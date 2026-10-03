@@ -8,3 +8,6 @@ dev-dist
 .firebase
 .firebaserc
 e2e-out
+
+.vercel
+.env*

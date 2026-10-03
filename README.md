@@ -107,7 +107,28 @@ The reader is local-first. IndexedDB is the working copy on every device; the cl
 `.env.local` is git-ignored. The values identify the project and are not secrets; access is enforced by the rules, which let a signed-in user read and write only `users/{their uid}/state/*`.
 
 Local development without Firebase: `node scripts/mock-cloud.mjs` and build/run with `VITE_SYNC_MOCK=http://localhost:4320`.
-Production: host `dist/` on any HTTPS static host, add that domain in step 6, and build with the same `.env.local`. To use a phone or tablet, the app must be reachable there over HTTPS — `localhost` only exists on the PC.
+
+### Production (Vercel)
+
+Live at **https://reader-marcus.vercel.app** — Vercel project `reader-marcus`, Firebase project `reader-marcus` (Firestore in `asia-south1`).
+
+- Deploy: `vercel deploy --prod` (builds with `npm run build`, serves `dist/`; settings in [`vercel.json`](vercel.json)). Routing is hash-based, so no SPA rewrite is needed.
+- Environment: the four `VITE_FIREBASE_*` values live in Vercel → Project → Settings → Environment Variables. They are read at build time, so redeploy after changing them.
+- Sign-in domain: in production `VITE_FIREBASE_AUTH_DOMAIN` is the site's own hostname, and `vercel.json` proxies `/__/auth/*` to `<project>.firebaseapp.com`. Sign-in then stays first-party, which is what makes the redirect fallback work in browsers that block third-party storage. Locally (`.env.local`) the auth domain stays `<project>.firebaseapp.com`.
+- A new hostname needs three entries: Firebase → Authentication → Settings → **Authorized domains**; and on the Google Cloud OAuth web client, **Authorized JavaScript origins** (`https://<host>`) and **Authorized redirect URIs** (`https://<host>/__/auth/handler`). Then update `VITE_FIREBASE_AUTH_DOMAIN` and the rewrite target if the Firebase project changed.
+- Rules: `npx firebase-tools deploy --only firestore:rules --project reader-marcus`.
+- Updates: the service worker checks for a new build on every load and takes over immediately; `sw.js` and `index.html` are served `no-cache`.
+
+Troubleshooting
+
+| Symptom | Cause |
+|---|---|
+| Vercel login page instead of the reader | Vercel → Project → Settings → Deployment Protection → Vercel Authentication is on for all deployments |
+| `auth/unauthorized-domain` | hostname missing from Firebase Authorized domains |
+| Google `redirect_uri_mismatch` | `https://<host>/__/auth/handler` missing from the OAuth client's redirect URIs |
+| Popup opens the reader itself | an old service worker is intercepting `/__/auth/*` — reload once |
+| `Sync paused — will retry` with `permission-denied` | rules not deployed, or signed in to a different Firebase project than the build's |
+| Stays on `Offline — changes queued` while online | Firestore unreachable (network filter / ad-blocker); the queue is kept and retried |
 
 ### Sync behaviour
 

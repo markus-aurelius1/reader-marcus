@@ -29,6 +29,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,json}'],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         cleanupOutdatedCaches: true,
+        // Google sign-in runs at /__/auth/* on this origin (proxied to Firebase); the service
+        // worker must let those navigations reach the network instead of serving the app shell.
+        navigateFallbackDenylist: [/^\/__\//],
       },
     }),
   ],
