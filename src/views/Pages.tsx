@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
-import { X } from 'lucide-react'
+import { ArrowRight, Star, X } from 'lucide-react'
 import { getLoaded, stageTitle, stages, type Chapter, type PyqCluster, type Subject } from '../lib/content'
 import { STATUS_LABEL, chapterProgress, secHtml, secTitle, subjectProgress, useStore, type Status } from '../lib/store'
 import { href } from '../lib/router'
 import { COLORS, anchor, textStream, type Color, type Highlight } from '../lib/highlight'
 import { renderBody } from '../lib/md'
+import type { ContentRef } from '../lib/contract'
+import { destinations, isFavourite, subjectRef, toggleFavourite, type Destination } from '../lib/nav'
 
 const Meter = ({ v, max }: { v: number; max: number }) => (
   <span className="meter"><i style={{ width: `${max ? (v / max) * 100 : 0}%` }} /></span>
@@ -24,14 +26,50 @@ function useResume(subjects: Subject[]) {
   return null
 }
 
+/** Star toggle for a favourite destination. */
+export function FavButton({ target, what }: { target: ContentRef; what: string }) {
+  const on = useStore((s) => isFavourite(s.prefs.favourites, target))
+  return (
+    <button className={'fav' + (on ? ' on' : '')} onClick={() => toggleFavourite(target)} aria-pressed={on} title={on ? `Remove ${what} from favourites` : `Add ${what} to favourites`}>
+      <Star />{on ? 'Favourite' : 'Add to favourites'}
+    </button>
+  )
+}
+
+function DestRows({ items }: { items: (Destination & { note?: string })[] }) {
+  return (
+    <div className="rows">
+      {items.map((d) => (
+        <a key={d.id} className="row" href={d.to}>
+          <span className="t"><b>{d.title}</b><small>{d.context}</small></span>
+          {d.note && <span className="num" style={{ width: 'auto' }}>{d.note}</span>}
+        </a>
+      ))}
+    </div>
+  )
+}
+
+const ago = (iso: string) => {
+  const d = Math.floor((Date.now() - Date.parse(iso)) / 86400000)
+  return d <= 0 ? 'Today' : d === 1 ? 'Yesterday' : `${d} days ago`
+}
+
+// ---- Home (structural shell; the dashboard is built on top of this later) ----
 export function Home({ subjects }: { subjects: Subject[] }) {
-  const progress = useStore((s) => s.progress)
   const resume = useResume(subjects)
+  const prefs = useStore((s) => s.prefs)
+  const sections = useStore((s) => s.progress.sections)
+  const recent = useMemo(
+    () => prefs.recents.flatMap((r) => destinations([r.target]).map((d) => ({ ...d, note: ago(r.visitedAt) }))).slice(0, 5),
+    [prefs.recents],
+  )
+  const favourites = useMemo(() => destinations(prefs.favourites), [prefs.favourites])
+  const queued = Object.values(sections).filter((x) => x.revise || x.difficult).length
   return (
     <div className="page">
       <div className="eyebrow">UPSC CSE · UPPCS</div>
-      <h1 className="title">Notes</h1>
-      {resume && (
+      <h1 className="title">Home</h1>
+      {resume ? (
         <a className="resume" href={href.reader(resume.chapter.key, undefined, { resume: true })}>
           <div style={{ minWidth: 0 }}>
             <small>Resume where I left off</small>
@@ -43,8 +81,68 @@ export function Home({ subjects }: { subjects: Subject[] }) {
           </div>
           <span className="go">Continue →</span>
         </a>
+      ) : (
+        <a className="resume" href={href.study()}>
+          <div style={{ minWidth: 0 }}><small>Start here</small><b>Open the Study library</b></div>
+          <span className="go">Browse →</span>
+        </a>
       )}
-      {stages.map((st) => (
+      <div className="quick">
+        <a href={href.study()}>Study library<ArrowRight /></a>
+        <a href={href.revision()}>Revision queue{queued > 0 && <small>{queued}</small>}<ArrowRight /></a>
+        <a href={href.highlights()}>Highlights<ArrowRight /></a>
+      </div>
+      {recent.length > 0 && (
+        <section>
+          <h3 className="gh">Recent</h3>
+          <DestRows items={recent} />
+        </section>
+      )}
+      <section>
+        <h3 className="gh">Favourites</h3>
+        {favourites.length ? <DestRows items={favourites} /> : <p className="empty" style={{ padding: '4px 0 0' }}>Use “Add to favourites” on any chapter or subject to keep it here.</p>}
+      </section>
+    </div>
+  )
+}
+
+// ---- PYQ Hub (structural shell) ----------------------------------------------
+export function PyqHub({ subjects }: { subjects: Subject[] }) {
+  const withPyq = subjects.filter((s) => s.pyq)
+  return (
+    <div className="page">
+      <div className="eyebrow">Previous year questions</div>
+      <h1 className="title">PYQ Hub</h1>
+      <p className="shell-note">One place to explore questions across subjects and years is being built here. Until then, each subject keeps its own question references.</p>
+      {withPyq.length > 0 && (
+        <>
+          <h3 className="gh">By subject</h3>
+          <div className="rows">
+            {withPyq.map((s) => {
+              const n = new Set(Object.values(s.pyq!.chapters).flatMap((c) => [...uniq(c.upsc), ...uniq(c.uppcs)])).size
+              return (
+                <a key={s.key} className="row" href={href.subject(s.key, 'pyq')}>
+                  <span className="t"><b>{s.title}</b><small>{stageTitle(s.stage)}</small></span>
+                  <span className="num" style={{ width: 'auto' }}>{n} references</span>
+                </a>
+              )
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// ---- Study (library): stage → paper → subject --------------------------------
+export function StudyHome({ stage }: { stage?: string }) {
+  const progress = useStore((s) => s.progress)
+  const shown = stages.some((st) => st.id === stage) ? stages.filter((st) => st.id === stage) : stages
+  return (
+    <div className="page">
+      <div className="eyebrow">Library</div>
+      <h1 className="title">Study</h1>
+      {shown.map((st) => (
         <section key={st.id}>
           <h2 className="sh">{st.title}</h2>
           {st.groups.filter((g) => g.subjects.length).map((g) => (
@@ -68,6 +166,7 @@ export function Home({ subjects }: { subjects: Subject[] }) {
           ))}
         </section>
       ))}
+      {shown.length < stages.length && <p style={{ marginTop: 22 }}><a className="linkbtn" style={{ color: 'var(--accent)' }} href={href.study()}>All stages →</a></p>}
     </div>
   )
 }
@@ -91,6 +190,7 @@ export function SubjectView({ subject, tab }: { subject: Subject; tab: 'overview
       <div className="chap-meta" style={{ borderBottom: 0, paddingBottom: 0, marginBottom: 0 }}>
         <span>{subject.chapters.length} chapters · {p.done} / {p.total} sections done</span>
         <span className="meter" style={{ width: 120 }}><i style={{ width: `${p.pct}%` }} /></span>
+        <FavButton target={subjectRef(subject)} what="this subject" />
         {resume && <a className="linkbtn" style={{ marginLeft: 'auto', color: 'var(--accent)' }} href={href.reader(resume.chapter.key, undefined, { resume: true })}>Resume: {resume.chapter.title} →</a>}
       </div>
       <nav className="tabs">
@@ -416,14 +516,15 @@ export function Revision({ subjects }: { subjects: Subject[] }) {
   )
 }
 
-// ---- Progress overview ------------------------------------------------------
-export function ProgressView({ subjects }: { subjects: Subject[] }) {
+// ---- Insights (shell): holds the Progress view; study-time analytics join it later ----
+export function InsightsPage({ subjects }: { subjects: Subject[] }) {
   const progress = useStore((s) => s.progress)
   const { setChapter } = useStore.getState()
   return (
     <div className="page wide">
       <div className="eyebrow">Where things stand</div>
-      <h1 className="title">Progress</h1>
+      <h1 className="title">Insights</h1>
+      <p className="shell-note">Study time, streaks and the activity heatmap will appear here once the study timer is added. Reading progress is below.</p>
       {subjects.map((s) => {
         const p = subjectProgress(progress, s)
         const count = (st: Status) => s.chapters.filter((c) => (progress.chapters[c.key]?.status ?? 'new') === st).length

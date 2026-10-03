@@ -1,6 +1,6 @@
 # UPSC Notes Reader
 
-Local-first revision-notes reader for UPSC CSE + UPPCS. React + TypeScript + Vite, installable PWA, works offline. No backend: edits, highlights and progress live in the browser (IndexedDB); theme / recall / sidebar preferences in localStorage.
+Local-first revision-notes reader for UPSC CSE + UPPCS. React + TypeScript + Vite, installable PWA, works offline. No backend: edits, highlights and progress live in the browser (IndexedDB); theme / recall / explorer preferences, favourites and recent destinations in localStorage.
 
 ## Run
 
@@ -20,7 +20,7 @@ Your edits and highlights are stored per browser and per address — keep using 
 
 ```
 content/                      ← all notes; the reader never names a subject in code
-  library.json                ← Prelims / Mains (GS1–GS4, Optional) slots shown on the Library page
+  library.json                ← Prelims / Mains (GS1–GS4, Optional) slots shown on the Study page and in the explorer
   prelims/polity/
     subject.json              ← title, topics → chapter order, taxonomy coverage contract
     chapters/<chapter>.md     ← one file per reading unit; "## " starts a section
@@ -32,6 +32,17 @@ scripts/e2e.mjs               ← end-to-end regression         (npm run e2e)
 src/                          ← reader UI (lib/, views/, editor/, components/, styles/) + sync/
 firestore.rules, .env.example ← optional cross-device sync
 ```
+
+## Navigation (Reader v2)
+
+The frozen v2 architecture, data contract and route table are in [`docs/READER_V2_CONTRACT.md`](docs/READER_V2_CONTRACT.md).
+
+- **Routes** are defined once, in `src/lib/router.ts` (`href` builds, `parse` reads). v1 links (`#/s/…`, `#/r/…`, `#/progress`) are rewritten in place.
+- **Navigation tree** (`src/lib/nav.ts`) is generated from `library.json` + each `subject.json` + the chapter files — a new subject appears in the rail's Study explorer, the subject switcher, breadcrumbs and Ctrl/Cmd+K with no code change.
+- **Presentation**: desktop/tablet use a primary rail (`components/Nav.tsx`) plus the Study explorer (`components/Explorer.tsx`: panel ≥ 1024px, drawer below); phones use a bottom tab bar and the explorer as a bottom sheet.
+- **Favourites / recent destinations** are fields of the existing preferences record (see the storage table).
+
+`scripts/e2e.mjs` → "Navigation v2" covers all of the above; extend its subject lists when a subject is added.
 
 ## Adding the next subject
 
@@ -191,7 +202,7 @@ There is no linter: typescript-eslint does not yet support the TypeScript 7 comp
 | Highlights | IndexedDB → `highlights` (one row each: position, quoted words, colour) |
 | Progress, flags, reading position | IndexedDB → `kv` → `progress` (+ `stamps`: when each field changed) |
 | Sync queue · unresolved conflicts | IndexedDB → `outbox` · `conflicts` |
-| Theme, Recall Mode, sidebar, collapsed sections | localStorage `upsc-prefs` |
+| Theme, Recall Mode, explorer panel, collapsed sections, favourites, recent destinations | localStorage `upsc-prefs` (all but the panel state sync as `pref~main`) |
 
 Highlights are stored apart from the text and re-attached to it when a section is shown. **Reset Local Edits** therefore restores the original text and keeps highlights, progress, status, flags and reading position. A highlight made on words that existed only in your edit cannot be placed on the original text: it is kept and listed on the Highlights page as "not in the current text", where you can remove it.
 

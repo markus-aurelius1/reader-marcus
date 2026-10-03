@@ -8,6 +8,7 @@
 // `#section` is optional. A link into a subject that is not in the library yet stays in the
 // text as plain words and switches on by itself once that subject is added.
 import type { Chapter, Section, Subject } from './content'
+import { href } from './router'
 
 export interface Ref {
   subjectKey: string
@@ -22,8 +23,7 @@ export function parseRef(ref: string, from: string): Ref {
   return { subjectKey: from, chapterId: seg[0], sectionId: sectionId || undefined }
 }
 
-export const refHref = (r: Ref) =>
-  r.chapterId ? `#/r/${r.subjectKey}/${r.chapterId}${r.sectionId ? '/' + r.sectionId : ''}` : `#/s/${r.subjectKey}`
+export const refHref = (r: Ref) => (r.chapterId ? href.reader(`${r.subjectKey}/${r.chapterId}`, r.sectionId) : href.subject(r.subjectKey))
 
 let installed: (subjectKey: string) => boolean = () => true
 /** Tells the linker which subjects exist; set once by the content registry. */

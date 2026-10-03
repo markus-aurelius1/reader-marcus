@@ -115,7 +115,7 @@ async function device(port, name, viewport = { width: 1280, height: 860 }) {
   return api
 }
 const cloudDump = async (uid = 'mock-user') => (await fetch(`http://localhost:${P.cloud}/dump?uid=${uid}`)).json()
-const PARL = '#/r/prelims/polity/parliament'
+const PARL = '#/study/prelims/polity/parliament'
 
 try {
   // ==========================================================================
@@ -147,7 +147,7 @@ try {
 
   // ==========================================================================
   section('Reader regression (production build, local-only)')
-  await L.hash('#/progress')
+  await L.hash('#/insights')
   check('Polity: 19 chapters', (await L.count('section:first-of-type .rows .row')) === 19)
   check('Polity: 117 sections', /\/117\)/.test(await L.text('.stat')), await L.text('.stat'))
   await L.hash(PARL)
@@ -258,7 +258,7 @@ try {
   check('search: chapter jump', (await search('judiciary'))[0] === 'Judiciary & Legal Services')
 
   // navigation
-  await L.hash('#/r/prelims/polity/political-theory')
+  await L.hash('#/study/prelims/polity/political-theory')
   const before = await L.ev(() => location.hash)
   await L.ev(() => document.querySelector('a.xref').click()); await sleep(500)
   const target = await L.ev(() => ({ hash: location.hash, title: document.title }))
@@ -272,8 +272,8 @@ try {
   check('Focus Mode hides chrome, keeps the reading-progress bar; Esc leaves', focus.top === 'none' && focus.side === 'none' && focus.bar !== 'none' && !(await L.ev(() => document.querySelector('.app').classList.contains('focus'))), focus)
   await L.key('t'); const dark = await L.ev(() => [document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor]); await L.key('t')
   check('theme toggle', dark[0] === 'dark' && dark[1] === 'rgb(21, 22, 26)' && (await L.ev(() => document.documentElement.dataset.theme)) === 'light', dark)
-  await L.hash('#/s/prelims/polity/pyq'); const pyq = await L.count('details.syn')
-  await L.hash('#/s/prelims/polity/insights'); const ins = await L.count('.hbar')
+  await L.hash('#/study/prelims/polity?tab=pyq'); const pyq = await L.count('details.syn')
+  await L.hash('#/study/prelims/polity?tab=insights'); const ins = await L.count('.hbar')
   check('PYQs and Insights tabs', pyq === 19 && ins === 19)
 
   // exports
@@ -290,14 +290,14 @@ try {
 
   // ==========================================================================
   section('Economy + cross-links')
-  const ECO = '#/r/prelims/economy/'
-  await L.hash('#/')
+  const ECO = '#/study/prelims/economy/'
+  await L.hash('#/study')
   check('Library lists Economy & Social Development under Prelims, after Polity', (await L.ev(() => [...document.querySelectorAll('a.row b')].map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture')
-  await L.hash('#/progress')
+  await L.hash('#/insights')
   check('Economy: 17 chapters, 107 sections', (await L.count('section:nth-of-type(2) .rows .row')) === 17 && (await L.ev(() => document.querySelectorAll('.stat')[1].textContent)).includes('/107)'))
-  await L.hash('#/s/prelims/economy'); const ecoRows = await L.count('.rows .row'); const ecoTopics = await L.count('h3.gh')
-  await L.hash('#/s/prelims/economy/pyq'); const ecoPyq = await L.count('details.syn')
-  await L.hash('#/s/prelims/economy/insights'); const ecoIns = await L.count('.hbar'); const ecoFlags = await L.ev(() => [...document.querySelectorAll('.rows .chip')].map((c) => c.textContent))
+  await L.hash('#/study/prelims/economy'); const ecoRows = await L.count('.rows .row'); const ecoTopics = await L.count('h3.gh')
+  await L.hash('#/study/prelims/economy?tab=pyq'); const ecoPyq = await L.count('details.syn')
+  await L.hash('#/study/prelims/economy?tab=insights'); const ecoIns = await L.count('.hbar'); const ecoFlags = await L.ev(() => [...document.querySelectorAll('.rows .chip')].map((c) => c.textContent))
   check('Economy overview, PYQs and Insights tabs', ecoRows === 17 && ecoTopics === 6 && ecoPyq === 17 && ecoIns === 17, [ecoRows, ecoTopics, ecoPyq, ecoIns])
   check('Insights lists Economy ↻ Dynamic and Verify items', ecoFlags.includes('↻ Dynamic') && ecoFlags.includes('Verify'), ecoFlags.length)
   const sEco = await search('crowding out')
@@ -307,16 +307,16 @@ try {
   const rel = await L.ev(async () => { const i = document.querySelector('.palette input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'fiscal federalism'); i.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 250)); return [...document.querySelectorAll('.palette li')].filter((li) => li.querySelector('em')).map((li) => li.textContent) })
   check('search palette offers related destinations in another subject', rel.some((t) => t.startsWith('Finance Commission') && t.includes('Polity') && t.includes('related to Fiscal Federalism')), rel)
   await L.ev(() => [...document.querySelectorAll('.palette li')].find((li) => li.querySelector('em') && li.textContent.startsWith('Finance Commission')).click()); await sleep(400)
-  check('related result opens the exact section', (await L.ev(() => location.hash)) === '#/r/prelims/polity/constitutional-bodies/finance-commission')
+  check('related result opens the exact section', (await L.ev(() => location.hash)) === '#/study/prelims/polity/constitutional-bodies/finance-commission')
 
   // cross-subject link → exact section → Back
   await L.hash(ECO + 'budget-fiscal-policy/fiscal-federalism')
   const from = await L.ev(() => location.hash)
   await L.ev(() => document.querySelector('#s-fiscal-federalism a.xref[data-xref^="prelims/polity/"]').click()); await sleep(500)
   const dest = await L.ev(() => ({ hash: location.hash, title: document.title, top: Math.round(document.getElementById('s-finance-commission').getBoundingClientRect().top), crumbs: document.querySelector('.crumbs').textContent }))
-  check('cross-subject link opens the exact chapter and section', dest.hash === '#/r/prelims/polity/constitutional-bodies/finance-commission' && dest.title.startsWith('Constitutional Bodies') && dest.top >= 0 && dest.top < 200 && dest.crumbs.includes('Polity'), dest)
+  check('cross-subject link opens the exact chapter and section', dest.hash === '#/study/prelims/polity/constitutional-bodies/finance-commission' && dest.title.startsWith('Constitutional Bodies') && dest.top >= 0 && dest.top < 200 && dest.crumbs.includes('Polity'), dest)
   const back = await L.ev(() => [...document.querySelectorAll('#s-finance-commission .related a')].map((a) => a.textContent + ' ' + a.getAttribute('href')))
-  check('destination shows a Related backlink to the linking section', back.some((t) => t.includes('Economy & Social Development') && t.includes('Fiscal Federalism') && t.endsWith('#/r/prelims/economy/budget-fiscal-policy/fiscal-federalism')), back)
+  check('destination shows a Related backlink to the linking section', back.some((t) => t.includes('Economy & Social Development') && t.includes('Fiscal Federalism') && t.endsWith('#/study/prelims/economy/budget-fiscal-policy/fiscal-federalism')), back)
   await L.page.goBack(); await sleep(500)
   check('browser Back returns to the linking section', (await L.ev(() => location.hash)) === from && (await L.ev(() => document.title)).startsWith('Budget'))
   await L.page.goForward(); await sleep(400)
@@ -343,7 +343,7 @@ try {
   await L.highlight('fiscal-policy', 'Crowding out', 'blue'); await L.click('#s-deficits .tg.done'); await L.click('#s-frbm .tg.rev')
   await L.editMode(true); await L.edit('fiscal-federalism', '<p>ECO-E2E edit</p>'); await L.saved(); await L.editMode(false)
   const edited = await L.ev(() => ({ text: document.querySelector('#s-fiscal-federalism .sec-body').textContent.includes('ECO-E2E edit'), links: [...document.querySelectorAll('#s-fiscal-federalism .sec-body a.xref')].map((a) => a.getAttribute('data-xref') + ' ' + a.getAttribute('href')) }))
-  check('edited section keeps its cross-links (ids and routes)', edited.text && edited.links.includes('prelims/polity/constitutional-bodies#finance-commission #/r/prelims/polity/constitutional-bodies/finance-commission') && edited.links.includes('taxation#cess-vs-surcharge #/r/prelims/economy/taxation/cess-vs-surcharge'), edited)
+  check('edited section keeps its cross-links (ids and routes)', edited.text && edited.links.includes('prelims/polity/constitutional-bodies#finance-commission #/study/prelims/polity/constitutional-bodies/finance-commission') && edited.links.includes('taxation#cess-vs-surcharge #/study/prelims/economy/taxation/cess-vs-surcharge'), edited)
   await L.ev(() => document.querySelector('#s-fiscal-federalism .sec-body a.xref[data-xref^="prelims/polity/"]').click()); await sleep(400)
   check('link in an edited section still navigates', (await L.ev(() => location.hash)).endsWith('constitutional-bodies/finance-commission'))
   await L.page.goBack(); await sleep(400)
@@ -356,8 +356,8 @@ try {
   await sleep(1500)
   const xh = dl('prelims-economy-budget-fiscal-policy.html'); const xm = dl('prelims-economy-budget-fiscal-policy.md'); const xs = dl('prelims-economy.html')
   check('Markdown export keeps cross-links as stable ids', xm.includes('](@prelims/polity/constitutional-bodies#finance-commission)') && xm.includes('](@taxation#cess-vs-surcharge)') && xm.includes('ECO-E2E edit'))
-  check('HTML export: links outside the file point back to the reader', xh.includes(`href="http://localhost:${P.local}/#/r/prelims/polity/constitutional-bodies/finance-commission"`) && xh.includes(`href="http://localhost:${P.local}/#/r/prelims/economy/taxation/cess-vs-surcharge"`), (xh.match(/data-xref="[^"]+" href="[^"]+"/g) ?? []).slice(0, 3))
-  check('HTML export: links inside the file use its own anchors', xs.includes('data-xref="taxation#cess-vs-surcharge" href="#taxation--cess-vs-surcharge"') && xs.includes('<section id="taxation--cess-vs-surcharge">') && xs.includes(`href="http://localhost:${P.local}/#/r/prelims/polity/`))
+  check('HTML export: links outside the file point back to the reader', xh.includes(`href="http://localhost:${P.local}/#/study/prelims/polity/constitutional-bodies/finance-commission"`) && xh.includes(`href="http://localhost:${P.local}/#/study/prelims/economy/taxation/cess-vs-surcharge"`), (xh.match(/data-xref="[^"]+" href="[^"]+"/g) ?? []).slice(0, 3))
+  check('HTML export: links inside the file use its own anchors', xs.includes('data-xref="taxation#cess-vs-surcharge" href="#taxation--cess-vs-surcharge"') && xs.includes('<section id="taxation--cess-vs-surcharge">') && xs.includes(`href="http://localhost:${P.local}/#/study/prelims/polity/`))
   L.page.once('dialog', (d) => d.accept())
   await L.menu('Reset Local Edits — this chapter'); await sleep(700)
   check('Reset Local Edits works on Economy and keeps highlight + progress', !(await L.text('#s-fiscal-federalism .sec-body')).includes('ECO-E2E edit') && (await L.marks('fiscal-policy')).length === 1 && (await L.text('.chap-meta span')) === '1 / 7 sections done')
@@ -366,12 +366,12 @@ try {
 
   // ==========================================================================
   section('History & Culture + cross-links')
-  const HIS = '#/r/prelims/history-culture/'
-  await L.hash('#/progress')
+  const HIS = '#/study/prelims/history-culture/'
+  await L.hash('#/insights')
   check('History & Culture: 29 chapters, 204 sections', (await L.count('section:nth-of-type(3) .rows .row')) === 29 && (await L.ev(() => document.querySelectorAll('.stat')[2].textContent)).includes('/204)'))
-  await L.hash('#/s/prelims/history-culture'); const hisRows = await L.count('.rows .row'); const hisTopics = await L.count('h3.gh')
-  await L.hash('#/s/prelims/history-culture/pyq'); const hisPyq = await L.count('details.syn')
-  await L.hash('#/s/prelims/history-culture/insights'); const hisIns = await L.count('.hbar'); const hisFlags = await L.ev(() => [...document.querySelectorAll('.rows .chip')].map((c) => c.textContent))
+  await L.hash('#/study/prelims/history-culture'); const hisRows = await L.count('.rows .row'); const hisTopics = await L.count('h3.gh')
+  await L.hash('#/study/prelims/history-culture?tab=pyq'); const hisPyq = await L.count('details.syn')
+  await L.hash('#/study/prelims/history-culture?tab=insights'); const hisIns = await L.count('.hbar'); const hisFlags = await L.ev(() => [...document.querySelectorAll('.rows .chip')].map((c) => c.textContent))
   check('History overview, PYQs and Insights tabs', hisRows === 29 && hisTopics === 6 && hisPyq === 29 && hisIns === 29, [hisRows, hisTopics, hisPyq, hisIns])
   check('Insights lists History ↻ Dynamic and Verify items', hisFlags.includes('↻ Dynamic') && hisFlags.includes('Verify'), hisFlags.length)
   const sHis = await search('Vattakirutal')
@@ -380,7 +380,7 @@ try {
   await L.hash(HIS + 'awards-institutions/article-18')
   const hFrom = await L.ev(() => location.hash)
   await L.ev(() => document.querySelector('#s-article-18 a.xref[data-xref^="prelims/polity/"]').click()); await sleep(500)
-  const FR = '#/r/prelims/polity/fundamental-rights/right-to-equality-articles-14-18'
+  const FR = '#/study/prelims/polity/fundamental-rights/right-to-equality-articles-14-18'
   const hBack = await L.ev(() => [...document.querySelectorAll('#s-right-to-equality-articles-14-18 .related a')].map((a) => a.textContent + ' ' + a.getAttribute('href')))
   check('History → Polity link opens the exact section, with a Related backlink', (await L.ev(() => location.hash)) === FR && hBack.some((t) => t.includes('History & Culture') && t.includes('Article 18') && t.endsWith(HIS + 'awards-institutions/article-18')), hBack)
   check('Polity body untouched by History backlinks', await L.ev(() => document.querySelector('#s-right-to-equality-articles-14-18 .sec-body .related') === null))
@@ -389,7 +389,7 @@ try {
   // History → Economy
   await L.hash(HIS + 'painting-crafts-textiles/gi')
   await L.ev(() => document.querySelector('#s-gi a.xref[data-xref^="prelims/economy/"]').click()); await sleep(500)
-  check('History → Economy link opens the exact section', (await L.ev(() => location.hash)) === '#/r/prelims/economy/international-institutions/trips-gi-patents' && (await L.ev(() => [...document.querySelectorAll('#s-trips-gi-patents .related a')].some((a) => a.textContent.includes('History & Culture')))))
+  check('History → Economy link opens the exact section', (await L.ev(() => location.hash)) === '#/study/prelims/economy/international-institutions/trips-gi-patents' && (await L.ev(() => [...document.querySelectorAll('#s-trips-gi-patents .related a')].some((a) => a.textContent.includes('History & Culture')))))
   await L.page.goBack(); await sleep(400)
   check('Back returns from Economy to History', (await L.ev(() => location.hash)) === HIS + 'painting-crafts-textiles/gi')
   // inside History, and a link into a subject that is not in the library yet
@@ -407,7 +407,7 @@ try {
   await L.highlight('act-1919', 'High Commissioner for India', 'blue'); await L.click('#s-act-1919 .tg.done'); await L.click('#s-simon-nehru .tg.rev')
   await L.editMode(true); await L.edit('act-1935', '<p>HIS-E2E edit</p>'); await L.saved(); await L.editMode(false)
   const hEdited = await L.ev(() => ({ text: document.querySelector('#s-act-1935 .sec-body').textContent.includes('HIS-E2E edit'), links: [...document.querySelectorAll('#s-act-1935 .sec-body a.xref')].map((a) => a.getAttribute('data-xref') + ' ' + a.getAttribute('href')) }))
-  check('edited History section keeps its cross-links', hEdited.text && hEdited.links.includes('prelims/polity/preamble#sources-of-the-constitution #/r/prelims/polity/preamble/sources-of-the-constitution') && hEdited.links.includes('prelims/polity/parts-schedules#seventh-schedule-lists #/r/prelims/polity/parts-schedules/seventh-schedule-lists'), hEdited)
+  check('edited History section keeps its cross-links', hEdited.text && hEdited.links.includes('prelims/polity/preamble#sources-of-the-constitution #/study/prelims/polity/preamble/sources-of-the-constitution') && hEdited.links.includes('prelims/polity/parts-schedules#seventh-schedule-lists #/study/prelims/polity/parts-schedules/seventh-schedule-lists'), hEdited)
   await L.reload()
   check('History edit, highlight and progress persist across reload', (await L.text('#s-act-1935 .sec-body')).includes('HIS-E2E edit') && (await L.marks('act-1919')).join() === 'blue:High Commissioner for India' && (await L.text('.chap-meta span')) === '1 / 8 sections done')
   await L.hash('#/revision')
@@ -437,6 +437,137 @@ try {
   check('unplaced highlights are kept and labelled, not misattached', hp.length === 3 && hp.filter((x) => x.includes('not in the current text')).length === 2, hp)
   await L.reload()
   check('reset state survives reload', (await L.count('.hl-item')) === 3 && (await L.idb('overrides')).length === 0)
+
+  // ==========================================================================
+  section('Navigation v2')
+  await L.page.setViewport({ width: 1280, height: 860 })
+  const hashNow = (d = L) => d.ev(() => location.hash)
+  const h1 = (d = L) => d.text('h1.title')
+  const homeLists = (d = L) => d.ev(() => Object.fromEntries([...document.querySelectorAll('.page section')].map((s) => [s.querySelector('h3').textContent, [...s.querySelectorAll('.row b')].map((b) => b.textContent)])))
+  // v1 deep links
+  await L.go('#/r/prelims/polity/parliament/budget-and-financial-procedure')
+  check('v1 reader link opens the same section at its v2 address', (await hashNow()) === '#/study/prelims/polity/parliament/budget-and-financial-procedure' && (await L.ev(() => document.title)).startsWith('Parliament') && (await L.ev(() => { const t = document.getElementById('s-budget-and-financial-procedure').getBoundingClientRect().top; return t >= 0 && t < 200 })))
+  await L.go('#/s/prelims/economy/pyq')
+  check('v1 subject-tab link opens the same tab', (await hashNow()) === '#/study/prelims/economy?tab=pyq' && (await L.count('details.syn')) === 17)
+  await L.go('#/progress')
+  check('v1 Progress link opens Insights, with the Progress view inside', (await hashNow()) === '#/insights' && (await h1()) === 'Insights' && (await L.count('.stat')) === 3)
+  await L.go('#/'); await L.hash('#/r/prelims/polity/judiciary'); const viaOld = await hashNow(); await L.page.goBack(); await sleep(400)
+  check('a rewritten v1 link adds no extra history entry (Back returns in one step)', viaOld === '#/study/prelims/polity/judiciary' && ['#/', ''].includes(await hashNow()), [viaOld, await hashNow()])
+
+  // desktop rail
+  await L.go('#/')
+  const rail = await L.ev(() => ({ items: [...document.querySelectorAll('.rail a, .rail button')].map((e) => e.querySelector('span').textContent).join('|'), tab: getComputedStyle(document.querySelector('.tabbar')).display, w: document.querySelector('.rail').getBoundingClientRect().width }))
+  check('desktop: primary rail — Home, Study, PYQ Hub, Insights, Highlights, Search; no tab bar', rail.items === 'Home|Study|PYQ Hub|Insights|Highlights|Search' && rail.tab === 'none' && rail.w > 60, rail)
+  const visited = []
+  for (const label of ['Study', 'PYQ Hub', 'Insights', 'Highlights', 'Home']) {
+    await L.ev((l) => [...document.querySelectorAll('.rail a')].find((a) => a.textContent === l).click(), label); await sleep(350)
+    visited.push([await hashNow(), await h1(), await L.text('.rail a.on')].join(' '))
+  }
+  check('rail opens each surface at its route and marks it active', visited.join(' | ') === '#/study Study Study | #/pyqs PYQ Hub PYQ Hub | #/insights Insights Insights | #/highlights Highlights Highlights | #/ Home Home', visited)
+  await L.ev(() => document.querySelector('.rail button').click()); await sleep(200)
+  check('rail Search opens the palette', (await L.count('.palette input')) === 1)
+  await L.page.keyboard.press('Escape'); await sleep(150)
+  check('Home, PYQ Hub and Insights are shells: no explorer panel outside Study', (await L.ev(() => document.querySelector('.app').classList.contains('side-open'))) === false && (await L.count('.sidebar .x-tree')) === 0)
+  await L.hash('#/pyqs')
+  check('PYQ Hub shell lists only subjects that have question references', (await L.ev(() => [...document.querySelectorAll('.row b')].map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture')
+  await L.click('a.row'); check('PYQ Hub row opens the subject PYQ tab', (await hashNow()) === '#/study/prelims/polity?tab=pyq' && (await L.count('details.syn')) === 19)
+
+  // study explorer
+  await L.hash('#/study')
+  const lib = await L.ev(() => ({ open: document.querySelector('.app').classList.contains('side-open'), chapters: document.querySelectorAll('.sidebar .chap').length, stages: [...document.querySelectorAll('.x-stage > .x-row')].map((e) => e.textContent).join('|'), subjects: document.querySelectorAll('.x-subject').length, off: document.querySelectorAll('.x-row.off').length }))
+  check('Study: explorer shows stages and subjects, no chapters until a subject is chosen', lib.open && lib.chapters === 0 && lib.stages === 'Prelims|Mains' && lib.subjects === 3 && lib.off === 5, lib)
+  await L.ev(() => [...document.querySelectorAll('.x-stage > .x-row')].find((e) => e.textContent === 'Mains').click()); await sleep(250)
+  check('Mains opens to its papers', (await L.ev(() => [...document.querySelectorAll('.x-paper > .x-row')].map((e) => e.textContent).join('|'))) === 'GS1|GS2|GS3|GS4')
+  await L.hash('#/study/mains')
+  check('stage route lists that stage only', (await L.ev(() => [...document.querySelectorAll('h2.sh')].map((e) => e.textContent).join('|'))) === 'Mains' && (await L.text('.crumbs')) === 'Study›Mains')
+  await L.hash(PARL)
+  const tree = await L.ev(() => ({ chapters: [...document.querySelectorAll('.x-tree .chap')].map((e) => e.querySelector('span').textContent), secs: document.querySelectorAll('.side-secs a').length, topics: document.querySelectorAll('.x-topic').length, openTopics: document.querySelectorAll('.x-topic > .kids').length, current: document.querySelector('.x-tree .chap[aria-current="page"] span')?.textContent }))
+  check('explorer expands only the active branch (subject → topic → chapter → sections)', tree.chapters.join('|') === 'Union Executive|Parliament|Judiciary & Legal Services' && tree.secs === 9 && tree.topics === 6 && tree.openTopics === 1 && tree.current === 'Parliament', tree)
+  await L.click('.twist[aria-label="Expand Economy & Social Development"]')
+  const peek = await L.count('.x-topic')
+  await L.hash('#/study/prelims/history-culture/mughals'); await sleep(200)
+  check('another branch can be opened by hand; it folds away when the subject changes', peek === 12 && (await L.count('.x-topic')) === 6 && (await L.text('.x-tree .chap[aria-current="page"] span')) ?.startsWith('Mughals'), [peek, await L.count('.x-topic')])
+  await L.key('s'); const hidden = await L.ev(() => !document.querySelector('.app').classList.contains('side-open') && getComputedStyle(document.querySelector('.main')).paddingLeft); await L.key('s')
+  check('explorer panel collapses and returns (s)', hidden === '76px' && (await L.ev(() => getComputedStyle(document.querySelector('.main')).paddingLeft)) === '356px', hidden)
+
+  // subject switcher, header Prev / Next / Related, breadcrumbs
+  await L.hash(PARL)
+  await L.click('.switch-head')
+  const opts = await L.ev(() => [...document.querySelectorAll('.switcher a[role="option"]')].map((a) => a.childNodes[0].textContent).join('|'))
+  await L.ev(() => [...document.querySelectorAll('.switcher a[role="option"]')].find((a) => a.textContent.startsWith('Economy')).click()); await sleep(450)
+  check('subject switcher lists every subject and resumes the chapter last read there', opts === 'Polity|Economy & Social Development|History & Culture' && (await hashNow()).startsWith('#/study/prelims/economy/') && (await L.count('.switcher')) === 0 && (await L.count('.sec')) > 3, [opts, await hashNow()])
+  await L.page.goBack(); await sleep(400)
+  check('browser Back returns from a subject switch', (await hashNow()) === PARL)
+  await L.click('.crumbs .switch-crumb'); const crumbSw = await L.count('.switcher a[role="option"]'); await L.page.keyboard.press('Escape'); await sleep(150)
+  check('breadcrumb carries the compact switcher; Esc closes it', crumbSw === 3 && (await L.count('.switcher')) === 0)
+  check('breadcrumbs: stage › subject › chapter, each a link', (await L.ev(() => [...document.querySelectorAll('.crumbs a')].map((a) => a.textContent + ' ' + a.getAttribute('href')).join(' | '))) === 'Prelims #/study/prelims | Polity #/study/prelims/polity | Parliament #/study/prelims/polity/parliament')
+  await L.click('button[aria-label="Next chapter"]'); const nx = await L.ev(() => document.title); await L.click('button[aria-label="Previous chapter"]')
+  check('header Previous / Next step through the subject', nx.startsWith('Judiciary') && (await L.ev(() => document.title)).startsWith('Parliament'), nx)
+  await L.hash('#/study/prelims/polity/political-theory'); check('first chapter: Previous is disabled', await L.ev(() => document.querySelector('button[aria-label="Previous chapter"]').disabled))
+  await L.hash('#/study/prelims/economy/budget-fiscal-policy/fiscal-federalism'); await sleep(300)
+  await L.click('button[aria-label^="Related"]')
+  const relLinks = await L.ev(() => [...document.querySelectorAll('.relmenu a')].map((a) => a.getAttribute('href')))
+  await L.ev(() => document.querySelector('.relmenu a[href="#/study/prelims/polity/constitutional-bodies/finance-commission"]').click()); await sleep(450)
+  check('header Related lists cross-links for the chapter and section, and opens them', relLinks.length >= 2 && (await hashNow()) === '#/study/prelims/polity/constitutional-bodies/finance-commission' && (await L.count('.relmenu')) === 0, relLinks)
+
+  // favourites and recent destinations
+  await L.hash(PARL); await L.click('.chap-meta .fav')
+  await L.hash('#/study/prelims/economy'); await L.click('.chap-meta .fav')
+  await L.hash('#/study/prelims/history-culture/mughals')
+  await L.reload(); await L.hash('#/')
+  const lists = await homeLists()
+  check('favourites (a chapter and a subject) persist and are listed on Home', lists.Favourites?.join('|') === 'Parliament|Economy & Social Development', lists)
+  check('recent destinations: newest first, no duplicates, at most 5 on Home', lists.Recent?.[0].startsWith('Mughals') && lists.Recent.length <= 5 && new Set(lists.Recent).size === lists.Recent.length && lists.Recent.includes('Parliament'), lists.Recent)
+  await L.ev(() => [...document.querySelectorAll('.page section')].find((s) => s.querySelector('h3').textContent === 'Favourites').querySelector('a.row').click()); await sleep(400)
+  check('a favourite opens its chapter; the explorer pins favourites', (await hashNow()) === PARL && (await L.ev(() => [...document.querySelectorAll('.x-pinned .chap span')].map((e) => e.textContent).join('|'))) === 'Parliament|Economy & Social Development')
+  await L.click('.chap-meta .fav'); await L.hash('#/')
+  check('removing a favourite takes it off Home', (await homeLists()).Favourites?.join('|') === 'Economy & Social Development')
+  check('navigation preferences live in the existing preferences store, not a new one', await L.ev(() => { const p = JSON.parse(localStorage.getItem('upsc-prefs')); return p.favourites.length === 1 && p.favourites[0].kind === 'subject' && p.favourites[0].subjectId === 'economy' && p.recents[0].target.chapterId === 'parliament' && !!Date.parse(p.recents[0].visitedAt) }))
+
+  // Ctrl/Cmd+K
+  await L.ev(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))); await sleep(250)
+  const groups = await L.ev(() => [...document.querySelectorAll('.palette li.grp')].map((e) => e.textContent).join('|'))
+  check('Ctrl+K with no query offers Recent, Favourites and every subject', groups === 'Recent|Favourites|Subjects' && (await L.ev(() => [...document.querySelectorAll('.palette li:not(.grp) b')].slice(-3).map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture', groups)
+  await L.page.keyboard.press('Escape'); await sleep(150)
+  const sSub = await search('history')
+  check('Ctrl+K jumps to a subject by name', sSub[0] === 'History & Culture', sSub.slice(0, 3))
+  await L.ev(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))); await sleep(250)
+  await L.page.keyboard.type('economy soc'); await sleep(300); await L.page.keyboard.press('Enter'); await sleep(400)
+  check('Cmd+K + Enter opens the subject', (await hashNow()) === '#/study/prelims/economy' && (await L.count('.palette')) === 0)
+
+  // tablet
+  await L.page.setViewport({ width: 768, height: 1024 }); await L.go(PARL)
+  const tab = await L.ev(() => ({ rail: getComputedStyle(document.querySelector('.rail')).display, railW: document.querySelector('.rail').getBoundingClientRect().width, tabbar: getComputedStyle(document.querySelector('.tabbar')).display, open: document.querySelector('.app').classList.contains('side-open'), pad: getComputedStyle(document.querySelector('.main')).paddingLeft }))
+  await L.click('button[aria-label="Study explorer"]'); await sleep(350)
+  const drawer = await L.ev(() => { const r = document.querySelector('.sidebar').getBoundingClientRect(); return { left: r.left, top: r.top, bottom: r.bottom, h: innerHeight, scrim: getComputedStyle(document.querySelector('.scrim')).display } })
+  await L.ev(() => [...document.querySelectorAll('.x-tree .chap')].find((a) => a.textContent.includes('Judiciary')).click()); await sleep(450)
+  check('tablet: rail stays, explorer is a drawer beside it that closes on navigation', tab.rail === 'flex' && tab.railW === 64 && tab.tabbar === 'none' && !tab.open && tab.pad === '64px' && drawer.left === 64 && drawer.top === 0 && drawer.bottom === drawer.h && drawer.scrim === 'block' && (await hashNow()) === '#/study/prelims/polity/judiciary' && !(await L.ev(() => document.querySelector('.app').classList.contains('side-open'))), [tab, drawer])
+  await L.page.screenshot({ path: join(OUT, 'tablet.png') })
+
+  // phone
+  await L.page.setViewport({ width: 375, height: 812 }); await L.go('#/')
+  const bar = await L.ev(() => ({ items: [...document.querySelectorAll('.tabbar a, .tabbar button')].map((e) => e.textContent).join('|'), rail: getComputedStyle(document.querySelector('.rail')).display, r: document.querySelector('.tabbar').getBoundingClientRect().toJSON(), h: innerHeight, on: document.querySelector('.tabbar .on')?.textContent }))
+  check('phone: bottom bar — Home, Study, PYQs, Insights, More; no rail', bar.items === 'Home|Study|PYQs|Insights|More' && bar.rail === 'none' && bar.r.bottom === bar.h && bar.r.left === 0 && bar.r.width === 375 && bar.on === 'Home', bar)
+  await L.page.screenshot({ path: join(OUT, 'phone-home.png') })
+  const tabs = []
+  for (const label of ['Study', 'PYQs', 'Insights']) { await L.ev((l) => [...document.querySelectorAll('.tabbar a')].find((a) => a.textContent === l).click(), label); await sleep(350); tabs.push([await hashNow(), await L.text('.tabbar .on')].join(' ')) }
+  check('phone: tabs open their routes and show the active one', tabs.join(' | ') === '#/study Study | #/pyqs PYQs | #/insights Insights', tabs)
+  await L.click('.tabbar button')
+  const more = await L.ev(() => { const m = document.querySelector('.menu.more'); const r = m.getBoundingClientRect(); const vis = [...m.querySelectorAll('a, button')].filter((e) => getComputedStyle(e).display !== 'none').map((e) => e.childNodes[1]?.textContent ?? e.textContent); return { vis, fits: r.left >= 0 && r.right <= innerWidth && r.bottom <= document.querySelector('.tabbar').getBoundingClientRect().top && r.top >= 0 } })
+  check('phone: More holds Highlights, Revision queue, theme and account/sync, above the bar', more.fits && ['Highlights', 'Revision queue', 'Account & sync'].every((x) => more.vis.includes(x)) && more.vis.some((x) => / theme$/.test(x)), more)
+  await L.ev(() => [...document.querySelectorAll('.menu.more a')].find((a) => a.textContent === 'Highlights').click()); await sleep(350)
+  check('phone: Highlights opens from More and More is marked active', (await hashNow()) === '#/highlights' && (await L.count('.menu.more')) === 0 && (await L.text('.tabbar .on')) === 'More')
+  await L.hash(PARL)
+  await L.click('button[aria-label="Study explorer"]'); await sleep(350)
+  const sheet = await L.ev(() => { const r = document.querySelector('.sidebar').getBoundingClientRect(); return { left: r.left, w: r.width, top: r.top, bottom: r.bottom, h: innerHeight, head: !!document.querySelector('.sidebar .switch-head'), secs: document.querySelectorAll('.sidebar .side-secs a').length } })
+  await L.page.screenshot({ path: join(OUT, 'phone-explorer.png') })
+  await L.ev(() => document.querySelector('.sidebar .side-secs a[href$="/presiding-officers"]').click()); await sleep(450)
+  check('phone: explorer is a bottom sheet (not the desktop sidebar) and closes on navigation', sheet.left === 0 && sheet.w === 375 && sheet.top > 120 && sheet.bottom === sheet.h && sheet.head && sheet.secs === 9 && (await hashNow()) === PARL + '/presiding-officers' && !(await L.ev(() => document.querySelector('.app').classList.contains('side-open'))), sheet)
+  check('phone: chapter Previous / Next remain at the foot of the chapter', (await L.count('.pn a')) === 2 && (await L.ev(() => getComputedStyle(document.querySelector('.pager')).display)) === 'none')
+  await L.page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }])
+  check('reduced motion: navigation transitions are switched off', await L.ev(() => parseFloat(getComputedStyle(document.querySelector('.sidebar')).transitionDuration) < 0.001 && parseFloat(getComputedStyle(document.querySelector('.tabbar svg')).transitionDuration) < 0.001))
+  await L.page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }])
+  await L.page.setViewport({ width: 1280, height: 860 }); await L.go(PARL)
 
   // ==========================================================================
   section('Print / PDF')
@@ -470,7 +601,7 @@ try {
 
   // ==========================================================================
   section('Responsive layout')
-  const routes = ['#/', '#/s/prelims/polity', '#/s/prelims/polity/insights', '#/highlights', '#/revision', '#/progress', PARL, '#/r/prelims/polity/constitutional-bodies', '#/r/prelims/polity/parts-schedules', '#/s/prelims/economy', '#/s/prelims/economy/insights', '#/r/prelims/economy/budget-fiscal-policy', '#/r/prelims/economy/government-schemes', '#/r/prelims/economy/money-rbi-monetary-policy', '#/r/prelims/economy/international-institutions', '#/s/prelims/history-culture', '#/s/prelims/history-culture/insights', '#/r/prelims/history-culture/constitutional-development', '#/r/prelims/history-culture/architecture-sculpture', '#/r/prelims/history-culture/early-nationalism-swadeshi', '#/r/prelims/history-culture/british-administration-economy']
+  const routes = ['#/', '#/study', '#/study/mains', '#/pyqs', '#/insights', '#/study/prelims/polity', '#/study/prelims/polity?tab=insights', '#/highlights', '#/revision', '#/insights', PARL, '#/study/prelims/polity/constitutional-bodies', '#/study/prelims/polity/parts-schedules', '#/study/prelims/economy', '#/study/prelims/economy?tab=insights', '#/study/prelims/economy/budget-fiscal-policy', '#/study/prelims/economy/government-schemes', '#/study/prelims/economy/money-rbi-monetary-policy', '#/study/prelims/economy/international-institutions', '#/study/prelims/history-culture', '#/study/prelims/history-culture?tab=insights', '#/study/prelims/history-culture/constitutional-development', '#/study/prelims/history-culture/architecture-sculpture', '#/study/prelims/history-culture/early-nationalism-swadeshi', '#/study/prelims/history-culture/british-administration-economy']
   for (const [name, w, h] of [['phone 375', 375, 812], ['tablet 768', 768, 1024], ['desktop 1280', 1280, 860]]) {
     await L.page.setViewport({ width: w, height: h })
     const bad = []
@@ -483,7 +614,7 @@ try {
     await L.panel(false)
     check(`${name}: no horizontal overflow on ${routes.length + 1} views`, bad.length === 0, bad)
     check(`${name}: account panel fits the viewport`, box)
-    if (w === 375) { await L.page.screenshot({ path: join(OUT, 'phone.png') }); await L.click('button[aria-label="Toggle sidebar"]'); await sleep(350); check('phone: drawer opens over content', (await L.ev(() => document.querySelector('.sidebar').getBoundingClientRect().left)) === 0); await L.click('.scrim') }
+    if (w === 375) { await L.page.screenshot({ path: join(OUT, 'phone.png') }); await L.click('button[aria-label="Study explorer"]'); await sleep(350); check('phone: explorer opens over content', (await L.ev(() => document.querySelector('.sidebar').getBoundingClientRect().left)) === 0); await L.click('.scrim') }
   }
   await L.page.screenshot({ path: join(OUT, 'desktop.png') })
 
@@ -540,15 +671,15 @@ try {
   await L.page.setOfflineMode(true)
   await L.reload()
   check('offline: full reload served by the service worker', (await L.count('.sec')) === 9)
-  await L.hash('#/r/prelims/polity/judiciary')
+  await L.hash('#/study/prelims/polity/judiciary')
   check('offline: navigation and cached notes', (await L.ev(() => document.title)).startsWith('Judiciary'))
-  await L.hash('#/r/prelims/economy/taxation/gst')
+  await L.hash('#/study/prelims/economy/taxation/gst')
   await L.ev(() => document.querySelector('#s-gst a.xref[data-xref^="prelims/polity/"]').click()); await sleep(400)
-  check('offline: Economy and cross-subject links work', (await L.ev(() => location.hash)) === '#/r/prelims/polity/amendments-basic-structure/three-routes-of-change' && (await L.count('.sec')) > 3)
-  await L.hash('#/r/prelims/history-culture/communal-politics-ina-partition/communal-award-poona')
+  check('offline: Economy and cross-subject links work', (await L.ev(() => location.hash)) === '#/study/prelims/polity/amendments-basic-structure/three-routes-of-change' && (await L.count('.sec')) > 3)
+  await L.hash('#/study/prelims/history-culture/communal-politics-ina-partition/communal-award-poona')
   await L.ev(() => document.querySelector('#s-communal-award-poona a.xref[data-xref^="prelims/polity/"]').click()); await sleep(400)
-  check('offline: History and its cross-subject links work', (await L.ev(() => location.hash)) === '#/r/prelims/polity/elections/reservation-in-legislatures' && (await L.count('.sec')) > 3)
-  await L.hash('#/r/prelims/polity/judiciary')
+  check('offline: History and its cross-subject links work', (await L.ev(() => location.hash)) === '#/study/prelims/polity/elections/reservation-in-legislatures' && (await L.count('.sec')) > 3)
+  await L.hash('#/study/prelims/polity/judiciary')
   await L.highlight('article-map', 'Supreme Court', 'green'); await L.click('#s-article-map .tg.done')
   await L.reload()
   check('offline: local changes persist', (await L.marks('article-map')).length === 1 && (await L.text('.chap-meta span')).startsWith('1 /'))
@@ -609,22 +740,30 @@ try {
   check('no conflict raised for independent changes', mA.includes('Synced'), mA)
 
   section('Sync — Economy')
-  await A.hash('#/r/prelims/economy/inflation')
+  await A.hash('#/study/prelims/economy/inflation')
   await A.highlight('base-effect', 'same period last year', 'green'); await A.click('#s-causes .tg.done')
   await A.editMode(true); await A.edit('control', '<p>A edits inflation control</p>'); await A.saved(); await A.editMode(false)
   await A.syncNow(); await B.syncNow()
-  await B.hash('#/r/prelims/economy/inflation')
+  await B.hash('#/study/prelims/economy/inflation')
   const ecoB = { meta: await B.text('.chap-meta span'), marks: (await B.marks('base-effect')).join(), edit: (await B.text('#s-control .sec-body')).includes('A edits inflation control'), link: await B.ev(() => document.querySelector('#s-control .sec-body a.xref')?.getAttribute('href')) }
-  check('Economy progress, highlight and edit reach the second device with links intact', ecoB.meta === '1 / 6 sections done' && ecoB.marks === 'green:same period last year' && ecoB.edit && ecoB.link === '#/r/prelims/economy/money-rbi-monetary-policy/policy-tools', ecoB)
+  check('Economy progress, highlight and edit reach the second device with links intact', ecoB.meta === '1 / 6 sections done' && ecoB.marks === 'green:same period last year' && ecoB.edit && ecoB.link === '#/study/prelims/economy/money-rbi-monetary-policy/policy-tools', ecoB)
 
   section('Sync — History & Culture')
-  await A.hash('#/r/prelims/history-culture/gandhian-mass-movements')
+  await A.hash('#/study/prelims/history-culture/gandhian-mass-movements')
   await A.highlight('quit-india', 'Do or Die', 'green'); await A.click('#s-rowlatt-jallianwala .tg.done')
   await A.editMode(true); await A.edit('gandhi-irwin-rtc', '<p>A edits the pact</p>'); await A.saved(); await A.editMode(false)
   await A.syncNow(); await B.syncNow()
-  await B.hash('#/r/prelims/history-culture/gandhian-mass-movements')
+  await B.hash('#/study/prelims/history-culture/gandhian-mass-movements')
   const hisB = { meta: await B.text('.chap-meta span'), marks: (await B.marks('quit-india')).join(), edit: (await B.text('#s-gandhi-irwin-rtc .sec-body')).includes('A edits the pact'), link: await B.ev(() => document.querySelector('#s-gandhi-irwin-rtc .sec-body a.xref')?.getAttribute('href')) }
-  check('History progress, highlight and edit reach the second device with links intact', hisB.meta === '1 / 7 sections done' && hisB.marks === 'green:Do or Die' && hisB.edit && hisB.link === '#/r/prelims/history-culture/communal-politics-ina-partition/communal-award-poona', hisB)
+  check('History progress, highlight and edit reach the second device with links intact', hisB.meta === '1 / 7 sections done' && hisB.marks === 'green:Do or Die' && hisB.edit && hisB.link === '#/study/prelims/history-culture/communal-politics-ina-partition/communal-award-poona', hisB)
+  section('Sync — navigation preferences')
+  await A.hash(PARL); await A.click('.chap-meta .fav'); await A.syncNow(); await B.syncNow(); await B.hash('#/')
+  const navB = await B.ev(() => Object.fromEntries([...document.querySelectorAll('.page section')].map((x) => [x.querySelector('h3').textContent, [...x.querySelectorAll('.row b')].map((b) => b.textContent)])))
+  check('favourites and recent destinations reach the second device', navB.Favourites?.join() === 'Parliament' && navB.Recent?.[0] === 'Parliament', navB)
+  const prefDocs = (await cloudDump()).filter((d) => d.rec.kind === 'pref')
+  check('they travel inside the existing preferences record; no navigation tree or view model is uploaded', prefDocs.length === 1 && prefDocs[0].rec.f.favourites.v[0].chapterId === 'parliament' && Array.isArray(prefDocs[0].rec.f.recents.v) && (await cloudDump()).every((d) => ['edit', 'hl', 'sec', 'chap', 'pref'].includes(d.rec.kind)), prefDocs.map((d) => Object.keys(d.rec.f)))
+  await A.click('.chap-meta .fav'); await A.syncNow(); await B.syncNow()
+  check('removing a favourite syncs too', (await B.ev(() => JSON.parse(localStorage.getItem('upsc-prefs')).favourites.length)) === 0)
   await A.hash(PARL); await B.hash(PARL)
   // highlight recolour / removal across devices
   await B.ev(() => { getSelection().removeAllRanges(); document.querySelector('#s-budget-and-financial-procedure mark').click() }); await sleep(250); await B.click('.hlpal .sw[data-c="blue"]')

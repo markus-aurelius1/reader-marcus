@@ -31,15 +31,15 @@ describe('cross-link ids', () => {
   })
 
   it('routes to the exact chapter / section, or the subject overview', () => {
-    expect(refHref(parseRef('prelims/polity/parliament#budget', 'prelims/economy'))).toBe('#/r/prelims/polity/parliament/budget')
-    expect(refHref(parseRef('inflation', 'prelims/economy'))).toBe('#/r/prelims/economy/inflation')
-    expect(refHref(parseRef('mains/gs3-economy', 'prelims/economy'))).toBe('#/s/mains/gs3-economy')
+    expect(refHref(parseRef('prelims/polity/parliament#budget', 'prelims/economy'))).toBe('#/study/prelims/polity/parliament/budget')
+    expect(refHref(parseRef('inflation', 'prelims/economy'))).toBe('#/study/prelims/economy/inflation')
+    expect(refHref(parseRef('mains/gs3-economy', 'prelims/economy'))).toBe('#/study/mains/gs3-economy')
   })
 
   it('renders same-subject and cross-subject links from markdown', () => {
     const html = renderBody('[a](@inflation#causes) and [b](@mains/gs3-economy/growth#inclusive)', 'prelims/economy')
-    expect(html).toContain('<a class="xref" data-xref="inflation#causes" href="#/r/prelims/economy/inflation/causes">a</a>')
-    expect(html).toContain('<a class="xref" data-xref="mains/gs3-economy/growth#inclusive" href="#/r/mains/gs3-economy/growth/inclusive">b</a>')
+    expect(html).toContain('<a class="xref" data-xref="inflation#causes" href="#/study/prelims/economy/inflation/causes">a</a>')
+    expect(html).toContain('<a class="xref" data-xref="mains/gs3-economy/growth#inclusive" href="#/study/mains/gs3-economy/growth/inclusive">b</a>')
     expect(refsIn(html)).toEqual(['inflation#causes', 'mains/gs3-economy/growth#inclusive'])
   })
 
@@ -48,13 +48,13 @@ describe('cross-link ids', () => {
     const pending = renderBody('[GS2](@mains/gs2-polity/federalism)', 'prelims/economy')
     expect(pending).toContain('<a class="xref pending" data-xref="mains/gs2-polity/federalism">GS2</a>')
     setInstalled(() => true)
-    expect(relink(pending, 'prelims/economy')).toContain('href="#/r/mains/gs2-polity/federalism"')
+    expect(relink(pending, 'prelims/economy')).toContain('href="#/study/mains/gs2-polity/federalism"')
   })
 
   it('re-routes links inside edited HTML, whatever attribute order the editor wrote', () => {
     const edited = '<p>x <a href="#/stale" data-xref="parliament#budget" class="xref">Budget</a> <mark data-hid="h1" data-color="yellow">kept</mark></p>'
     const out = relink(edited, 'prelims/polity')
-    expect(out).toBe('<p>x <a class="xref" data-xref="parliament#budget" href="#/r/prelims/polity/parliament/budget">Budget</a> <mark data-hid="h1" data-color="yellow">kept</mark></p>')
+    expect(out).toBe('<p>x <a class="xref" data-xref="parliament#budget" href="#/study/prelims/polity/parliament/budget">Budget</a> <mark data-hid="h1" data-color="yellow">kept</mark></p>')
     expect(relink(out, 'prelims/polity')).toBe(out)
   })
 

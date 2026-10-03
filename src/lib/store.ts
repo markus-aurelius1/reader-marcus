@@ -5,6 +5,7 @@ import { migrateOverrides, newRev, type V2Override } from './migrate'
 import { sectionByKey, type Chapter, type Section, type Subject } from './content'
 import { keyOf, kindOf, type Field, type Rec } from '../sync/merge'
 import { relink } from './links'
+import type { ContentRef, RecentDestination } from './contract'
 
 export type Override = V2Override
 export type { Highlight }
@@ -36,14 +37,19 @@ export interface Prefs {
   recall: boolean
   sidebar: boolean
   collapsed: string[]
+  // NavigationPreferences (docs/READER_V2_CONTRACT.md)
+  favourites: ContentRef[]
+  recents: RecentDestination[]
 }
 export type SaveState = 'idle' | 'editing' | 'saving' | 'saved'
 /** docId → field → [time, device]: when each progress / preference field last changed. */
 type Stamps = Record<string, Record<string, [number, string]>>
 
 const PREFS_KEY = 'upsc-prefs'
-const SYNCED_PREFS = ['theme', 'recall', 'collapsed'] as const
-const defaultPrefs: Prefs = { theme: 'system', recall: false, sidebar: true, collapsed: [] }
+const SYNCED_PREFS = ['theme', 'recall', 'collapsed', 'favourites', 'recents'] as const
+// changed by ordinary reading; they ride with the next sync instead of starting one
+const LAZY_PREFS = ['collapsed', 'recents']
+const defaultPrefs: Prefs = { theme: 'system', recall: false, sidebar: true, collapsed: [], favourites: [], recents: [] }
 function readPrefs(): Prefs {
   try {
     return { ...defaultPrefs, ...JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') }
@@ -347,7 +353,7 @@ export const useStore = create<State>((set, get) => ({
     const synced = Object.keys(patch).filter((k) => (SYNCED_PREFS as readonly string[]).includes(k))
     if (synced.length) {
       stamp('pref~main', synced)
-      markDirty('pref~main', synced.every((k) => k === 'collapsed'))
+      markDirty('pref~main', synced.every((k) => LAZY_PREFS.includes(k)))
       queueProgress()
     }
   },
@@ -455,7 +461,7 @@ export const syncLocal = {
       stamps = { ...stamps, [rec.id]: { ...stamps[rec.id], ...st } }
       if (rec.kind === 'pref') {
         const prefs = { ...s.prefs, ...(values as Partial<Prefs>) }
-        if (!Array.isArray(prefs.collapsed)) prefs.collapsed = []
+        for (const k of ['collapsed', 'favourites', 'recents'] as const) if (!Array.isArray(prefs[k])) prefs[k] = []
         useStore.setState({ prefs })
         localStorage.setItem(PREFS_KEY, JSON.stringify(prefs))
       } else if (rec.kind === 'sec') {

@@ -9,6 +9,8 @@ import { COLORS, applyHighlights, markExtent, marksInRange, newHid, rangeOffsets
 import { flashText } from '../lib/search'
 import { EditorSection, Toolbar, editors } from '../editor/Editor'
 import { Related } from '../components/Related'
+import { chapterRef, recordVisit } from '../lib/nav'
+import { FavButton } from './Pages'
 
 /** Section currently in view — read by the top bar breadcrumbs and the sidebar. */
 export const useSpy = create<{ id?: string }>(() => ({}))
@@ -39,6 +41,8 @@ export function Reader({ subject, chapter, route, n }: { subject: Subject; chapt
     const st = useStore.getState()
     const status = st.progress.chapters[chapter.key]?.status
     st.setChapter(chapter.key, { at: Date.now(), status: !status || status === 'new' ? 'reading' : status }, true)
+    recordVisit(chapterRef(chapter), chapter.title)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chapter.key])
 
   // Position on every navigation: explicit section > resume/boot position > top.
@@ -118,6 +122,7 @@ export function Reader({ subject, chapter, route, n }: { subject: Subject; chapt
         </select>
         <span>{cp.done} / {cp.total} sections done</span>
         <span className="meter" style={{ width: 90 }}><i style={{ width: `${cp.total ? (cp.done / cp.total) * 100 : 0}%` }} /></span>
+        <FavButton target={chapterRef(chapter)} what="this chapter" />
         <button
           className="linkbtn"
           style={{ marginLeft: 'auto' }}
