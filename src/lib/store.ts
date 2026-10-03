@@ -5,7 +5,7 @@ import { migrateOverrides, newRev, type V2Override } from './migrate'
 import { sectionByKey, type Chapter, type Section, type Subject } from './content'
 import { keyOf, kindOf, type Field, type Kind, type Rec } from '../sync/merge'
 import { relink } from './links'
-import type { ContentRef, RecentDestination, StudyTimerPreferences } from './contract'
+import type { ContentRef, ProgressSummary, RecentDestination, StudyTimerPreferences } from './contract'
 import { timeZone, type Env } from './timer'
 
 export type Override = V2Override
@@ -594,4 +594,29 @@ export function subjectProgress(p: Progress, s: Subject) {
     total += cp.total
   }
   return { done, total, pct: total ? Math.round((done / total) * 100) : 0 }
+}
+
+export interface ProgressDetail extends ProgressSummary {
+  sectionsDone: number
+  sectionsTotal: number
+  /** Sections flagged ★ Difficult / ↻ Revise. */
+  difficult: number
+  revise: number
+}
+/** ProgressSummary over any set of chapters: chapters by status, sections done, flags. */
+export function progressSummary(p: Progress, chapters: Chapter[]): ProgressDetail {
+  const out: ProgressDetail = { totalUnits: chapters.length, notStarted: 0, reading: 0, revised: 0, mastered: 0, completionPercent: 0, sectionsDone: 0, sectionsTotal: 0, difficult: 0, revise: 0 }
+  const field = { new: 'notStarted', reading: 'reading', revised: 'revised', mastered: 'mastered' } as const
+  for (const c of chapters) {
+    out[field[(p.chapters[c.key]?.status ?? 'new') as Status] ?? 'notStarted']++
+    for (const s of c.sections) {
+      const st = p.sections[s.key]
+      out.sectionsTotal++
+      if (st?.done) out.sectionsDone++
+      if (st?.difficult) out.difficult++
+      if (st?.revise) out.revise++
+    }
+  }
+  out.completionPercent = out.sectionsTotal ? Math.round((out.sectionsDone / out.sectionsTotal) * 100) : 0
+  return out
 }

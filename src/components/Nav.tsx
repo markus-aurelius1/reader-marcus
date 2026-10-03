@@ -5,7 +5,7 @@ export type Area = 'home' | 'study' | 'pyqs' | 'insights' | 'highlights' | 'more
 
 /** The primary destination a route belongs to. */
 export const areaOf = (r: Route): Area =>
-  r.name === 'subject' || r.name === 'reader' || r.name === 'study' ? 'study' : r.name === 'revision' ? 'more' : r.name
+  r.name === 'subject' || r.name === 'reader' || r.name === 'study' ? 'study' : r.name
 
 const DEST = [
   { id: 'home', label: 'Home', short: 'Home', to: href.home(), Icon: HomeIcon },

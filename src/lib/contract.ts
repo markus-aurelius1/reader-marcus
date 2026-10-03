@@ -92,3 +92,79 @@ export interface StudyTimerPreferences {
   followNavigation: boolean
   longSessionReminderMinutes?: number
 }
+
+// ---- analytics: derived only, never stored or synced ---------------------------------
+
+export type AnalyticsPeriod = 'today' | 'week' | 'month' | 'year' | 'custom'
+
+export interface AnalyticsFilter {
+  period: AnalyticsPeriod
+  startAt?: string
+  endAt?: string
+  stage?: ExamStage
+  paperId?: string
+  subjectId?: string
+  topicId?: string
+  chapterId?: string
+}
+
+export interface TimeBucket {
+  key: string
+  label: string
+  durationMs: number
+}
+
+export interface StudyDistribution {
+  id: string
+  label: string
+  durationMs: number
+  percent: number
+}
+
+/** Calculated from StudySession records (lib/analytics.ts). */
+export interface StudyAnalytics {
+  totalDurationMs: number
+  sessionCount: number
+  averageSessionMs: number
+  longestSessionMs: number
+  currentPeriodMs: number
+  comparisonPeriodMs: number
+  changeAbsoluteMs: number
+  changePercent?: number
+  dailySeries: TimeBucket[]
+  byStage: StudyDistribution[]
+  bySubject: StudyDistribution[]
+  byTopic: StudyDistribution[]
+  byChapter: StudyDistribution[]
+}
+
+export interface StudyHeatmapDay {
+  date: string // YYYY-MM-DD
+  durationMs: number
+  sessionCount: number
+}
+
+// ---- progress and revision: derived from the existing reader state --------------------
+
+export interface ProgressSummary {
+  /** Chapters. */
+  totalUnits: number
+  notStarted: number
+  reading: number
+  revised: number
+  mastered: number
+  /** Sections marked done ÷ all sections — the reader's measure of completion. */
+  completionPercent: number
+}
+
+export interface SubjectProgressSummary extends ProgressSummary {
+  subjectId: string
+  subjectTitle: string
+  studyTimeMs: number
+}
+
+export interface RevisionSummary {
+  difficultCount: number
+  reviseCount: number
+  targets: ContentRef[]
+}

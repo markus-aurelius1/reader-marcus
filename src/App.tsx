@@ -8,7 +8,8 @@ import { flushOverrides, secTitle, useStore } from './lib/store'
 import { go, href, useRoute } from './lib/router'
 import { exportHTML, exportMarkdown } from './lib/export'
 import { Reader, useSpy } from './views/Reader'
-import { Highlights, Home, InsightsPage, PyqHub, Revision, StudyHome, SubjectView } from './views/Pages'
+import { Highlights, Home, PyqHub, StudyHome, SubjectView } from './views/Pages'
+import { InsightsPage, TAB_LABEL } from './views/Insights'
 import { Palette } from './components/Palette'
 import { Explorer, SubjectSwitcher } from './components/Explorer'
 import { Rail, TabBar, areaOf } from './components/Nav'
@@ -27,7 +28,7 @@ const isTyping = (e: KeyboardEvent) => {
   return t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)
 }
 
-const PAGE: Record<string, string> = { home: 'Home', study: 'Study', pyqs: 'PYQ Hub', insights: 'Insights', highlights: 'Highlights', revision: 'Revision queue' }
+const PAGE: Record<string, string> = { home: 'Home', study: 'Study', pyqs: 'PYQ Hub', insights: 'Insights', highlights: 'Highlights' }
 
 export function App() {
   const { route, n } = useRoute()
@@ -186,7 +187,9 @@ export function App() {
         ? trail(subject.key).map((c, i, all) => (i === all.length - 1 ? { ...c, to: undefined } : c))
         : route.name === 'study' && navPath(route.stage ?? '').length
           ? [{ label: PAGE.study, to: href.study() }, { label: navPath(route.stage!)[0].title }]
-          : [{ label: PAGE[route.name] }]
+          : route.name === 'insights' && route.tab !== 'overview'
+            ? [{ label: PAGE.insights, to: href.insights() }, { label: TAB_LABEL[route.tab] }]
+            : [{ label: PAGE[route.name] }]
 
   const resetEdits = async (prefix: string, what: string) => {
     setMenu(false)
@@ -327,11 +330,9 @@ export function App() {
         ) : route.name === 'pyqs' ? (
           <PyqHub subjects={subjects} />
         ) : route.name === 'insights' ? (
-          <InsightsPage subjects={subjects} />
+          <InsightsPage subjects={subjects} tab={route.tab} />
         ) : route.name === 'highlights' ? (
           <Highlights subjects={subjects} />
-        ) : route.name === 'revision' ? (
-          <Revision subjects={subjects} />
         ) : route.name === 'home' ? (
           <Home subjects={subjects} />
         ) : (

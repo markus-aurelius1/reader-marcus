@@ -55,6 +55,24 @@ The reader header carries a study timer: **Start** on any chapter, then a runnin
 
 Code: `src/lib/timer.ts` (pure rules), `src/lib/study.ts` (state, IndexedDB, sync adapter), `src/components/Timer.tsx` (header control and notices). Rules and reconciliation: [`docs/READER_V2_CONTRACT.md`](docs/READER_V2_CONTRACT.md) → "Timer rules as built".
 
+## Insights (Reader v2)
+
+**Insights** has five tabs. Every study-time figure is calculated, each time it is shown, from the completed sessions on the device — there are no stored totals — so it is the same on every synced device and can never drift from the sessions.
+
+| Tab | Shows |
+| --- | --- |
+| **Overview** | Today, this week, this month and this year so far, each beside its comparison period; sessions completed, average and longest session, active study days; study time by subject. |
+| **Time** | Day / Week / Month / Year selector with earlier periods; study time by hour, day or month; a 53-week calendar heatmap; trend; sessions by length; longest and most recent sessions; a stage / subject filter. |
+| **Subjects** | Time by exam stage, by subject (most studied first, reading progress beside it), by topic and chapter; least recently studied subjects. Every row opens what it names. |
+| **Progress** | The reader's progress page: Prelims overall (Mains once it has content), per subject completion, Not started / Reading / Revised / Mastered, ★ and ↻ counts, and tracked time. Chapter status is set here as before. |
+| **Revision** | The revision queue: ★ Difficult and ↻ Revise sections with the time since each was last studied and the highlights made in it, plus chapters in progress. |
+
+Rules, in short: days and weeks follow the device's timezone (weeks run Monday–Sunday); a session crossing midnight is split between the two days; paused time is never counted; time recorded on two devices at once counts once; "so far" periods are compared with the same elapsed part of the previous period; a percentage is shown only when there is something to divide by. The full rules are in [`docs/READER_V2_CONTRACT.md`](docs/READER_V2_CONTRACT.md) → "Analytics rules as built".
+
+With no tracked sessions the time tabs say so and draw nothing. Old links `#/progress` and `#/revision` open the matching tab.
+
+Code: `src/lib/analytics.ts` (pure calculations, `analytics.test.ts`), `src/views/Insights.tsx` (the five tabs), `src/components/Charts.tsx` (bar, line and heatmap in plain HTML/SVG — no chart dependency).
+
 ## Adding the next subject
 
 1. **Place the source** — put the Source Pack in `source/`.
@@ -197,7 +215,7 @@ Troubleshooting
 ## Checks
 
 ```bash
-npm run test     # merge, queue, conflict, anchoring, migration, cross-link, study-timer and timer-sync unit tests
+npm run test     # merge, queue, conflict, anchoring, migration, cross-link, study-timer, timer-sync and analytics unit tests
 npm run check    # content contract (taxonomy coverage, cross-links across subjects, markers)
 npm run e2e      # headless-Chrome regression of the production build: reader, migration, print-to-PDF,
                  # cross-links, offline, responsive, and two-device sync against the mock cloud  → e2e-out/

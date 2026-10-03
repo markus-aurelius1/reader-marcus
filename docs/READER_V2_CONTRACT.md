@@ -445,6 +445,11 @@ interface StudyStreak {
 // PROGRESS — DERIVED FROM EXISTING READER STATE
 // ------------------------------------------------------------
 
+/*
+Units are chapters: the four counts are chapters by status.
+completionPercent is sections marked done ÷ all sections — the reader's
+existing measure of completion.
+*/
 interface ProgressSummary {
   totalUnits: number;
 
@@ -707,6 +712,49 @@ Pause time is excluded.
 
 Sessions crossing midnight must be split correctly across heatmap/date buckets.
 
+## Analytics rules as built (Job 3)
+
+```text
+Source           completed StudySession rows only (src/lib/analytics.ts, pure). Nothing is stored:
+                 no counters, no analytics store, no synced aggregate. The one cache is an
+                 in-memory index rebuilt whenever the sessions change. A timer that is still
+                 running is not in any figure until it is stopped.
+
+Study time       a span counts from startedAt for durationMs — active study only, so a pause
+                 never appears in any total, chart or heatmap day.
+Overlap          spans that overlap in wall-clock time (two devices at once, or the same record
+                 twice) count once; the overlapping stretch belongs to the span that began first.
+                 A session with no time left of its own is not counted as a session.
+
+Timezone         the IANA zone of the device showing the figures (not the zone stored on each
+                 session): one calendar for every period, bucket and heatmap day. Day boundaries
+                 are local midnights, correct across DST changes.
+Midnight         a span crossing local midnight is cut there; each day gets its own part.
+Week             Monday to Sunday.
+
+Period so far ↔ comparison
+  today          midnight → now          ↔ the whole of yesterday
+  week           Monday → now            ↔ last week's Monday → same weekday, same time into the day
+  month          the 1st → now           ↔ last month's 1st → same day of the month, same time
+  year           1 January → now         ↔ last year's 1 January → same date, same time
+                 "Same time" is the time elapsed since local midnight, never past the end of
+                 that day. Where the earlier month has no such day (the 31st; 29 February) the
+                 comparison runs to the end of that month.
+Change           absolute difference always. A percentage only when the comparison period has
+                 at least one minute of study; otherwise it is left out and the page says so in
+                 words. Never ∞, never NaN.
+
+Sessions         a session belongs to the period in which it ended and is counted at its full
+                 length (a session crossing midnight is one session, not two).
+                 average = total ÷ count; longest = the longest of them.
+Active days      local calendar days with any study time.
+Filters          stage / paper / subject / topic / chapter (AnalyticsFilter). Inside a filter a
+                 session counts only its time in that scope.
+Attribution      by the span's own StudyContext; time tracked by section counts towards its
+                 chapter, topic, subject and stage.
+Last studied     the end of the latest span on that section / chapter / subject.
+```
+
 ---
 
 # NAVIGATION INFORMATION ARCHITECTURE
@@ -781,17 +829,18 @@ Hash routes, built only by `href` in `src/lib/router.ts`. Every path segment is 
 #/study/{stage}/{subject}/{chapter}             reader
 #/study/{stage}/{subject}/{chapter}/{section}   reader at a section (?h= | ?q= | ?resume)
 #/pyqs                                          PYQ Hub
-#/insights                                      Insights (includes Progress)
+#/insights                                      Insights → Overview
+#/insights/{time|subjects|progress|revision}    Insights tabs
 #/highlights                                    Highlights
-#/revision                                      Revision queue
 ```
 
-v1 links keep working and are rewritten in place (no extra history entry):
+Earlier links keep working and are rewritten in place (no extra history entry):
 
 ```text
 #/s/{stage}/{subject}[/pyq|/insights]   → #/study/{stage}/{subject}[?tab=…]
 #/r/{stage}/{subject}/{chapter}[/…]     → #/study/{stage}/{subject}/{chapter}[/…]
-#/progress                              → #/insights
+#/progress                              → #/insights/progress
+#/revision                              → #/insights/revision
 ```
 
 ---
@@ -805,4 +854,6 @@ v1 links keep working and are rewritten in place (no extra history entry):
 | 2026-10-03 | Preferences storage section | `NavigationPreferences` / `StudyTimerPreferences` had no storage home |
 | 2026-10-03 | `StudyStreak` added (derived), `DashboardViewModel.streak`, added to Never sync | Principle 10 names streaks; no type existed |
 | 2026-10-03 | Routes section | Job 1 fixed the stable routes |
+| 2026-10-03 | Routes: `#/insights/{tab}`; `#/progress` → `#/insights/progress`; `#/revision` becomes an alias of `#/insights/revision` | Job 3: Insights has five tabs; Progress and the Revision queue live inside it, so each has one address |
+| 2026-10-03 | "Analytics rules as built"; `ProgressSummary` units documented | Job 3 fixed the calculation rules the contract left open (timezone used, week start, overlap, session attribution, percentage rule); types unchanged |
 | 2026-10-03 | "Timer rules as built": span ids, stopped marker in `studyRuntime/active`, record envelope for study documents, meaning of `source: "recovered"`, two-device reconciliation | Job 2 needed a deterministic, loss-free rule for timers that diverge offline; types unchanged |

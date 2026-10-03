@@ -151,6 +151,11 @@ try {
   // ==========================================================================
   section('Reader regression (production build, local-only)')
   await L.hash('#/insights')
+  const empty = [await L.ev(() => ({ note: document.querySelector('.nodata')?.textContent ?? '', drawn: document.querySelectorAll('.chart, .kpi, .heat i, .vb').length }))]
+  for (const t of ['time', 'subjects']) { await L.hash('#/insights/' + t); empty.push(await L.ev(() => ({ note: document.querySelector('.nodata')?.textContent ?? '', drawn: document.querySelectorAll('.chart, .kpi, .heat i, .vb').length }))) }
+  check('Insights before any tracked session: says analytics appear after timed study; no charts, no sample data', empty.every((e) => e.note.includes('No tracked study time yet') && e.note.includes('timer') && e.drawn === 0), empty)
+  check('Insights tabs: Overview, Time, Subjects, Progress, Revision', (await L.ev(() => [...document.querySelectorAll('.tabs a')].map((a) => a.textContent + ' ' + a.getAttribute('href')).join(' | '))) === 'Overview #/insights | Time #/insights/time | Subjects #/insights/subjects | Progress #/insights/progress | Revision #/insights/revision')
+  await L.hash('#/insights/progress')
   check('Polity: 19 chapters', (await L.count('section:first-of-type .rows .row')) === 19)
   check('Polity: 117 sections', /\/117\)/.test(await L.text('.stat')), await L.text('.stat'))
   await L.hash(PARL)
@@ -296,7 +301,7 @@ try {
   const ECO = '#/study/prelims/economy/'
   await L.hash('#/study')
   check('Library lists Economy & Social Development under Prelims, after Polity', (await L.ev(() => [...document.querySelectorAll('a.row b')].map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture')
-  await L.hash('#/insights')
+  await L.hash('#/insights/progress')
   check('Economy: 17 chapters, 107 sections', (await L.count('section:nth-of-type(2) .rows .row')) === 17 && (await L.ev(() => document.querySelectorAll('.stat')[1].textContent)).includes('/107)'))
   await L.hash('#/study/prelims/economy'); const ecoRows = await L.count('.rows .row'); const ecoTopics = await L.count('h3.gh')
   await L.hash('#/study/prelims/economy?tab=pyq'); const ecoPyq = await L.count('details.syn')
@@ -370,7 +375,7 @@ try {
   // ==========================================================================
   section('History & Culture + cross-links')
   const HIS = '#/study/prelims/history-culture/'
-  await L.hash('#/insights')
+  await L.hash('#/insights/progress')
   check('History & Culture: 29 chapters, 204 sections', (await L.count('section:nth-of-type(3) .rows .row')) === 29 && (await L.ev(() => document.querySelectorAll('.stat')[2].textContent)).includes('/204)'))
   await L.hash('#/study/prelims/history-culture'); const hisRows = await L.count('.rows .row'); const hisTopics = await L.count('h3.gh')
   await L.hash('#/study/prelims/history-culture?tab=pyq'); const hisPyq = await L.count('details.syn')
@@ -453,7 +458,7 @@ try {
   await L.go('#/s/prelims/economy/pyq')
   check('v1 subject-tab link opens the same tab', (await hashNow()) === '#/study/prelims/economy?tab=pyq' && (await L.count('details.syn')) === 17)
   await L.go('#/progress')
-  check('v1 Progress link opens Insights, with the Progress view inside', (await hashNow()) === '#/insights' && (await h1()) === 'Insights' && (await L.count('.stat')) === 3)
+  check('v1 Progress link opens Insights → Progress', (await hashNow()) === '#/insights/progress' && (await h1()) === 'Insights' && (await L.text('.tabs .on')) === 'Progress' && (await L.count('.stat')) === 3)
   await L.go('#/'); await L.hash('#/r/prelims/polity/judiciary'); const viaOld = await hashNow(); await L.page.goBack(); await sleep(400)
   check('a rewritten v1 link adds no extra history entry (Back returns in one step)', viaOld === '#/study/prelims/polity/judiciary' && ['#/', ''].includes(await hashNow()), [viaOld, await hashNow()])
 
@@ -635,6 +640,145 @@ try {
   check('the earlier session was not touched', JSON.stringify(ses2.find((x) => x.id === done1.id)) === JSON.stringify(done1))
 
   // ==========================================================================
+  section('Insights (derived from study sessions)')
+  await L.page.setViewport({ width: 1280, height: 860 })
+  const chip = async (d, text) => { await d.ev((t) => [...document.querySelectorAll('.filters .chip')].find((b) => b.textContent === t).click(), text); await sleep(250) }
+  const pick = async (label, value) => { await L.ev((l, v) => { const s = document.querySelector(`select[aria-label^="${l}"]`); Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, v); s.dispatchEvent(new Event('change', { bubbles: true })) }, label, value); await sleep(300) }
+  const durText = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'under a minute' : m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')} min` }
+  // a small history written straight into the session store — the only thing analytics reads
+  const seeded = await L.ev(() => new Promise((res) => {
+    const at = (daysAgo, h, m = 0) => { const d = new Date(); d.setHours(h, m, 0, 0); d.setDate(d.getDate() - daysAgo); return d }
+    const key = (daysAgo) => { const d = at(daysAgo, 12); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` }
+    const q = indexedDB.open('upsc-notes')
+    q.onsuccess = () => {
+      const db = q.result
+      const tx = db.transaction('studySessions', 'readwrite')
+      const st = tx.objectStore('studySessions')
+      const g = st.getAll()
+      g.onsuccess = () => {
+        const spans = g.result.flatMap((x) => x.spans)
+        const ctx = (ch) => spans.find((x) => x.context.ref.chapterId === ch).context
+        const parl = ctx('parliament'); const infl = ctx('inflation')
+        const jud = { ...parl, ref: { ...parl.ref, chapterId: 'judiciary' }, chapterTitle: 'Judiciary & Legal Services' }
+        const mk = (id, parts) => {
+          const sp = parts.map(([start, min, context], i) => ({ id: `seed-${id}-${i}`, context, startedAt: start.toISOString(), endedAt: new Date(+start + min * 60000).toISOString(), durationMs: min * 60000 }))
+          return { id: 'seed-' + id, startedAt: sp[0].startedAt, endedAt: sp[sp.length - 1].endedAt, durationMs: sp.reduce((n, x) => n + x.durationMs, 0), spans: sp, source: 'timer', createdDeviceId: 'seed', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, createdAt: sp[sp.length - 1].endedAt }
+        }
+        st.put(mk('plain', [[at(3, 10), 60, parl]]))
+        st.put(mk('midnight', [[at(6, 23, 30), 60, infl]])) // 23:30 → 00:30
+        st.put(mk('paused', [[at(10, 8), 20, parl], [at(10, 9, 20), 20, parl]])) // an hour paused in between
+        st.put(mk('old', [[at(40, 9), 120, jud]]))
+      }
+      tx.oncomplete = () => { db.close(); res({ d3: key(3), d5: key(5), d6: key(6), d10: key(10), today: key(0) }) }
+    }
+  }))
+  await L.go('#/insights'); await L.reload()
+  const sesAll = await L.idb('studySessions')
+  const totalMs = sesAll.reduce((n, x) => n + x.durationMs, 0)
+  const ov = await L.ev(() => ({ cards: [...document.querySelectorAll('.kpi')].map((k) => k.dataset.k + ': ' + k.querySelector('b').textContent + ' | ' + k.querySelector('span').textContent), text: document.querySelector('.page').textContent, nodata: document.querySelectorAll('.nodata').length }))
+  check('Overview: today, this week, month and year so far — each beside its comparison period', ov.cards.length === 4 && ov.cards.map((c) => c.split(':')[0]).join() === 'day,week,month,year' && ov.nodata === 0 && /yesterday/.test(ov.cards[0]) && ov.cards.slice(1).every((c) => /by now/.test(c)), ov.cards)
+  check('zero comparison periods are stated in words: no ∞, NaN or bare percentages', !/Infinity|∞|NaN|undefined/.test(ov.text) && ov.cards.every((c) => !/None .*%/.test(c)), ov.cards)
+  await chip(L, 'All time')
+  const allStat = await L.ev(() => [...document.querySelectorAll('.stat b')].map((b) => b.textContent))
+  check('All time: study time is exactly the sum of the stored sessions; sessions, average, longest, active days', allStat[0] === durText(totalMs) && allStat[1] === String(sesAll.length) && allStat[2] === durText(totalMs / sesAll.length) && allStat[3] === '2 h 00 min' && Number(allStat[4]) >= 5, [allStat, durText(totalMs), sesAll.length])
+  const dist = await L.ev(() => [...document.querySelectorAll('.dist .dr')].map((r) => r.querySelector('.dn').textContent + ' ' + r.getAttribute('href')))
+  check('Overview: subject distribution, each row opening its subject', dist.length === 2 && dist[0] === 'Polity #/study/prelims/polity' && dist[1] === 'Economy & Social Development #/study/prelims/economy', dist)
+  await L.page.screenshot({ path: join(OUT, 'desktop-insights-overview.png') })
+
+  await L.hash('#/insights/time')
+  const cell = (k) => L.ev((k) => document.querySelector(`.heat i[data-date="${k}"]`)?.title ?? null, k)
+  const heat = await L.ev(() => { const c = [...document.querySelectorAll('.heat i[data-date]')]; return { n: c.length, last: c[c.length - 1].dataset.date, levels: new Set(c.map((x) => x.dataset.l)).size } })
+  check('Time: calendar heatmap covers the last 53 weeks, ending today, in graded shades', heat.n >= 365 && heat.n <= 371 && heat.last === seeded.today && heat.levels >= 3, heat)
+  check('a heatmap day gives its date, time and sessions', (await cell(seeded.d3))?.includes('· 1 h 00 min · 1 session'), await cell(seeded.d3))
+  check('a session crossing midnight is split between the two local days', (await cell(seeded.d6))?.includes('· 30 min · 1 session') && (await cell(seeded.d5))?.includes('· 30 min · 1 session'), [await cell(seeded.d6), await cell(seeded.d5)])
+  check('paused time is not counted (20 + 20 min around an hour paused = 40 min)', (await cell(seeded.d10))?.includes('· 40 min · 1 session'), await cell(seeded.d10))
+  const firstBars = () => L.ev(() => document.querySelector('.vbars')?.querySelectorAll('.vb').length ?? 0)
+  const counts = {}
+  for (const k of ['Day', 'Week', 'Month', 'Year']) { await chip(L, k); counts[k] = await firstBars() }
+  const dim = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()
+  check('Day / Week / Month / Year selector redraws the study-time chart (hours, days, days, months)', counts.Day >= 23 && counts.Day <= 25 && counts.Week === 7 && counts.Month === dim && counts.Year === 12, [counts, dim])
+  await chip(L, 'Week')
+  const wk = await L.text('.stepper b'); const nextOff = await L.ev(() => document.querySelector('button[aria-label="Next week"]').disabled)
+  await L.click('button[aria-label="Previous week"]'); const wk2 = await L.text('.stepper b'); await L.click('button[aria-label="Next week"]')
+  check('earlier periods can be stepped through; there is no period after the current one', nextOff && wk2 !== wk && (await L.text('.stepper b')) === wk, [wk, wk2])
+  await chip(L, 'Month')
+  const charts = await L.ev(() => ({ heads: [...document.querySelectorAll('h3.gh')].map((h) => h.textContent.split(' · ')[0]), line: document.querySelectorAll('.line polyline').length, lists: document.querySelectorAll('.two .rows').length, rows: document.querySelectorAll('.two .row').length, links: [...document.querySelectorAll('.two a.row')].map((a) => a.getAttribute('href')) }))
+  check('Time: daily chart, calendar, trend, session-length distribution, longest and most recent sessions', ['Study time by day', 'Calendar', 'Trend', 'Sessions by length', 'Longest sessions', 'Most recent sessions'].every((h) => charts.heads.includes(h)) && charts.line === 1 && charts.lists === 2 && charts.rows >= 4 && charts.links.every((h) => h.startsWith('#/study/prelims/')), charts)
+  await chip(L, 'Week')
+  await L.ev(() => document.querySelector('.vbars').focus()); await L.page.keyboard.press('ArrowRight'); await sleep(150)
+  const kb = await L.ev(() => ({ read: document.querySelector('.chart-read').textContent, label: document.querySelector('.vbars').getAttribute('aria-label'), rows: document.querySelector('.sr-only table').tBodies[0].rows.length, live: document.querySelector('.chart [aria-live]').textContent, tip: document.querySelector('.vb').title, heat: document.querySelector('.heat-scroll').getAttribute('aria-label') }))
+  check('charts are labelled, have tooltips, can be read with the keyboard and have a table equivalent', /^Study time by day/.test(kb.label) && kb.rows === 7 && /Mon/.test(kb.read) && /^Mon.*: /.test(kb.live) && /^Mon.* · /.test(kb.tip) && /days? with study/.test(kb.heat), kb)
+  await pick('Stage or subject', 'prelims/economy')
+  check('subject filter narrows every figure on the page', (await cell(seeded.d3))?.includes('no tracked study') && (await cell(seeded.d6))?.includes('· 30 min · 1 session') && (await L.text('.stat span')).includes('Economy'), [await cell(seeded.d3), await L.text('.stat span')])
+  await pick('Stage or subject', '')
+  const shade = () => L.ev(() => getComputedStyle(document.querySelector('.heat i[data-l="4"]')).backgroundColor + '|' + getComputedStyle(document.querySelector('.vb i:not([data-zero])')).backgroundColor + '|' + getComputedStyle(document.querySelector('.heat i[data-l="0"]')).backgroundColor)
+  const lightC = await shade(); await L.key('t'); const darkC = await shade()
+  await L.page.screenshot({ path: join(OUT, 'desktop-insights-time-dark.png'), fullPage: true })
+  await L.key('t')
+  check('charts follow the light and dark themes', lightC.startsWith('rgb(47, 74, 122)|rgb(47, 74, 122)') && darkC.startsWith('rgb(157, 183, 232)|rgb(157, 183, 232)') && lightC.split('|')[2] !== darkC.split('|')[2], [lightC, darkC])
+  await L.page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }])
+  check('reduced motion: chart transitions are switched off', await L.ev(() => parseFloat(getComputedStyle(document.querySelector('.vb i')).transitionDuration) < 0.001 && parseFloat(getComputedStyle(document.querySelector('.lc i')).transitionDuration) < 0.001))
+  await L.page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }])
+  await L.page.screenshot({ path: join(OUT, 'desktop-insights-time.png'), fullPage: true })
+
+  await L.hash('#/insights/subjects')
+  const sub = await L.ev(() => { const d = [...document.querySelectorAll('.page > .dist')]; return { stage: d[0].textContent, subjects: [...d[1].querySelectorAll('.dr')].map((r) => [r.querySelector('.dn').textContent, r.querySelector('.dv').textContent, r.querySelector('.dx').textContent].join('|')), stale: [...document.querySelectorAll('.page > .rows .row')].map((r) => r.textContent) } })
+  check('Subjects: time by exam stage, and by subject — most studied first, reading progress beside', sub.stage.startsWith('Prelims') && sub.subjects.length === 3 && sub.subjects[0].startsWith('Polity|') && /\|\d+% done$/.test(sub.subjects[0]) && sub.subjects[1].startsWith('Economy') && sub.subjects[2].startsWith('History & Culture|—|'), sub)
+  check('Subjects: least recently studied first; a subject never timed says so', sub.stale.length === 3 && sub.stale[0].startsWith('History & Culture') && sub.stale[0].includes('not studied with the timer yet') && /last studied (today|yesterday)/.test(sub.stale[2]), sub.stale)
+  const topic = await L.ev(() => ({ n: document.querySelectorAll('details.syn').length, heads: [...document.querySelectorAll('details.syn .th')].map((b) => b.textContent), chapters: [...document.querySelector('details.syn').querySelectorAll('a.dr')].map((a) => a.getAttribute('href')) }))
+  check('Subjects: time by topic and chapter inside each studied subject', topic.n === 2 && topic.heads.length === 2 && topic.chapters.join() === '#/study/prelims/polity/judiciary,' + PARL, topic)
+  await L.ev((h) => { document.querySelector('details.syn').open = true; document.querySelector(`details.syn a.dr[href="${h}"]`).click() }, PARL); await sleep(450)
+  check('a chapter in the breakdown opens that chapter', (await hashNow()) === PARL && (await L.count('.sec')) === 9)
+  await L.page.goBack(); await sleep(350)
+  await L.ev(() => document.querySelectorAll('.page > .dist')[1].querySelector('a.dr').click()); await sleep(400)
+  check('a subject row opens that subject', (await hashNow()) === '#/study/prelims/polity')
+
+  await L.hash('#/insights/progress')
+  const pg = await L.ev(() => ({ overall: [...document.querySelectorAll('.kpi')].map((k) => k.dataset.stage + ' ' + k.textContent), stats: document.querySelectorAll('.stat').length, first: document.querySelector('.stat').textContent, parl: [...document.querySelectorAll('.row')].find((r) => r.querySelector('b')?.textContent === 'Parliament').textContent, bar: document.querySelector('.sbar').getAttribute('aria-label') }))
+  check('Progress: Prelims overall; no Mains figure until Mains content exists', pg.overall.length === 1 && pg.overall[0].startsWith('prelims') && /65 chapters/.test(pg.overall[0]) && /of 428 sections done/.test(pg.overall[0]) && /★ \d+ difficult · ↻ \d+ to revise/.test(pg.overall[0]) && /tracked/.test(pg.overall[0]) && /Not started.*Reading.*Revised.*Mastered/.test(pg.bar), pg.overall)
+  check('Progress: per subject — completion, the four statuses, ★ / ↻ counts and study time; chapters show time too', pg.stats === 3 && /sections done \(\d+\/117\)/.test(pg.first) && /Not started.*Reading.*Revised.*Mastered/.test(pg.first) && /★ Difficult/.test(pg.first) && /↻ Revise/.test(pg.first) && /tracked · last (today|yesterday)/.test(pg.first) && /tracked/.test(pg.parl) && /★ [1-9]/.test(pg.parl), pg)
+  await pick('Status of Mughals', 'mastered'); await sleep(500)
+  check('Progress: chapter status can still be set here, is saved, and the overall figure follows', /1 mastered/.test(await L.text('.kpi')) && (await L.idb('kv')).some((v) => v?.chapters?.['prelims/history-culture/mughals']?.status === 'mastered'))
+  check('nothing on Progress calls the study good or bad', !/productiv|efficien|great|well done|behind|on track/i.test(await L.text('.page')))
+
+  await L.hash(PARL); await L.click('#s-bills-types-and-procedure .tg.rev')
+  await L.go('#/revision')
+  const rv = await L.ev(() => ({ hash: location.hash, tab: document.querySelector('.tabs .on').textContent, stat: document.querySelector('.stat').textContent, rows: [...document.querySelectorAll('.row.rv')].map((r) => r.textContent), hl: [...document.querySelectorAll('.rhl a')].map((a) => a.textContent + ' ' + a.getAttribute('href')) }))
+  check('the Revision queue is now Insights → Revision; its old link still opens it', rv.hash === '#/insights/revision' && rv.tab === 'Revision' && /★ Difficult.*↻ Revise.*in progress/.test(rv.stat), rv)
+  check('Revision: ★ and ↻ sections, each with the time since it was last studied', rv.rows.some((r) => r.includes('Sessions & Devices') && r.includes('↻ Revise') && r.includes('★ Difficult') && /chapter last studied (today|yesterday)/.test(r)) && rv.rows.some((r) => r.includes('Simon') && r.includes('not timed yet')), rv.rows)
+  check('Revision: highlights in a queued section are shown with it', rv.hl.some((h) => h.startsWith('All Money Bills are Financial Bills ') && h.includes('/parliament/bills-types-and-procedure?h=')), rv.hl)
+  await L.ev(() => [...document.querySelectorAll('.rhl a')].find((a) => a.textContent.startsWith('All Money Bills')).click()); await sleep(600)
+  check('…and open the highlighted passage', (await hashNow()).includes('bills-types-and-procedure?h=') && (await L.ev(() => { const m = document.querySelector('#s-bills-types-and-procedure mark'); const r = m.getBoundingClientRect(); return r.top > 0 && r.top < innerHeight })))
+  await L.page.goBack(); await sleep(350)
+  await L.ev(() => [...document.querySelectorAll('.row.rv')].find((r) => r.textContent.includes('Sessions & Devices')).querySelector('a').click()); await sleep(450)
+  check('a queued section opens directly', (await hashNow()) === PARL + '/sessions-and-devices')
+  await L.page.goBack(); await sleep(350)
+  await pick('Order', 'stale')
+  const staleRows = await L.ev(() => ({ heads: [...document.querySelectorAll('h3.gh')].map((h) => h.textContent), first: document.querySelector('.row.rv').textContent }))
+  check('Revision: can be ordered by longest since studied', staleRows.heads[0] === 'Longest since studied first' && staleRows.first.includes('not timed yet'), staleRows)
+  await pick('Order', 'library'); await chip(L, '★ Difficult')
+  check('Revision: ★ / ↻ filters', (await L.ev(() => [...document.querySelectorAll('.row.rv')].every((r) => r.textContent.includes('★ Difficult')))) && (await L.count('.row.rv')) >= 1)
+  await chip(L, 'All')
+  const rvBefore = await L.count('.row.rv')
+  await L.ev(() => [...document.querySelectorAll('.row.rv')].find((r) => r.textContent.includes('Bills')).querySelector('button').click()); await sleep(400)
+  check('Revision: Clear takes a section off the queue', (await L.count('.row.rv')) === rvBefore - 1 && (await L.idb('kv')).some((v) => v?.sections?.['prelims/polity/parliament/bills-types-and-procedure']?.revise === false))
+
+  const disk = await L.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { const out = { stores: [...db.objectStoreNames].sort().join(), kv: g.result.join(), ls: Object.keys(localStorage).join() }; db.close(); res(out) } } }))
+  check('analytics stored nothing: no new IndexedDB store, no counters or caches on disk', disk.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,studyGoals,studySessions' && !/analytic|insight|total|heat|streak|cache|index/i.test(disk.kv + disk.ls), disk)
+  check('the sessions themselves were not touched', JSON.stringify(await L.idb('studySessions')) === JSON.stringify(sesAll))
+  for (const [w, h, name] of [[375, 812, 'phone'], [768, 1024, 'tablet']]) {
+    await L.page.setViewport({ width: w, height: h })
+    const fit = []
+    for (const t of ['', '/time', '/subjects', '/progress', '/revision']) { await L.go('#/insights' + t); if (await L.ev(() => document.documentElement.scrollWidth > innerWidth + 1)) fit.push(t) }
+    await L.go('#/insights/time')
+    const hs = await L.ev(() => { const b = document.querySelector('.heat-scroll'); return { scrolls: b.scrollWidth > b.clientWidth, atEnd: Math.abs(b.scrollLeft + b.clientWidth - b.scrollWidth) < 2, bars: document.querySelector('.vbars').getBoundingClientRect().width } })
+    check(`${name}: all five Insights tabs fit; the calendar ${w < 700 ? 'scrolls inside its own frame, opened at today' : 'fits'}`, fit.length === 0 && hs.bars > 250 && (w < 700 ? hs.scrolls && hs.atEnd : true), [fit, hs])
+    await L.page.screenshot({ path: join(OUT, `${name}-insights-time.png`), fullPage: true })
+    if (w === 375) { await L.go('#/insights'); await L.page.screenshot({ path: join(OUT, 'phone-insights-overview.png'), fullPage: true }) }
+  }
+  await L.page.setViewport({ width: 1280, height: 860 })
+
+  // ==========================================================================
   section('Print / PDF')
   await L.hash(PARL)
   await L.key('r') // Recall Mode ON: answers must still print
@@ -666,7 +810,7 @@ try {
 
   // ==========================================================================
   section('Responsive layout')
-  const routes = ['#/', '#/study', '#/study/mains', '#/pyqs', '#/insights', '#/study/prelims/polity', '#/study/prelims/polity?tab=insights', '#/highlights', '#/revision', '#/insights', PARL, '#/study/prelims/polity/constitutional-bodies', '#/study/prelims/polity/parts-schedules', '#/study/prelims/economy', '#/study/prelims/economy?tab=insights', '#/study/prelims/economy/budget-fiscal-policy', '#/study/prelims/economy/government-schemes', '#/study/prelims/economy/money-rbi-monetary-policy', '#/study/prelims/economy/international-institutions', '#/study/prelims/history-culture', '#/study/prelims/history-culture?tab=insights', '#/study/prelims/history-culture/constitutional-development', '#/study/prelims/history-culture/architecture-sculpture', '#/study/prelims/history-culture/early-nationalism-swadeshi', '#/study/prelims/history-culture/british-administration-economy']
+  const routes = ['#/', '#/study', '#/study/mains', '#/pyqs', '#/insights', '#/study/prelims/polity', '#/study/prelims/polity?tab=insights', '#/highlights', '#/revision', '#/insights/time', '#/insights/subjects', '#/insights/progress', PARL, '#/study/prelims/polity/constitutional-bodies', '#/study/prelims/polity/parts-schedules', '#/study/prelims/economy', '#/study/prelims/economy?tab=insights', '#/study/prelims/economy/budget-fiscal-policy', '#/study/prelims/economy/government-schemes', '#/study/prelims/economy/money-rbi-monetary-policy', '#/study/prelims/economy/international-institutions', '#/study/prelims/history-culture', '#/study/prelims/history-culture?tab=insights', '#/study/prelims/history-culture/constitutional-development', '#/study/prelims/history-culture/architecture-sculpture', '#/study/prelims/history-culture/early-nationalism-swadeshi', '#/study/prelims/history-culture/british-administration-economy']
   for (const [name, w, h] of [['phone 375', 375, 812], ['tablet 768', 768, 1024], ['desktop 1280', 1280, 860]]) {
     await L.page.setViewport({ width: w, height: h })
     const bad = []
@@ -744,6 +888,8 @@ try {
   await L.hash('#/study/prelims/history-culture/communal-politics-ina-partition/communal-award-poona')
   await L.ev(() => document.querySelector('#s-communal-award-poona a.xref[data-xref^="prelims/polity/"]').click()); await sleep(400)
   check('offline: History and its cross-subject links work', (await L.ev(() => location.hash)) === '#/study/prelims/polity/elections/reservation-in-legislatures' && (await L.count('.sec')) > 3)
+  await L.hash('#/insights/time')
+  check('offline: Insights is drawn from the sessions on this device', (await L.count('.heat i[data-date]')) >= 365 && (await L.count('.vbars .vb')) >= 7 && (await L.count('.nodata')) === 0)
   await L.hash('#/study/prelims/polity/judiciary')
   await L.highlight('article-map', 'Supreme Court', 'green'); await L.click('#s-article-map .tg.done')
   await L.reload()
@@ -752,7 +898,7 @@ try {
   await L.reload()
   const offRun = await activeRow(L)
   await L.click('button[aria-label="Stop timer"]'); await sleep(400)
-  check('offline: the timer starts, survives a reload and saves its session; local-only timers are never provisional', offRun.state === 'running' && offRun.offlineProvisional === undefined && (await L.idb('studySessions')).length === 3 && (await L.idb('studySessions')).some((x) => x.id === offRun.sessionId && x.spans[0].context.ref.chapterId === 'judiciary'))
+  check('offline: the timer starts, survives a reload and saves its session; local-only timers are never provisional', offRun.state === 'running' && offRun.offlineProvisional === undefined && (await L.idb('studySessions')).length === 7 && (await L.idb('studySessions')).some((x) => x.id === offRun.sessionId && x.spans[0].context.ref.chapterId === 'judiciary'))
   await L.page.setOfflineMode(false)
   await L.ctx.close()
 
@@ -955,6 +1101,9 @@ try {
   await A.syncNow(); await B.syncNow()
   check('reconnect: the queued session and the stopped timer reach the cloud and the other device', (await sesDocs()).length === 3 && (await runDoc()).del === true && (await A.idb('outbox')).length === 0 && (await B.idb('studySessions')).length === 3 && (await A.idb('studySessions')).length === 3 && (await B.count('.tchip')) === 0 && (await A.idb('studySessions')).every((x) => !!x.syncedAt))
   check('completed sessions are write-once in the cloud', (await cloudDump()).filter((d) => d.rec.kind === 'ses').every((d) => d.ver === 1))
+  const insightOf = async (d) => { await d.hash('#/insights'); await d.ev(() => [...document.querySelectorAll('.filters .chip')].find((b) => b.textContent === 'All time').click()); await sleep(250); return d.ev(() => [...document.querySelectorAll('.kpi b, .stat b')].map((b) => b.textContent).join('|')) }
+  const insA = await insightOf(A); const insB = await insightOf(B)
+  check('Insights on both devices is derived from the same synced sessions and agrees', insA === insB && insA.split('|').length === 9 && Number(insA.split('|')[5]) >= 2, [insA, insB])
   await A.hash(PARL); await B.hash(PARL)
 
   section('Sync — reset and sign-out')

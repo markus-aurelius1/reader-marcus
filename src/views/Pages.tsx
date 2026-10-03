@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react'
 import { ArrowRight, Star, X } from 'lucide-react'
 import { getLoaded, stageTitle, stages, type Chapter, type PyqCluster, type Subject } from '../lib/content'
-import { STATUS_LABEL, chapterProgress, secHtml, secTitle, subjectProgress, useStore, type Status } from '../lib/store'
+import { STATUS_LABEL, chapterProgress, secHtml, secTitle, subjectProgress, useStore } from '../lib/store'
 import { href } from '../lib/router'
 import { COLORS, anchor, textStream, type Color, type Highlight } from '../lib/highlight'
 import { renderBody } from '../lib/md'
 import type { ContentRef } from '../lib/contract'
 import { destinations, isFavourite, subjectRef, toggleFavourite, type Destination } from '../lib/nav'
 
-const Meter = ({ v, max }: { v: number; max: number }) => (
+export const Meter = ({ v, max }: { v: number; max: number }) => (
   <span className="meter"><i style={{ width: `${max ? (v / max) * 100 : 0}%` }} /></span>
 )
 
@@ -203,7 +203,7 @@ export function SubjectView({ subject, tab }: { subject: Subject; tab: 'overview
   )
 }
 
-function ChapterRow({ c }: { c: Chapter }) {
+export function ChapterRow({ c }: { c: Chapter }) {
   const progress = useStore((s) => s.progress)
   const cp = chapterProgress(progress, c)
   return (
@@ -454,107 +454,6 @@ export function Highlights({ subjects }: { subjects: Subject[] }) {
           })}
         </>
       )}
-    </div>
-  )
-}
-
-// ---- Revision queue ---------------------------------------------------------
-export function Revision({ subjects }: { subjects: Subject[] }) {
-  const progress = useStore((s) => s.progress)
-  const overrides = useStore((s) => s.overrides)
-  const { setSection } = useStore.getState()
-  const [mode, setMode] = useState<'all' | 'revise' | 'difficult'>('all')
-  const groups = subjects.flatMap((s) =>
-    s.chapters.map((c) => ({
-      s,
-      c,
-      secs: c.sections.filter((x) => {
-        const st = progress.sections[x.key]
-        return mode === 'revise' ? st?.revise : mode === 'difficult' ? st?.difficult : st?.revise || st?.difficult
-      }),
-    })),
-  ).filter((g) => g.secs.length)
-  const reading = subjects.flatMap((s) => s.chapters.filter((c) => progress.chapters[c.key]?.status === 'reading').map((c) => ({ s, c })))
-  return (
-    <div className="page">
-      <div className="eyebrow">Marked while reading</div>
-      <h1 className="title">Revision queue</h1>
-      <div className="filters">
-        {(['all', 'revise', 'difficult'] as const).map((m) => (
-          <button key={m} className={'chip' + (mode === m ? ' u' : '')} onClick={() => setMode(m)}>
-            {m === 'all' ? 'All' : m === 'revise' ? '↻ Revise' : '★ Difficult'}
-          </button>
-        ))}
-      </div>
-      {groups.length === 0 && <p className="empty">Nothing queued. Use ↻ or ★ beside any section heading to send it here.</p>}
-      {groups.map(({ s, c, secs }) => (
-        <div key={c.key}>
-          <h3 className="gh">{stageTitle(s.stage)} › {s.title} › {c.title}</h3>
-          <div className="rows">
-            {secs.map((x) => {
-              const st = progress.sections[x.key] ?? {}
-              return (
-                <div className="row" key={x.key}>
-                  <a className="t" href={href.reader(c.key, x.id)}>
-                    <b>{secTitle(overrides, x)}</b>
-                    <small>{[st.revise && '↻ Revise', st.difficult && '★ Difficult', st.done && 'done'].filter(Boolean).join(' · ')}</small>
-                  </a>
-                  <button className="linkbtn" onClick={() => setSection(x.key, { revise: false, difficult: false })}>Clear</button>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      ))}
-      {reading.length > 0 && (
-        <>
-          <h3 className="gh" style={{ marginTop: 28 }}>Chapters in progress</h3>
-          <div className="rows">{reading.map(({ c }) => <ChapterRow key={c.key} c={c} />)}</div>
-        </>
-      )}
-    </div>
-  )
-}
-
-// ---- Insights (shell): holds the Progress view; study-time analytics join it later ----
-export function InsightsPage({ subjects }: { subjects: Subject[] }) {
-  const progress = useStore((s) => s.progress)
-  const { setChapter } = useStore.getState()
-  return (
-    <div className="page wide">
-      <div className="eyebrow">Where things stand</div>
-      <h1 className="title">Insights</h1>
-      <p className="shell-note">Study time, streaks and the activity heatmap will appear here once the study timer is added. Reading progress is below.</p>
-      {subjects.map((s) => {
-        const p = subjectProgress(progress, s)
-        const count = (st: Status) => s.chapters.filter((c) => (progress.chapters[c.key]?.status ?? 'new') === st).length
-        return (
-          <section key={s.key}>
-            <h2 className="sh"><a href={href.subject(s.key)}>{stageTitle(s.stage)} · {s.title}</a></h2>
-            <div className="stat">
-              <span><b>{p.pct}%</b>sections done ({p.done}/{p.total})</span>
-              {(Object.keys(STATUS_LABEL) as Status[]).map((st) => <span key={st}><b>{count(st)}</b>{STATUS_LABEL[st]}</span>)}
-            </div>
-            <div className="rows">
-              {s.chapters.map((c) => {
-                const cp = chapterProgress(progress, c)
-                return (
-                  <div className="row" key={c.key}>
-                    <i className="dot" data-s={cp.status} />
-                    <a className="t" href={href.reader(c.key)}><b>{c.title}</b><small>{c.topicTitle}</small></a>
-                    <select className="sel hide-sm" aria-label={`Status of ${c.title}`} value={cp.status} onChange={(e) => setChapter(c.key, { status: e.target.value as Status })}>
-                      {(Object.keys(STATUS_LABEL) as Status[]).map((st) => <option key={st} value={st}>{STATUS_LABEL[st]}</option>)}
-                    </select>
-                    <Meter v={cp.done} max={cp.total} />
-                    <span className="num">{cp.done}/{cp.total}</span>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-        )
-      })}
-      {subjects.length === 0 && <p className="empty">No subjects added yet.</p>}
     </div>
   )
 }
