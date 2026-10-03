@@ -1,0 +1,33 @@
+{
+  "title": "Polity",
+  "source": "source/Polity-v01-source-pack-CLAUDE-READY.md",
+  "topics": [
+    { "id": "foundations", "title": "Constitutional Foundations", "chapters": ["political-theory", "preamble", "parts-schedules", "union-states-citizenship", "amendments-basic-structure"] },
+    { "id": "rights", "title": "Rights, Duties & Protective Frameworks", "chapters": ["fundamental-rights", "dpsp-fundamental-duties", "scheduled-tribal-areas", "rights-legislation"] },
+    { "id": "union", "title": "Union Institutions & Judiciary", "chapters": ["union-executive", "parliament", "judiciary"] },
+    { "id": "states", "title": "States, Federalism & Emergency", "chapters": ["state-executive-legislature", "federalism-emergency"] },
+    { "id": "representation", "title": "Representation & Local Government", "chapters": ["elections", "local-government"] },
+    { "id": "institutions", "title": "Institutions, Regulation & Governance", "chapters": ["constitutional-bodies", "statutory-bodies", "governance-regulators"] }
+  ],
+  "taxonomy": [
+    "prelims-polity-and-governance-constitutional-foundations-political-theory-and-constitutional-concepts",
+    "prelims-polity-and-governance-constitutional-foundations-schedules-parts-and-provision-mapping",
+    "prelims-polity-and-governance-constitutional-foundations-amendments-and-basic-structure",
+    "prelims-polity-and-governance-constitutional-foundations-preamble-and-constitutional-status",
+    "prelims-polity-and-governance-constitutional-foundations-citizenship-and-states",
+    "prelims-polity-and-governance-rights-duties-and-protective-frameworks-fundamental-rights-and-writs",
+    "prelims-polity-and-governance-rights-duties-and-protective-frameworks-dpsp-and-fundamental-duties",
+    "prelims-polity-and-governance-rights-duties-and-protective-frameworks-scheduled-and-tribal-areas-fifth-sixth-schedule-pesa",
+    "prelims-polity-and-governance-rights-duties-and-protective-frameworks-statutory-law-and-rights-legislation",
+    "prelims-polity-and-governance-union-institutions-and-judiciary-parliament",
+    "prelims-polity-and-governance-union-institutions-and-judiciary-judiciary-and-legal-services",
+    "prelims-polity-and-governance-union-institutions-and-judiciary-union-executive",
+    "prelims-polity-and-governance-states-federalism-and-emergency-provisions-state-executive-and-legislature",
+    "prelims-polity-and-governance-states-federalism-and-emergency-provisions-federalism-centrestate-relations-and-emergency",
+    "prelims-polity-and-governance-democratic-representation-and-local-government-panchayati-raj-and-municipalities",
+    "prelims-polity-and-governance-democratic-representation-and-local-government-elections-and-representation",
+    "prelims-polity-and-governance-institutions-regulation-and-governance-governance-regulators-agencies-standards-and-digital-identity",
+    "prelims-polity-and-governance-institutions-regulation-and-governance-non-constitutional-and-statutory-bodies",
+    "prelims-polity-and-governance-institutions-regulation-and-governance-constitutional-bodies"
+  ]
+}

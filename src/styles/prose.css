@@ -1,0 +1,62 @@
+/* Content typography. Shared by the reader, the editor and the exported HTML,
+   so it only depends on CSS variables. */
+.prose { font-size: 1rem; line-height: 1.62; color: var(--ink); overflow-wrap: break-word; }
+.prose > :first-child { margin-top: 0; }
+.prose p { margin: 0.5em 0; }
+.prose h3 { font: 600 1.06em/1.35 var(--sans); letter-spacing: 0.005em; color: var(--accent); margin: 1.5em 0 0.45em; }
+.prose h4 { font: 600 0.8em/1.4 var(--sans); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2); margin: 1.3em 0 0.35em; }
+.prose ul, .prose ol { margin: 0.4em 0; padding-left: 1.3em; }
+.prose li { margin: 0.2em 0; padding-left: 0.1em; }
+.prose li > p { margin: 0; }
+.prose li::marker { color: var(--ink-3); }
+.prose ul ul, .prose ol ul, .prose ul ol { margin: 0.12em 0; }
+.prose strong { font-weight: 650; color: var(--ink); }
+.prose hr { border: 0; border-top: 1px solid var(--line); margin: 1.4em 0; }
+.prose a { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+.prose a.xref::before { content: '↗ '; font-size: 0.85em; opacity: 0.7; }
+.prose a:hover { border-bottom-color: var(--accent); }
+.prose blockquote { margin: 0.7em 0; padding: 0.1em 0 0.1em 0.9em; border-left: 2px solid var(--line); color: var(--ink-2); }
+
+/* Article / Act anchor */
+.prose code { font: 600 0.84em/1 var(--sans); font-variant-numeric: tabular-nums; background: var(--code); color: var(--ink); padding: 0.14em 0.42em; border-radius: 4px; white-space: nowrap; }
+
+.prose .hy { font-weight: 650; color: var(--hy); }
+.prose .red { color: var(--red); font-weight: 650; }
+
+.prose mark { background: var(--hl-yellow); color: inherit; padding: 0.08em 0; border-radius: 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.prose mark[data-color='green'] { background: var(--hl-green); }
+.prose mark[data-color='blue'] { background: var(--hl-blue); }
+.prose mark[data-color='pink'] { background: var(--hl-pink); }
+
+/* Tables */
+.prose table { display: block; width: max-content; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 0.8em 0; font-size: 0.94em; line-height: 1.45; -webkit-overflow-scrolling: touch; }
+.prose th, .prose td { border: 1px solid var(--line); padding: 0.42em 0.7em; text-align: left; vertical-align: top; min-width: 4.5em; }
+.prose th { background: var(--code); font-weight: 650; font-size: 0.93em; color: var(--ink); }
+.prose td p, .prose th p { margin: 0; }
+.prose tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--code) 38%, transparent); }
+
+/* Callouts */
+.prose .callout { margin: 0.7em 0; padding: 0.5em 0.85em; border-radius: 6px; border-left: 3px solid var(--line); background: var(--note-bg); }
+.prose .callout > :first-child { margin-top: 0; }
+.prose .callout > :last-child { margin-bottom: 0; }
+.prose .callout::before { display: block; font: 700 0.7em/1.7 var(--sans); letter-spacing: 0.09em; color: var(--ink-2); }
+.prose .callout[data-kind='trap'] { background: var(--trap-bg); border-left-color: var(--red); }
+.prose .callout[data-kind='trap']::before { content: 'TRAP'; color: var(--red); }
+.prose .callout[data-kind='exc'] { background: var(--exc-bg); border-left-color: #c98a1b; }
+.prose .callout[data-kind='exc']::before { content: 'EXCEPTION'; color: #a56a00; }
+.prose .callout[data-kind='uppcs'] { background: var(--uppcs-bg); border-left-color: #6f9a6a; }
+.prose .callout[data-kind='uppcs']::before { content: 'UPPCS+'; color: #4d7a49; }
+.prose .callout[data-kind='dyn'] { background: var(--dyn-bg); border-left-color: #6d8fc4; }
+.prose .callout[data-kind='dyn']::before { content: '↻ DYNAMIC — verify before exam'; color: #4a6da6; }
+.prose .callout[data-kind='verify'] { background: var(--verify-bg); border-left-color: #9a6fb5; }
+.prose .callout[data-kind='verify']::before { content: 'VERIFY — unresolved, do not rely on'; color: #7d4f9b; }
+.prose .callout[data-kind='flow'] { background: var(--flow-bg); border-left-color: var(--accent); font-size: 0.95em; }
+.prose .callout[data-kind='note'] { border-left-color: var(--ink-3); }
+
+@media print {
+  .prose table { display: table; width: auto; max-width: 100%; overflow: visible; }
+  .prose tr, .prose .callout, .prose li { break-inside: avoid; }
+  .prose h3, .prose h4 { break-after: avoid; }
+  .prose thead { display: table-header-group; }
+  .prose a.xref::before { content: ''; }
+}

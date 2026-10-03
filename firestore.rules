@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each signed-in user can read and write only their own study state.
+    match /users/{uid}/state/{docId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.id is string
+        && request.resource.data.kind in ['edit', 'hl', 'sec', 'chap', 'pref']
+        && request.resource.data.st == request.time;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

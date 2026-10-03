@@ -1,0 +1,67 @@
+{
+  "stages": [
+    {
+      "id": "prelims",
+      "title": "Prelims",
+      "groups": [
+        {
+          "id": "gs",
+          "title": "General Studies",
+          "subjects": [
+            { "id": "polity", "title": "Polity" },
+            { "id": "economy", "title": "Economy" },
+            { "id": "history-culture", "title": "History & Culture" },
+            { "id": "geography", "title": "Geography" },
+            { "id": "agriculture", "title": "Agriculture" },
+            { "id": "environment", "title": "Environment & Ecology" },
+            { "id": "science-tech", "title": "Science & Technology" },
+            { "id": "international-relations", "title": "International Relations" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mains",
+      "title": "Mains",
+      "groups": [
+        {
+          "id": "gs1",
+          "title": "GS1",
+          "subjects": [
+            { "id": "gs1-history-culture", "title": "History & Culture" },
+            { "id": "gs1-geography", "title": "Geography" },
+            { "id": "gs1-society", "title": "Society" }
+          ]
+        },
+        {
+          "id": "gs2",
+          "title": "GS2",
+          "subjects": [
+            { "id": "gs2-polity", "title": "Polity & Constitution" },
+            { "id": "gs2-governance", "title": "Governance" },
+            { "id": "gs2-social-justice", "title": "Social Justice" },
+            { "id": "gs2-international-relations", "title": "International Relations" }
+          ]
+        },
+        {
+          "id": "gs3",
+          "title": "GS3",
+          "subjects": [
+            { "id": "gs3-economy", "title": "Economy" },
+            { "id": "gs3-agriculture", "title": "Agriculture" },
+            { "id": "gs3-environment", "title": "Environment" },
+            { "id": "gs3-disaster-management", "title": "Disaster Management" },
+            { "id": "gs3-science-tech", "title": "Science & Technology" },
+            { "id": "gs3-internal-security", "title": "Internal Security" }
+          ]
+        },
+        {
+          "id": "gs4",
+          "title": "GS4",
+          "subjects": [{ "id": "gs4-ethics", "title": "Ethics" }]
+        },
+        { "id": "optional", "title": "Optional", "subjects": [] }
+      ]
+    }
+  ]
+}

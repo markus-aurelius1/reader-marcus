@@ -1,0 +1,10 @@
+node_modules
+dist
+dev-dist
+*.log
+.env
+.env.*
+!.env.example
+.firebase
+.firebaserc
+e2e-out

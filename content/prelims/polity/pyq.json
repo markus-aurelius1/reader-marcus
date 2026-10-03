@@ -1,0 +1,1618 @@
+{
+ "source": "source/Polity-v01-source-pack-CLAUDE-READY.md",
+ "chapters": {
+  "political-theory": {
+   "upsc": [
+    {
+     "label": "Parliamentary system — defining institutional feature / executive responsibility",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q059",
+      "UPSC-CSE-2015-GS1-Q091",
+      "UPSC-CSE-2017-GS1-Q046",
+      "UPSC-CSE-2017-GS1-Q099",
+      "UPSC-CSE-2020-GS1-Q011",
+      "UPSC-CSE-2021-GS1-Q077"
+     ]
+    },
+    {
+     "label": "Liberty–rights–equality / Rule of Law",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q005",
+      "UPSC-CSE-2017-GS1-Q047",
+      "UPSC-CSE-2018-GS1-Q040",
+      "UPSC-CSE-2018-GS1-Q045",
+      "UPSC-CSE-2019-GS1-Q085",
+      "UPSC-CSE-2021-GS1-Q090"
+     ]
+    },
+    {
+     "label": "Constitution / constitutionalism / limited government",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q059",
+      "UPSC-CSE-2020-GS1-Q007",
+      "UPSC-CSE-2021-GS1-Q094",
+      "UPSC-CSE-2023-GS1-Q033"
+     ]
+    },
+    {
+     "label": "Political ideologies — narrow PYQ-tested layer",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q026",
+      "UPSC-CSE-2020-GS1-Q014"
+     ]
+    },
+    {
+     "label": "Closely related best-fit concepts",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q042",
+      "UPSC-CSE-2021-GS1-Q087",
+      "UPSC-CSE-2023-GS1-Q031"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Parliamentary system",
+     "ids": [
+      "UPPCS-2018-GS1-Q019",
+      "UPPCS-2025-GS1-Q054"
+     ]
+    },
+    {
+     "label": "Rule of Law / access to justice",
+     "ids": [
+      "UPPCS-2025-GS1-Q047"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** executive responsibility; limited government; State restraint; liberty under law; equality as absence of privilege; rights–duties correlation; Rule of Law; separation of powers; natural justice.\n- **Recurring traps:** parliamentary ≠ mere election; Constitution ≠ constitutionalism; liberty ≠ unrestricted action; equality ≠ identical treatment in all circumstances; due process ≠ textual phrase “procedure established by law”; State ≠ nation.\n- **Qualifier patterns:** *best definition*, *most appropriate*, *chief purpose*, *main advantage*, *by definition*, *implied institutionally*.\n- **UPSC vs UPPCS:** UPSC heavily conceptual/best-fit/elimination; UPPCS comparatively direct on origin/core feature and uses Assertion–Reason.\n- **Recent reinforcement:** UPSC 2023 directly revisited due process + purpose of Constitution; UPPCS 2025 revisited parliamentary responsibility + Rule of Law."
+  },
+  "parts-schedules": {
+   "upsc": [
+    {
+     "label": "Anti-defection / Tenth Schedule",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q049",
+      "UPSC-CSE-2022-GS1-Q016",
+      "UPSC-CSE-2025-GS1-Q088"
+     ]
+    },
+    {
+     "label": "Eighth Schedule / classical-language distinction",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q008",
+      "UPSC-CSE-2015-GS1-Q075",
+      "UPSC-CSE-2024-GS1-Q072"
+     ]
+    },
+    {
+     "label": "Ninth Schedule / judicial review",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q005",
+      "UPSC-CSE-2019-GS1-Q047"
+     ]
+    },
+    {
+     "label": "Parts / direct provision placement",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q074"
+     ]
+    },
+    {
+     "label": "Seventh Schedule / List-entry mapping",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q040",
+      "UPSC-CSE-2013-GS1-Q069",
+      "UPSC-CSE-2024-GS1-Q075"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Part ↔ subject mapping",
+     "ids": [
+      "UPPCS-2018-GS1-Q021",
+      "UPPCS-2020-GS1-Q092",
+      "UPPCS-2023-GS1-Q001",
+      "UPPCS-2025-GS1-Q024"
+     ]
+    },
+    {
+     "label": "Schedule ↔ subject / Eighth Schedule",
+     "ids": [
+      "UPPCS-2019-GS1-Q028",
+      "UPPCS-2022-GS1-Q046",
+      "UPPCS-2023-GS1-Q007",
+      "UPPCS-2025-GS1-Q102",
+      "UPPCS-2025-GS1-Q113"
+     ]
+    },
+    {
+     "label": "Seventh Schedule entries",
+     "ids": [
+      "UPPCS-2024-GS1-Q143"
+     ]
+    },
+    {
+     "label": "Article ↔ provision recall",
+     "ids": [
+      "UPPCS-2019-GS1-Q033",
+      "UPPCS-2019-GS1-Q106",
+      "UPPCS-2019-GS1-Q108",
+      "UPPCS-2020-GS1-Q102",
+      "UPPCS-2020-GS1-Q114",
+      "UPPCS-2020-GS1-Q122",
+      "UPPCS-2020-GS1-Q132",
+      "UPPCS-2021-GS1-Q007",
+      "UPPCS-2021-GS1-Q138",
+      "UPPCS-2024-GS1-Q021",
+      "UPPCS-2024-GS1-Q102",
+      "UPPCS-2024-GS1-Q125",
+      "UPPCS-2024-GS1-Q142"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** Schedule-subject association; Part-subject association; Article-institution/provision association; three legislative Lists; language additions; anti-defection exceptions; Ninth Schedule immunity limits.\n- **Recurring traps:** `within 6 months` vs `after 6 months`; Speaker/Chairman vs President/Governor; 1/3 split vs 2/3 merger; judicial protection vs blanket immunity; “official language” vs Eighth Schedule language vs classical language.\n- **Qualifier patterns:** `NOT correctly matched`, `only`, `within/after`, `which Part/Schedule`, exact Article number, List classification.\n- **UPSC:** conceptual fine print + statement elimination + judicial doctrine.\n- **UPPCS:** wider rote mapping density; near-identical Article/Schedule pairs.\n- **Recent reinforcement:** UPSC 2024–25 → Parts, Eighth/Seventh Schedule, anti-defection; UPPCS 2024–25 → Articles, Lists, Parts and Schedules."
+  },
+  "amendments-basic-structure": {
+   "upsc": [
+    {
+     "label": "Initiation / bicameral passage / joint sitting / assent",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q057",
+      "UPSC-CSE-2013-GS1-Q011",
+      "UPSC-CSE-2020-GS1-Q002",
+      "UPSC-CSE-2022-GS1-Q013"
+     ]
+    },
+    {
+     "label": "Nature of amending power",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q066"
+     ]
+    },
+    {
+     "label": "State ratification",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q011",
+      "UPSC-CSE-2025-GS1-Q058"
+     ]
+    },
+    {
+     "label": "Basic Structure / judicial review",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q045",
+      "UPSC-CSE-2019-GS1-Q081",
+      "UPSC-CSE-2020-GS1-Q013"
+     ]
+    },
+    {
+     "label": "Landmark-amendment effects",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q007",
+      "UPSC-CSE-2019-GS1-Q045"
+     ]
+    },
+    {
+     "label": "Cross-node—1st Amendment/Ninth Schedule",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q005",
+      "UPSC-CSE-2019-GS1-Q047"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Amendment procedure",
+     "ids": [
+      "UPPCS-2018-GS1-Q022",
+      "UPPCS-2020-GS1-Q128",
+      "UPPCS-2021-GS1-Q055",
+      "UPPCS-2024-GS1-Q023",
+      "UPPCS-2025-GS1-Q141"
+     ]
+    },
+    {
+     "label": "Basic Structure origin",
+     "ids": [
+      "UPPCS-2020-GS1-Q120",
+      "UPPCS-2022-GS1-Q099"
+     ]
+    },
+    {
+     "label": "Case chronology",
+     "ids": [
+      "UPPCS-2024-GS1-Q126"
+     ]
+    },
+    {
+     "label": "Judgment ↔ amendment chronology",
+     "ids": [
+      "UPPCS-2021-GS1-Q059"
+     ]
+    },
+    {
+     "label": "Amendment-number/year matching",
+     "ids": [
+      "UPPCS-2024-GS1-Q127"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** Art. 368 procedure; special majority; State ratification; Basic Structure; judicial review; amendment-case chronology.\n- **Recurring traps:** `either House ≠ Lok Sabha only`; `≥½ States ≠ all States`; `no prior recommendation ≠ no presidential assent`; `no joint sitting`; `special majority ≠ ⅔ of total membership`.\n- **Qualifier pattern:** “only”, “all States”, “prior recommendation”, “shall give assent”, “not less than one-half”.\n- **UPSC:** statement-heavy; exact constitutional wording + judicial doctrine; increasingly tests whether a *specific provision* requires State ratification.\n- **UPPCS:** greater direct recall of amendment number/year, case names and chronological ordering.\n- **Recent reinforcement:** UPSC 2024–25 and UPPCS 2024–25 again tested Article 368 mechanics/ratification rather than generic amendment theory."
+  },
+  "preamble": {
+   "upsc": [
+    {
+     "label": "Preamble objectives / exact wording",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q038"
+     ]
+    },
+    {
+     "label": "Preamble as expression of framers’ intent",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q048"
+     ]
+    },
+    {
+     "label": "Legal status / independent legal effect",
+     "ids": [
+      "UPSC-CSE-2020-GS1-Q016"
+     ]
+    },
+    {
+     "label": "Exact status of India on 26-01-1950",
+     "ids": [
+      "UPSC-CSE-2021-GS1-Q093"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Exact content/count: Justice–Liberty–Equality–Fraternity",
+     "ids": [
+      "UPPCS-2018-GS1-Q013"
+     ]
+    },
+    {
+     "label": "Legal nature / enforceability",
+     "ids": [
+      "UPPCS-2019-GS1-Q107"
+     ]
+    },
+    {
+     "label": "Word present vs absent",
+     "ids": [
+      "UPPCS-2021-GS1-Q064"
+     ]
+    },
+    {
+     "label": "Words inserted by 42nd Amendment",
+     "ids": [
+      "UPPCS-2025-GS1-Q056"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** exact Preamble vocabulary; objectives; part/enforceability distinction; original vs amended formulation.\n- **Recurring traps:** current wording substituted for 1950 wording; `part of Constitution` ≠ `independently enforceable`; non-Preamble words inserted as distractors.\n- **Qualifier patterns:** **NOT**, **exact**, **legal nature**, **in that order**, **inserted by 42nd Amendment**.\n- **UPSC:** conceptual/legal distinctions + historical constitutional status.\n- **UPPCS:** higher literal-recall load—word counts, amendment words, presence/absence; taxonomy additionally requires source-country mapping.\n- **Recent reinforcement:** UPPCS 2025 again tested 42nd-Amendment insertion."
+  },
+  "union-states-citizenship": {
+   "upsc": [
+    {
+     "label": "Single citizenship + domicile; naturalised citizen; deprivation",
+     "ids": [
+      "UPSC-CSE-2021-GS1-Q089"
+     ]
+    },
+    {
+     "label": "State-formation history/legal basis; State-description matching",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q052"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Citizenship → Part/article recall",
+     "ids": [
+      "UPPCS-2018-GS1-Q021",
+      "UPPCS-2020-GS1-Q114"
+     ]
+    },
+    {
+     "label": "Article 2 vs Article 3; authority to create/rename States",
+     "ids": [
+      "UPPCS-2020-GS1-Q096",
+      "UPPCS-2024-GS1-Q101"
+     ]
+    },
+    {
+     "label": "State-formation chronology",
+     "ids": [
+      "UPPCS-2021-GS1-Q041",
+      "UPPCS-2025-GS1-Q033"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** Part II/Arts. 5–11; single citizenship; acquisition/loss; Parliament’s power; Arts. 2–4; chronology of State formation.\n- **Recurring traps:** citizen by birth ≠ only person eligible for President; citizenship can be deprived in statutorily specified cases; Article 2 ≠ Article 3; State legislature gives **views**, not consent.\n- **Qualifier patterns:** “only”; “not correctly matched”; “under Article 3”; “earliest to latest”; “came into existence on basis of…”.\n- **UPSC vs UPPCS:** UPSC → conceptual/legal-basis pair/statement traps; UPPCS → direct provision recall + chronology.\n- **Recent reinforcement:** State formation/legal basis in UPSC 2025; State-power matching in UPPCS 2024; chronology in UPPCS 2025."
+  },
+  "fundamental-rights": {
+   "upsc": [
+    {
+     "label": "Article 21 expansion / privacy / due process",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q004",
+      "UPSC-CSE-2018-GS1-Q092",
+      "UPSC-CSE-2019-GS1-Q056",
+      "UPSC-CSE-2021-GS1-Q079",
+      "UPSC-CSE-2023-GS1-Q031",
+      "UPSC-CSE-2024-GS1-Q076"
+     ]
+    },
+    {
+     "label": "FR classification / provision mapping",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q097",
+      "UPSC-CSE-2020-GS1-Q004",
+      "UPSC-CSE-2021-GS1-Q096",
+      "UPSC-CSE-2025-GS1-Q055"
+     ]
+    },
+    {
+     "label": "Article 14 / equality / arbitrariness / reservation",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q045",
+      "UPSC-CSE-2021-GS1-Q085",
+      "UPSC-CSE-2023-GS1-Q040"
+     ]
+    },
+    {
+     "label": "Article 13: law / ordinance / abridgment of FR",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q051",
+      "UPSC-CSE-2026-GS1-Q079"
+     ]
+    },
+    {
+     "label": "Writs",
+     "ids": [
+      "UPSC-CSE-2022-GS1-Q018",
+      "UPSC-CSE-2024-GS1-Q083"
+     ]
+    },
+    {
+     "label": "Preventive detention / Article 22",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q077"
+     ]
+    },
+    {
+     "label": "Right to Property",
+     "ids": [
+      "UPSC-CSE-2021-GS1-Q092"
+     ]
+    },
+    {
+     "label": "Minority rights",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q033"
+     ]
+    },
+    {
+     "label": "UDHR / human-rights mapping",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q046",
+      "UPSC-CSE-2020-GS1-Q008"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Writ names / scope / Article 32 powers",
+     "ids": [
+      "UPPCS-2019-GS1-Q032",
+      "UPPCS-2023-GS1-Q011"
+     ]
+    },
+    {
+     "label": "FR article/classification traps",
+     "ids": [
+      "UPPCS-2023-GS1-Q020",
+      "UPPCS-2024-GS1-Q099",
+      "UPPCS-2024-GS1-Q101",
+      "UPPCS-2024-GS1-Q103"
+     ]
+    },
+    {
+     "label": "Minority rights / Article 30",
+     "ids": [
+      "UPPCS-2019-GS1-Q026"
+     ]
+    },
+    {
+     "label": "Right to Education / amendment",
+     "ids": [
+      "UPPCS-2022-GS1-Q126"
+     ]
+    },
+    {
+     "label": "FR quotation/person attribution",
+     "ids": [
+      "UPPCS-2021-GS1-Q016"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** Article 21 expansion; article↔right mapping; writ applicability; Article 14 equality/non-arbitrariness; citizen vs person; property after 44th Amendment.\n- **Recurring traps:** Art 17 ≠ Right against Exploitation; property ≠ Art 19; Art 29(1) ≠ minority-only; prohibition ≠ certiorari; Art 32 ≠ Art 226; preventive detention ≠ ordinary arrest safeguards.\n- **Qualifier patterns:** `only`, `not`, `any person`, `citizen`, `public duty`, `lower court`, `how many`, assertion–reason, exact article/amendment.\n- **UPSC vs UPPCS:** UPSC increasingly tests doctrine/application and statement elimination; UPPCS more often tests direct article/amendment/writ recall.\n- **Recent reinforcement:** UPSC 2024 privacy + prohibition; 2025 ordinance/Art 24; **2026 Article 13 definition of law**. UPPCS 2024 reinforced Article 19, equality availability and exploitation."
+  },
+  "dpsp-fundamental-duties": {
+   "upsc": [
+    {
+     "label": "DPSP nature / governance / welfare state",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q038",
+      "UPSC-CSE-2015-GS1-Q007",
+      "UPSC-CSE-2015-GS1-Q089",
+      "UPSC-CSE-2017-GS1-Q017",
+      "UPSC-CSE-2020-GS1-Q012"
+     ]
+    },
+    {
+     "label": "DPSP content / article / classification",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q006",
+      "UPSC-CSE-2013-GS1-Q028",
+      "UPSC-CSE-2014-GS1-Q055",
+      "UPSC-CSE-2017-GS1-Q007",
+      "UPSC-CSE-2020-GS1-Q005",
+      "UPSC-CSE-2021-GS1-Q091"
+     ]
+    },
+    {
+     "label": "Fundamental Duties — list / nature / negative identification",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q044",
+      "UPSC-CSE-2012-GS1-Q059",
+      "UPSC-CSE-2015-GS1-Q083",
+      "UPSC-CSE-2017-GS1-Q036"
+     ]
+    },
+    {
+     "label": "Cross-framework constitutional placement",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q040",
+      "UPSC-CSE-2020-GS1-Q008"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "DPSP classification / origin / nature",
+     "ids": [
+      "UPPCS-2018-GS1-Q091",
+      "UPPCS-2021-GS1-Q046",
+      "UPPCS-2025-GS1-Q146"
+     ]
+    },
+    {
+     "label": "Article / Part / amendment matching",
+     "ids": [
+      "UPPCS-2019-GS1-Q106",
+      "UPPCS-2020-GS1-Q110",
+      "UPPCS-2020-GS1-Q122",
+      "UPPCS-2021-GS1-Q138",
+      "UPPCS-2022-GS1-Q146",
+      "UPPCS-2025-GS1-Q024"
+     ]
+    },
+    {
+     "label": "Fundamental Duty membership / negative identification",
+     "ids": [
+      "UPPCS-2021-GS1-Q031",
+      "UPPCS-2022-GS1-Q115"
+     ]
+    },
+    {
+     "label": "DPSP ↔ Fundamental Duty overlap",
+     "ids": [
+      "UPPCS-2019-GS1-Q098",
+      "UPPCS-2023-GS1-Q021"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** welfare state; socio-economic democracy; Article 37; Gandhian DPSPs; article-content mapping; 42nd Amendment additions; complete FD list; environment overlap.\n- **Recurring traps:**\n  - non-justiciable ≠ constitutionally unimportant;\n  - “fundamental in governance” ≠ judicially enforceable;\n  - DPSPs guide legislative/executive action ≠ limitations on their functions;\n  - vote ≠ Fundamental Duty;\n  - monuments ≠ Fundamental Duty;\n  - environment = **both** DPSP + FD.\n- **Qualifier patterns:** *not*, *both*, *which Part*, *fundamental*, *enforceable*, *added by*, *correctly matched*.\n- **UPSC vs UPPCS:** UPSC → conceptual qualifiers + elimination; UPPCS → denser article/Part/amendment/source recall.\n- **Recent reinforcement:** UPPCS 2022–2025 repeatedly tests Part/article mapping, DPSP–FD overlap and assertion/matching formats; last direct UPSC canonical reinforcement in this node is 2021."
+  },
+  "scheduled-tribal-areas": {
+   "upsc": [
+    {
+     "label": "PESA — Gram Sabha powers / statutory qualifiers",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q001",
+      "UPSC-CSE-2013-GS1-Q025"
+     ]
+    },
+    {
+     "label": "Fifth/Sixth Schedule — purpose / land protection / consequences / administration",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q059",
+      "UPSC-CSE-2019-GS1-Q050",
+      "UPSC-CSE-2022-GS1-Q073",
+      "UPSC-CSE-2023-GS1-Q039",
+      "UPSC-CSE-2025-GS1-Q056"
+     ]
+    },
+    {
+     "label": "PVTG classification",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q051"
+     ]
+    },
+    {
+     "label": "ST recognition / State-specific status",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q084"
+     ]
+    },
+    {
+     "label": "Recent Sixth-Schedule reinforcement",
+     "ids": [
+      "UPSC-CSE-2026-GS1-Q082"
+     ]
+    },
+    {
+     "label": "Secondary/cross-topic only",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q004",
+      "UPSC-CSE-2012-GS1-Q040"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Sixth Schedule — State mapping",
+     "ids": [
+      "UPPCS-2019-GS1-Q031"
+     ]
+    },
+    {
+     "label": "PESA — enactment year",
+     "ids": [
+      "UPPCS-2022-GS1-Q076"
+     ]
+    },
+    {
+     "label": "Part mapping — Scheduled & Tribal Areas = Part X",
+     "ids": [
+      "UPPCS-2023-GS1-Q001"
+     ]
+    }
+   ],
+   "synthesis": "- recurring concepts: Fifth vs Sixth; tribal-land protection; Scheduled Area declaration; State/Governor/Union roles; PESA Gram Sabha; ST notification; PVTG criteria.\n- recurring traps:\n  - President declares Scheduled Area ≠ Governor.\n  - Governor reports to **President** ≠ CM reports to Home Ministry.\n  - Fifth Schedule ≠ automatic autonomous local government.\n  - Scheduled Area declaration ≠ State executive power ceases.\n  - PESA mining recommendation = **minor minerals**, not any mineral.\n  - PESA ≠ creation of autonomous tribal regions.\n  - ST status = State/UT-specific.\n- qualifier patterns: **minor**, **not more than**, **as nearly as may be**, **annually or whenever required**, **consulted** vs **recommendation mandatory**.\n- UPSC vs UPPCS: UPSC → statement/consequence/qualifier elimination; UPPCS → direct Schedule–State–Part–year recall.\n- recent reinforcement: continuous UPSC testing from 2022–2026 on Scheduled Area consequences, notification, ST recognition and Fifth/Sixth distinction."
+  },
+  "rights-legislation": {
+   "upsc": [
+    {
+     "label": "Custody / parole / prisons",
+     "ids": [
+      "UPSC-CSE-2021-GS1-Q082",
+      "UPSC-CSE-2021-GS1-Q083",
+      "UPSC-CSE-2023-GS1-Q032"
+     ]
+    },
+    {
+     "label": "Act ↔ offence/action",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q092"
+     ]
+    },
+    {
+     "label": "Consumer protection",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q008"
+     ]
+    },
+    {
+     "label": "RTE legislation",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q021"
+     ]
+    },
+    {
+     "label": "Disability rights",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q034",
+      "UPSC-CSE-2026-GS1-Q081"
+     ]
+    },
+    {
+     "label": "Cyber / IT law",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q085"
+     ]
+    },
+    {
+     "label": "Flag Code",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q084"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Disability / accessibility",
+     "ids": [
+      "UPPCS-2021-GS1-Q118"
+     ]
+    },
+    {
+     "label": "RTE constitutional anchor",
+     "ids": [
+      "UPPCS-2022-GS1-Q126"
+     ]
+    },
+    {
+     "label": "Consumer / MRP",
+     "ids": [
+      "UPPCS-2025-GS1-Q137"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** custody status; State control of prisons/parole; statutory-right architecture; teacher-qualification authority; disability-accessibility framework; consumer complaint rights; cyber-reporting duty.\n- **Recurring traps:** `right ≠ concession`; `Code ≠ Act`; `Central framework ≠ State administration`; correct institution/Ministry; correct enactment year; exact statutory qualifier.\n- **Qualifier patterns:** “legally mandatory”, “all/only”, “standard size”, “right”, “minimum qualification”, “under which Act”.\n- **UPSC vs UPPCS:** UPSC → multi-statement legal precision + Act/action pairing; UPPCS → amendment/year/scheme association + direct legal-rule recall.\n- **Recent reinforcement:** 2023 sharply reinforced prisons + Flag Code + Act/offence matching; 2026 returned to disability law with a three-part statute/scheme/institution trap."
+  },
+  "parliament": {
+   "upsc": [
+    {
+     "label": "Composition / membership / parliamentary offices",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q007",
+      "UPSC-CSE-2013-GS1-Q070",
+      "UPSC-CSE-2018-GS1-Q001"
+     ]
+    },
+    {
+     "label": "Presiding officers / removal / Deputy Speaker rules",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q009",
+      "UPSC-CSE-2017-GS1-Q076",
+      "UPSC-CSE-2022-GS1-Q020",
+      "UPSC-CSE-2024-GS1-Q093",
+      "UPSC-CSE-2025-GS1-Q087"
+     ]
+    },
+    {
+     "label": "Lok Sabha–Rajya Sabha / special Rajya Sabha powers",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q030",
+      "UPSC-CSE-2015-GS1-Q027",
+      "UPSC-CSE-2016-GS1-Q095",
+      "UPSC-CSE-2020-GS1-Q002",
+      "UPSC-CSE-2022-GS1-Q015"
+     ]
+    },
+    {
+     "label": "Money / Financial Bills",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q001",
+      "UPSC-CSE-2015-GS1-Q027",
+      "UPSC-CSE-2018-GS1-Q031",
+      "UPSC-CSE-2023-GS1-Q037",
+      "UPSC-CSE-2024-GS1-Q068"
+     ]
+    },
+    {
+     "label": "Bill lapse / joint sitting",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q057",
+      "UPSC-CSE-2015-GS1-Q037",
+      "UPSC-CSE-2016-GS1-Q001",
+      "UPSC-CSE-2024-GS1-Q094"
+     ]
+    },
+    {
+     "label": "Sessions / prorogation / dissolution",
+     "ids": [
+      "UPSC-CSE-2020-GS1-Q020",
+      "UPSC-CSE-2024-GS1-Q095"
+     ]
+    },
+    {
+     "label": "Devices / executive control / private member",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q002",
+      "UPSC-CSE-2014-GS1-Q063",
+      "UPSC-CSE-2017-GS1-Q001",
+      "UPSC-CSE-2017-GS1-Q050",
+      "UPSC-CSE-2026-GS1-Q083"
+     ]
+    },
+    {
+     "label": "Budget / parliamentary financial control",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q036",
+      "UPSC-CSE-2011-GS1-Q043",
+      "UPSC-CSE-2011-GS1-Q074",
+      "UPSC-CSE-2012-GS1-Q035",
+      "UPSC-CSE-2015-GS1-Q060",
+      "UPSC-CSE-2020-GS1-Q006",
+      "UPSC-CSE-2024-GS1-Q085"
+     ]
+    },
+    {
+     "label": "Committees",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q051",
+      "UPSC-CSE-2014-GS1-Q018",
+      "UPSC-CSE-2018-GS1-Q020",
+      "UPSC-CSE-2019-GS1-Q069",
+      "UPSC-CSE-2024-GS1-Q080",
+      "UPSC-CSE-2026-GS1-Q084"
+     ]
+    },
+    {
+     "label": "Office of profit",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q049"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Composition / membership / representation",
+     "ids": [
+      "UPPCS-2018-GS1-Q023",
+      "UPPCS-2018-GS1-Q098",
+      "UPPCS-2021-GS1-Q128",
+      "UPPCS-2023-GS1-Q009",
+      "UPPCS-2023-GS1-Q014",
+      "UPPCS-2024-GS1-Q022",
+      "UPPCS-2025-GS1-Q018",
+      "UPPCS-2025-GS1-Q119"
+     ]
+    },
+    {
+     "label": "Presiding officers / Article mapping / chronology",
+     "ids": [
+      "UPPCS-2020-GS1-Q132",
+      "UPPCS-2023-GS1-Q006",
+      "UPPCS-2024-GS1-Q024",
+      "UPPCS-2025-GS1-Q066"
+     ]
+    },
+    {
+     "label": "Rajya Sabha special power",
+     "ids": [
+      "UPPCS-2018-GS1-Q020",
+      "UPPCS-2025-GS1-Q011"
+     ]
+    },
+    {
+     "label": "Money Bill / joint sitting",
+     "ids": [
+      "UPPCS-2019-GS1-Q033",
+      "UPPCS-2020-GS1-Q128",
+      "UPPCS-2021-GS1-Q055",
+      "UPPCS-2023-GS1-Q022",
+      "UPPCS-2025-GS1-Q141"
+     ]
+    },
+    {
+     "label": "Committees",
+     "ids": [
+      "UPPCS-2020-GS1-Q112",
+      "UPPCS-2021-GS1-Q049",
+      "UPPCS-2025-GS1-Q042",
+      "UPPCS-2025-GS1-Q089"
+     ]
+    },
+    {
+     "label": "Devices / sessions / President's address",
+     "ids": [
+      "UPPCS-2021-GS1-Q056",
+      "UPPCS-2021-GS1-Q144"
+     ]
+    },
+    {
+     "label": "Parliament Secretariat",
+     "ids": [
+      "UPPCS-2023-GS1-Q015"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** presiding officers > budget/financial control > committees > Money/Financial Bills > lapse/joint sitting > House asymmetry > devices/sessions.\n- **Recurring traps:** `may ≠ shall`; `recommend ≠ amend`; effective majority ≠ absolute majority; `2/3 present & voting ≠ 2/3 total membership`; President is part of Parliament but not either House; Chairman of RS ≠ member, Deputy Chairman = member.\n- **Qualifier patterns:** *only*, *not*, *final*, *present and voting*, *all the then members*, *within 14 days*, *more than six months*, *first session*.\n- **UPSC:** increasingly procedural/qualifier-heavy; 2022–26 reinforces Deputy Speaker, Ethics Committee, Speaker removal, lapse, Question Hour and committee composition.\n- **UPPCS:** more direct Article-number, seat-number, committee-size, state-representation and office-holder chronology recall.\n- **Recent reinforcement:** UPSC 2024–26 + UPPCS 2025 strongly reinforce presiding officers, joint sitting, committees and precise majority formulae."
+  },
+  "judiciary": {
+   "upsc": [
+    {
+     "label": "SC jurisdiction / powers / constitutional role",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q010",
+      "UPSC-CSE-2014-GS1-Q071",
+      "UPSC-CSE-2015-GS1-Q061",
+      "UPSC-CSE-2019-GS1-Q052"
+     ]
+    },
+    {
+     "label": "Judicial independence / appointments / removal",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q060",
+      "UPSC-CSE-2014-GS1-Q075",
+      "UPSC-CSE-2019-GS1-Q045",
+      "UPSC-CSE-2019-GS1-Q046",
+      "UPSC-CSE-2021-GS1-Q088"
+     ]
+    },
+    {
+     "label": "Judicial review",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q092",
+      "UPSC-CSE-2019-GS1-Q081",
+      "UPSC-CSE-2020-GS1-Q013"
+     ]
+    },
+    {
+     "label": "Legal services / ADR",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q071",
+      "UPSC-CSE-2016-GS1-Q040",
+      "UPSC-CSE-2020-GS1-Q009"
+     ]
+    },
+    {
+     "label": "Contempt",
+     "ids": [
+      "UPSC-CSE-2022-GS1-Q011"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "PIL / judicial review / access to justice",
+     "ids": [
+      "UPPCS-2018-GS1-Q093",
+      "UPPCS-2019-GS1-Q104",
+      "UPPCS-2025-GS1-Q047"
+     ]
+    },
+    {
+     "label": "Judges—removal/resignation",
+     "ids": [
+      "UPPCS-2020-GS1-Q098",
+      "UPPCS-2023-GS1-Q019"
+     ]
+    },
+    {
+     "label": "Tribunal / legal-aid provision mapping",
+     "ids": [
+      "UPPCS-2020-GS1-Q102",
+      "UPPCS-2020-GS1-Q122",
+      "UPPCS-2023-GS1-Q001"
+     ]
+    },
+    {
+     "label": "Legal-services current/history",
+     "ids": [
+      "UPPCS-2020-GS1-Q049"
+     ]
+    },
+    {
+     "label": "Judicial personality/history",
+     "ids": [
+      "UPPCS-2024-GS1-Q144"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** Art. 131 original jurisdiction; Art. 142; guardian/custodian role; appointment/removal safeguards; judicial review; NALSA/legal-aid eligibility; Gram Nyayalayas; contempt; constitutional location of tribunals.\n- **Recurring traps:** original ≠ appellate; exclusive original Art.131 ≠ exclusive power to test Central laws; judicial review ≠ review petition; constitutional removal majority ≠ statutory inquiry procedure; ordinary Lok Adalat ≠ Permanent Lok Adalat.\n- **Qualifier patterns:** *exclusive*, *only*, *cannot*, *all*, *constitutional vs statutory*, *may vs shall*, *pending vs pre-litigation*, *civil only vs civil + criminal*.\n- **UPSC vs UPPCS:** UPSC repeatedly tests legal effect/qualifiers and Constitution–statute boundaries; UPPCS more often tests Article/Part mapping, personalities, one-step institutional facts and current/history hooks.\n- **Recent reinforcement:** UPSC—Contempt (2022); UPPCS—tribunal + judge resignation (2023), PIL/access-to-justice (2025)."
+  },
+  "union-executive": {
+   "upsc": [
+    {
+     "label": "PM / CoM / parliamentary executive",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q053",
+      "UPSC-CSE-2013-GS1-Q059",
+      "UPSC-CSE-2013-GS1-Q068",
+      "UPSC-CSE-2015-GS1-Q044",
+      "UPSC-CSE-2015-GS1-Q091",
+      "UPSC-CSE-2017-GS1-Q050",
+      "UPSC-CSE-2022-GS1-Q015",
+      "UPSC-CSE-2024-GS1-Q095"
+     ]
+    },
+    {
+     "label": "President election / electoral college",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q070",
+      "UPSC-CSE-2018-GS1-Q032",
+      "UPSC-CSE-2023-GS1-Q036",
+      "UPSC-CSE-2023-GS1-Q080"
+     ]
+    },
+    {
+     "label": "Cabinet Secretariat / business rules",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q058",
+      "UPSC-CSE-2014-GS1-Q062",
+      "UPSC-CSE-2015-GS1-Q044"
+     ]
+    },
+    {
+     "label": "Attorney-General",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q012",
+      "UPSC-CSE-2022-GS1-Q017"
+     ]
+    },
+    {
+     "label": "Reports / President–Parliament interface",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q056",
+      "UPSC-CSE-2020-GS1-Q020",
+      "UPSC-CSE-2024-GS1-Q085"
+     ]
+    },
+    {
+     "label": "Assent / ordinance / pardon",
+     "ids": [
+      "UPSC-CSE-2022-GS1-Q013",
+      "UPSC-CSE-2023-GS1-Q036",
+      "UPSC-CSE-2025-GS1-Q051",
+      "UPSC-CSE-2025-GS1-Q086"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "PMO",
+     "ids": [
+      "UPPCS-2019-GS1-Q030"
+     ]
+    },
+    {
+     "label": "Attorney-General",
+     "ids": [
+      "UPPCS-2020-GS1-Q124",
+      "UPPCS-2023-GS1-Q012"
+     ]
+    },
+    {
+     "label": "CoM responsibility / membership",
+     "ids": [
+      "UPPCS-2021-GS1-Q097"
+     ]
+    },
+    {
+     "label": "President: Parliament/address/status",
+     "ids": [
+      "UPPCS-2021-GS1-Q144",
+      "UPPCS-2023-GS1-Q009",
+      "UPPCS-2024-GS1-Q022"
+     ]
+    },
+    {
+     "label": "Constitutional removal mapping",
+     "ids": [
+      "UPPCS-2020-GS1-Q132"
+     ]
+    },
+    {
+     "label": "Vice-President",
+     "ids": [
+      "UPPCS-2022-GS1-Q119",
+      "UPPCS-2023-GS1-Q005",
+      "UPPCS-2025-GS1-Q119"
+     ]
+    },
+    {
+     "label": "President chronology",
+     "ids": [
+      "UPPCS-2025-GS1-Q104"
+     ]
+    },
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2020-GS1-Q132",
+      "UPPCS-2023-GS1-Q009",
+      "UPPCS-2025-GS1-Q119"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** nominal vs real executive; CoM responsibility; presidential electoral college/vote value; President–VP contrasts; Cabinet Secretariat; AG status/rights.\n- **Recurring traps:** `Parliament` ≠ `Lok Sabha`; President ≠ PM as repository of Union executive power; President ≠ MP though part of Parliament; nominated MPs: President election ✗, VP election ✓; Cabinet Secretary ≠ PM; Cabinet Secretariat ≠ PMO.\n- **Qualifier patterns:** “elected”, “nominated”, “both Houses”, “House of the People”, “total membership”, “may reconsider once”, “not entitled to vote”, “limited judicial review”.\n- **UPSC vs UPPCS:** UPSC → constitutional fine print + elimination; UPPCS → Article/post mapping, VP, PMO and chronology.\n- **Recent reinforcement:** UPSC 2025 directly reinforced **ordinance limits + pardoning power**; UPPCS 2025 reinforced **VP status + Presidential chronology**."
+  },
+  "state-executive-legislature": {
+   "upsc": [
+    {
+     "label": "Governor—dual charge, appointment/removal framework",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q002"
+     ]
+    },
+    {
+     "label": "Governor—constitutional/discretionary powers; reservation of Bills",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q060",
+      "UPSC-CSE-2025-GS1-Q054"
+     ]
+    },
+    {
+     "label": "Governor—immunity, emoluments, non-answerability",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q041",
+      "UPSC-CSE-2025-GS1-Q059"
+     ]
+    },
+    {
+     "label": "Governor—Sarkaria Commission appointment criteria",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q066"
+     ]
+    },
+    {
+     "label": "Legislative Council—size + presiding officer",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q082"
+     ]
+    },
+    {
+     "label": "Assembly Speaker—vacation after dissolution",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q039"
+     ]
+    },
+    {
+     "label": "State Legislature—Governor’s address + procedural-rule trap",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q053"
+     ]
+    },
+    {
+     "label": "State administration—Chief Secretary appointment/tenure",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q025"
+     ]
+    },
+    {
+     "label": "Cross-node excluded",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q058"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Legislative Council—permanent but abolishable",
+     "ids": [
+      "UPPCS-2018-GS1-Q096"
+     ]
+    },
+    {
+     "label": "State executive—Article 162 heading",
+     "ids": [
+      "UPPCS-2019-GS1-Q108"
+     ]
+    },
+    {
+     "label": "State Council of Ministers—minimum strength",
+     "ids": [
+      "UPPCS-2020-GS1-Q118"
+     ]
+    },
+    {
+     "label": "Legislative Council—maximum/minimum strength",
+     "ids": [
+      "UPPCS-2023-GS1-Q013"
+     ]
+    },
+    {
+     "label": "Governor—Article 153–156 mapping",
+     "ids": [
+      "UPPCS-2024-GS1-Q021"
+     ]
+    },
+    {
+     "label": "Governor—same person for 2+ States / Article 153",
+     "ids": [
+      "UPPCS-2024-GS1-Q100"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** Governor’s constitutional position; discretion; tenure/removal; immunity; dual charge; Legislative Council size/permanence; Speaker continuity; Chief Secretary; provision mapping.\n- **Recurring traps:** “Governor for each State” ≠ different person for every State; 5-year term ≠ security for full 5 years; no constitutional removal procedure ≠ arbitrary/unreviewable removal; Council ≠ Rajya Sabha in powers; permanent ≠ cannot be abolished.\n- **Qualifier patterns:** *same person, not, cannot, during term, first session, fixed tenure, not more than, at least, one-third, two-thirds*.\n- **UPSC vs UPPCS:** UPSC → statement-combination, institutional nuance, immunity/discretion/commission traps. UPPCS → Article-number/heading + numerical recall.\n- **Recent reinforcement:** UPSC 2025 revisited Governor discretion and Article 361 immunity; UPPCS 2024 revisited Articles 153–156 and dual charge."
+  },
+  "federalism-emergency": {
+   "upsc": [
+    {
+     "label": "Parliament legislating on State subjects / legislative relations",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q030",
+      "UPSC-CSE-2013-GS1-Q021",
+      "UPSC-CSE-2016-GS1-Q095"
+     ]
+    },
+    {
+     "label": "Mineral competence / statutory federalism",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q062",
+      "UPSC-CSE-2025-GS1-Q089"
+     ]
+    },
+    {
+     "label": "Federal character/features",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q100",
+      "UPSC-CSE-2021-GS1-Q086"
+     ]
+    },
+    {
+     "label": "President’s Rule / emergency consequences",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q096",
+      "UPSC-CSE-2018-GS1-Q053",
+      "UPSC-CSE-2022-GS1-Q015"
+     ]
+    },
+    {
+     "label": "Centre–State coordinating institution/status",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q053"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Centre–State commissions/institutions",
+     "ids": [
+      "UPPCS-2018-GS1-Q018",
+      "UPPCS-2021-GS1-Q026"
+     ]
+    },
+    {
+     "label": "Nature of Indian federation",
+     "ids": [
+      "UPPCS-2019-GS1-Q027",
+      "UPPCS-2019-GS1-Q102",
+      "UPPCS-2020-GS1-Q126",
+      "UPPCS-2024-GS1-Q128"
+     ]
+    },
+    {
+     "label": "Emergency provisions",
+     "ids": [
+      "UPPCS-2024-GS1-Q102",
+      "UPPCS-2024-GS1-Q122"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** Art. 249; Art. 253; federal vs unitary/centralising traits; Art. 356 consequences; State–Centre division over minor minerals.\n- **Recurring traps:** “State consent required”; “special majority” without specifying formula; automatic Assembly dissolution; Art. 19 suspension under President’s Rule; States’ right to secede; Centre alone makes minor-mineral concession rules.\n- **Qualifier patterns:** `necessarily`, `exclusive`, `national interest`, `present and voting`, `constitutional`, `can/may` vs `automatically`.\n- **UPSC vs UPPCS:** UPSC → functional/procedural elimination; UPPCS → article/commission/thinker matching + direct constitutional characterization.\n- **Recent reinforcement:** minor-mineral competence repeated 2019 → 2025; constitutional status of Inter-State Council tested in 2025."
+  },
+  "local-government": {
+   "upsc": [
+    {
+     "label": "73rd Amendment / institution mapping / planning",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q011",
+      "UPSC-CSE-2011-GS1-Q073",
+      "UPSC-CSE-2012-GS1-Q023",
+      "UPSC-CSE-2013-GS1-Q069"
+     ]
+    },
+    {
+     "label": "Democratic decentralisation / objective",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q085",
+      "UPSC-CSE-2017-GS1-Q016"
+     ]
+    },
+    {
+     "label": "Age + tenure + intermediate tier + SFC",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q100",
+      "UPSC-CSE-2025-GS1-Q091"
+     ]
+    },
+    {
+     "label": "Reservation fine print",
+     "ids": [
+      "UPSC-CSE-2026-GS1-Q082"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Constitutional location / amendment / status",
+     "ids": [
+      "UPPCS-2020-GS1-Q092",
+      "UPPCS-2022-GS1-Q038",
+      "UPPCS-2024-GS1-Q146",
+      "UPPCS-2025-GS1-Q024"
+     ]
+    },
+    {
+     "label": "Local-body election authority",
+     "ids": [
+      "UPPCS-2020-GS1-Q100",
+      "UPPCS-2023-GS1-Q017",
+      "UPPCS-2024-GS1-Q024"
+     ]
+    },
+    {
+     "label": "Gram Sabha / composition / reservation / age / tenure",
+     "ids": [
+      "UPPCS-2019-GS1-Q099",
+      "UPPCS-2023-GS1-Q016",
+      "UPPCS-2025-GS1-Q039",
+      "UPPCS-2025-GS1-Q085"
+     ]
+    },
+    {
+     "label": "Committee/history/chronology",
+     "ids": [
+      "UPPCS-2019-GS1-Q105",
+      "UPPCS-2021-GS1-Q107",
+      "UPPCS-2021-GS1-Q131",
+      "UPPCS-2023-GS1-Q018",
+      "UPPCS-2024-GS1-Q129"
+     ]
+    },
+    {
+     "label": "Local finance/tax direct recall",
+     "ids": [
+      "UPPCS-2018-GS1-Q137"
+     ]
+    },
+    {
+     "label": "PESA boundary overlap",
+     "ids": [
+      "UPPCS-2022-GS1-Q076"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** constitutionalisation; democratic decentralisation; Gram Sabha; 3-tier structure; SEC/SFC; reservation; 5-year duration; local planning.\n- **Recurring traps:** 73rd ≠ 74th; DPC belongs Part IX-A/74th; SEC ≠ ECI; Governor ≠ CM for SFC; minimum age 21 ≠ 25/30; Gram Sabha = registered electors ≠ all residents; intermediate tier has ≤20-lakh exception.\n- **Qualifier patterns:** “not correct”; “all States”; “minimum”; “not less than”; “sole responsibility”; “who constitutes”; “only”.\n- **UPSC vs UPPCS:** UPSC → statement elimination + conceptual decentralisation; UPPCS → direct Part/Article/date/committee/authority recall.\n- **Recent reinforcement:** UPSC 2025–26 → intermediate tier/SFC + reservation; UPPCS 2024–25 → amendment mapping, SEC, Part IX-A, age, women reservation, tenure."
+  },
+  "elections": {
+   "upsc": [
+    {
+     "label": "Candidate eligibility / RPA / right-status",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q057",
+      "UPSC-CSE-2017-GS1-Q086",
+      "UPSC-CSE-2020-GS1-Q019"
+     ]
+    },
+    {
+     "label": "FPTP / winning threshold",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q076"
+     ]
+    },
+    {
+     "label": "Delimitation",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q054",
+      "UPSC-CSE-2024-GS1-Q071"
+     ]
+    },
+    {
+     "label": "Legislative reservation — current-layer PYQ",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q081"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Voting age",
+     "ids": [
+      "UPPCS-2021-GS1-Q022"
+     ]
+    },
+    {
+     "label": "Political-party chronology",
+     "ids": [
+      "UPPCS-2022-GS1-Q016"
+     ]
+    },
+    {
+     "label": "Election-reform chronology",
+     "ids": [
+      "UPPCS-2025-GS1-Q124"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** elector qualification; candidate qualification/disqualification; plurality vs majority; delimitation authority/finality/count; legislative reservation; voting-age amendment.\n- **Recurring traps:** “resident of constituency” ≠ “elector”; “largest votes” ≠ “absolute majority”; disqualification ≠ permanent; laid before House ≠ alterable by House; reserved seat ≠ separate electorate.\n- **Qualifier patterns:** *only*, *at least*, *permanently*, *cannot be challenged*, *cannot modify*, *how many*, chronology.\n- **UPSC vs UPPCS:** UPSC → legal/constitutional qualifiers + statement elimination; UPPCS → direct amendment/year/party/reform chronology recall.\n- **Recent reinforcement:** delimitation count (UPSC 2024); election-reform chronology (UPPCS 2025). No forecast beyond observed patterns."
+  },
+  "governance-regulators": {
+   "upsc": [
+    {
+     "label": "Regulators/agencies — status, function, ministry",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q003",
+      "UPSC-CSE-2014-GS1-Q096",
+      "UPSC-CSE-2015-GS1-Q063",
+      "UPSC-CSE-2016-GS1-Q023",
+      "UPSC-CSE-2017-GS1-Q034",
+      "UPSC-CSE-2018-GS1-Q004",
+      "UPSC-CSE-2019-GS1-Q069",
+      "UPSC-CSE-2019-GS1-Q074",
+      "UPSC-CSE-2022-GS1-Q079",
+      "UPSC-CSE-2025-GS1-Q003",
+      "UPSC-CSE-2025-GS1-Q057",
+      "UPSC-CSE-2025-GS1-Q060"
+     ]
+    },
+    {
+     "label": "Standards / certification / labelling",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q034",
+      "UPSC-CSE-2016-GS1-Q078",
+      "UPSC-CSE-2017-GS1-Q032",
+      "UPSC-CSE-2017-GS1-Q039",
+      "UPSC-CSE-2018-GS1-Q023"
+     ]
+    },
+    {
+     "label": "Aadhaar / digital identity",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q012",
+      "UPSC-CSE-2018-GS1-Q017",
+      "UPSC-CSE-2020-GS1-Q001"
+     ]
+    },
+    {
+     "label": "Digital governance / platforms",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q084",
+      "UPSC-CSE-2018-GS1-Q036",
+      "UPSC-CSE-2022-GS1-Q031"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Standards / certification",
+     "ids": [
+      "UPPCS-2022-GS1-Q065"
+     ]
+    },
+    {
+     "label": "E-governance effects",
+     "ids": [
+      "UPPCS-2024-GS1-Q123"
+     ]
+    },
+    {
+     "label": "IPR institution / nodal agency",
+     "ids": [
+      "UPPCS-2024-GS1-Q145"
+     ]
+    },
+    {
+     "label": "Portal / ministry / agency current matching",
+     "ids": [
+      "UPPCS-2021-GS1-Q093",
+      "UPPCS-2025-GS1-Q029",
+      "UPPCS-2025-GS1-Q070",
+      "UPPCS-2025-GS1-Q126"
+     ]
+    },
+    {
+     "label": "Dynamic e-governance ranking",
+     "ids": [
+      "UPPCS-2018-GS1-Q102"
+     ]
+    },
+    {
+     "label": "Boundary → sibling NITI node",
+     "ids": [
+      "UPPCS-2020-GS1-Q015",
+      "UPPCS-2020-GS1-Q138"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** legal status; enabling Act; parent ministry/department; exact statutory mandate; certification-mark owner; identity vs citizenship; e-governance platform purpose.\n- **Recurring traps:** institution created **under an Act** vs executive/society; administering ministry ≠ statute; similarly named directorates; regulator’s sector ≠ every activity in that sector.\n- **Qualifier patterns:** *statutory*, *first*, *directly*, *mandatory*, *under*, *nodal*, *proof of*, *only*, *how many*.\n- **UPSC vs UPPCS:** UPSC increasingly combines 2–3 attributes per row; UPPCS adds direct factual recall of newly launched portals, reports and sponsoring ministries.\n- **Recent reinforcement:** UPSC 2025 uses organization–function–ministry row matching; UPPCS 2025 uses current portal/report/ministry attribution.\n- **No unsupported forecasting:** plausible variants limited to the same transformations—body ↔ Act; body ↔ ministry; body ↔ function; mark ↔ authority; digital platform ↔ purpose."
+  },
+  "statutory-bodies": {
+   "upsc": [
+    {
+     "label": "A. Constitutional / statutory / executive status",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q019",
+      "UPSC-CSE-2023-GS1-Q035",
+      "UPSC-CSE-2025-GS1-Q053"
+     ]
+    },
+    {
+     "label": "B. Planning architecture: Planning Commission → NITI; NDC",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q069",
+      "UPSC-CSE-2013-GS1-Q098",
+      "UPSC-CSE-2014-GS1-Q057",
+      "UPSC-CSE-2015-GS1-Q042"
+     ]
+    },
+    {
+     "label": "C. Lokpal legal fine print",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q098"
+     ]
+    },
+    {
+     "label": "Semantic exclusions → sibling/other nodes",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q056",
+      "UPSC-CSE-2017-GS1-Q055",
+      "UPSC-CSE-2019-GS1-Q019",
+      "UPSC-CSE-2019-GS1-Q069",
+      "UPSC-CSE-2026-GS1-Q065"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "A. NITI / Planning Commission status + legacy",
+     "ids": [
+      "UPPCS-2018-GS1-Q015",
+      "UPPCS-2018-GS1-Q017",
+      "UPPCS-2018-GS1-Q092"
+     ]
+    },
+    {
+     "label": "B. NITI institutional role / structure",
+     "ids": [
+      "UPPCS-2019-GS1-Q140",
+      "UPPCS-2020-GS1-Q138"
+     ]
+    },
+    {
+     "label": "C. Inter-State Council",
+     "ids": [
+      "UPPCS-2021-GS1-Q026"
+     ]
+    },
+    {
+     "label": "D. Lokpal",
+     "ids": [
+      "UPPCS-2024-GS1-Q130"
+     ]
+    },
+    {
+     "label": "Semantic exclusions",
+     "ids": [
+      "UPPCS-2018-GS1-Q063",
+      "UPPCS-2020-GS1-Q015"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** institutional source/status; planning architecture; composition; appointment/selection; constitutional provision ↔ statutory Act mapping.\n- **Recurring traps:** non-constitutional ≠ non-statutory; NDC ≠ Planning Commission organ; ISC ≠ Zonal Council; Lokpal ≠ constitutional body; “Chairperson can be CJI” ≠ “only CJI can be Chairperson.”\n- **Qualifier patterns:** `how many`, `only`, `not`, `established as per Constitution`, `maximum`, `not less than`, `in/outside India`.\n- **UPSC vs UPPCS:** UPSC → multi-body classification + qualifier-heavy statutory statements; UPPCS → direct institution-person/source/committee recall.\n- **Recent reinforcement:** UPSC 2023 + two 2025 institutional-status/Lokpal questions; UPPCS 2024 Lokpal selection."
+  },
+  "constitutional-bodies": {
+   "upsc": [
+    {
+     "label": "Finance Commission—mandate/functions",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q045"
+     ]
+    },
+    {
+     "label": "13th FC recommendations",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q033"
+     ]
+    },
+    {
+     "label": "14th FC devolution/grants",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q002"
+     ]
+    },
+    {
+     "label": "15th FC horizontal-devolution criteria",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q029"
+     ]
+    },
+    {
+     "label": "15th FC recommendations/incentives",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q066"
+     ]
+    },
+    {
+     "label": "ECI—jurisdiction/function boundaries",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q007",
+      "UPSC-CSE-2017-GS1-Q090"
+     ]
+    },
+    {
+     "label": "CAG—role, audit/accountability limits",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q051"
+     ]
+    },
+    {
+     "label": "Constitutional reports/recommendations laid before Parliament",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q056"
+     ]
+    },
+    {
+     "label": "CAG → PAC accountability chain",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q051"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Constitutional status/article mapping",
+     "ids": [
+      "UPPCS-2018-GS1-Q017",
+      "UPPCS-2020-GS1-Q102",
+      "UPPCS-2023-GS1-Q002",
+      "UPPCS-2024-GS1-Q102",
+      "UPPCS-2024-GS1-Q125"
+     ]
+    },
+    {
+     "label": "Finance Commission—composition/functions/qualification",
+     "ids": [
+      "UPPCS-2021-GS1-Q134",
+      "UPPCS-2021-GS1-Q148",
+      "UPPCS-2023-GS1-Q010"
+     ]
+    },
+    {
+     "label": "Finance Commission—chairpersons/history",
+     "ids": [
+      "UPPCS-2021-GS1-Q076",
+      "UPPCS-2025-GS1-Q064"
+     ]
+    },
+    {
+     "label": "CAG—accounts/audit/PAC",
+     "ids": [
+      "UPPCS-2019-GS1-Q024",
+      "UPPCS-2021-GS1-Q049",
+      "UPPCS-2022-GS1-Q022"
+     ]
+    },
+    {
+     "label": "Cross-body removal comparison",
+     "ids": [
+      "UPPCS-2020-GS1-Q098"
+     ]
+    },
+    {
+     "label": "ECI—first CEC / first woman CEC",
+     "ids": [
+      "UPPCS-2021-GS1-Q110"
+     ]
+    },
+    {
+     "label": "ECI—function exclusions",
+     "ids": [
+      "UPPCS-2024-GS1-Q024"
+     ]
+    },
+    {
+     "label": "SPSC—removal / extension of functions",
+     "ids": [
+      "UPPCS-2021-GS1-Q099",
+      "UPPCS-2021-GS1-Q132"
+     ]
+    },
+    {
+     "label": "Joint State PSC",
+     "ids": [
+      "UPPCS-2022-GS1-Q135"
+     ]
+    },
+    {
+     "label": "UPSC—sources of functions",
+     "ids": [
+      "UPPCS-2024-GS1-Q124"
+     ]
+    }
+   ],
+   "synthesis": "- **Recurring concepts:** constitutional article ↔ body; appointing/removing authority; reports; function boundaries; FC devolution formula; CAG–PAC chain.\n- **Recurring traps:** `recommend ≠ decide`; `appointment authority ≠ removal authority`; `constitutional body ≠ statutory/executive body`; exact article-number matching.\n- **Qualifier patterns:** *only*, *not*, *correctly/not correctly matched*, *how many*, multi-statement combinations.\n- **UPSC:** narrower bodies, but deeper qualifier-heavy testing—especially FC criteria/recommendations and ECI/CAG functional limits.\n- **UPPCS:** broader body coverage + direct article/composition/chairperson/appointment-removal recall.\n- **Recent reinforcement:** UPSC 2023 + 2025 → 15th FC; UPPCS 2023–25 → article mapping, ECI/UPSC functions, FC chairpersons.\n- **Direct recurring-PYQ variants worth covering:** FC criteria across successive commissions; CEC vs EC removal; UPSC vs SPSC appointment/removal; Art. 338/338A/338B/340 differentiation."
+  }
+ }
+}
