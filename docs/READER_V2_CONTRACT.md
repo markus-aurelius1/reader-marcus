@@ -634,6 +634,53 @@ If a device starts offline and discovers an overlapping active cloud timer later
 - resolve deterministically or surface a minimal conflict;
 - no silent data loss.
 
+## Timer rules as built (Job 2)
+
+```text
+Elapsed time     accumulatedMs + (now − currentSpanStartedAt) while running. Always derived from
+                 timestamps, so a reload, a closed browser or another device shows the same figure.
+
+Span             one unbroken stretch of active study on one tracked unit. Pause, a change of
+                 tracked unit and a change of owner each close the open span.
+Span id          <ownerDeviceId>-<start time>. Two copies of one timer that drifted apart still
+                 agree on the spans they share.
+
+Session          written on Stop from the closed spans. durationMs = sum of span durations.
+                 Under one second of study: nothing is written.
+source           "timer"      Stop
+                 "recovered"  ended at the moment the app was last open (unattended stretch left
+                              out), or split off while reconciling two devices (below)
+
+studyRuntime/active   holds the ActiveStudySession, or once it stops a marker
+                      { sessionId, revision, ownerDeviceId, updatedAt, spanIds }
+                      so that other devices learn the timer ended.
+
+Cloud documents  the existing sync record envelope { id, kind, t, dev, rev?, del?, data, st }
+                 with data = the contract object; kind "ses" (create-only) and "run".
+```
+
+Only the owning device changes the timer. Any other device shows it and offers
+**Continue here**, which closes the open span, makes this device the owner and carries on in the
+same session.
+
+When two devices changed the timer without seeing each other (a device was offline):
+
+```text
+this device has no timer running      → take the cloud's state
+cloud timer already ended, ours is a  → ours becomes the active timer
+  different session
+anything else (two live timers, or    → the cloud timer stands — it is the one other devices follow.
+  two versions of one timer)            Spans recorded only on this device are written as a
+                                        "recovered" session (<sessionId>_<deviceId> when it is a
+                                        version of the same session) and synced like any other.
+same session completed on two devices → the copy already in the cloud stands (sessions are
+                                        immutable); the other device keeps its extra spans as
+                                        <sessionId>_<deviceId>.
+```
+
+No branch discards recorded time. Where two devices really did run at once, their sessions
+overlap in wall-clock time; analytics must treat overlapping spans as one stretch.
+
 ---
 
 # ANALYTICS COMPARISON RULES
@@ -758,3 +805,4 @@ v1 links keep working and are rewritten in place (no extra history entry):
 | 2026-10-03 | Preferences storage section | `NavigationPreferences` / `StudyTimerPreferences` had no storage home |
 | 2026-10-03 | `StudyStreak` added (derived), `DashboardViewModel.streak`, added to Never sync | Principle 10 names streaks; no type existed |
 | 2026-10-03 | Routes section | Job 1 fixed the stable routes |
+| 2026-10-03 | "Timer rules as built": span ids, stopped marker in `studyRuntime/active`, record envelope for study documents, meaning of `source: "recovered"`, two-device reconciliation | Job 2 needed a deterministic, loss-free rule for timers that diverge offline; types unchanged |

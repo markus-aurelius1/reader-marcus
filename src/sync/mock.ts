@@ -37,6 +37,13 @@ export function createMockBackend(base: string): Backend {
         },
       }
     },
+    // stands in for the Firestore listener on the active timer
+    watch(uid, cb) {
+      const t = window.setInterval(() => {
+        call(`/doc?uid=${encodeURIComponent(uid)}&id=run~active`).then((r: { rec: Rec | null }) => cb(r.rec?.rev), () => {})
+      }, 1500)
+      return () => clearInterval(t)
+    },
     onUser(cb) {
       listener = cb
       cb(current())

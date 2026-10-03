@@ -1,7 +1,7 @@
 // Navigation model. The tree is generated from content metadata (library.json + each subject's
 // subject.json and chapter files) — it is never stored or synced, and no route is spelled here.
 import { allSubjects, stages, type Chapter, type Subject } from './content'
-import type { ContentRef, ExamStage, NavigationNode, RecentDestination } from './contract'
+import type { ContentRef, ExamStage, NavigationNode, RecentDestination, StudyContext } from './contract'
 import { href } from './router'
 import { useStore } from './store'
 
@@ -33,6 +33,14 @@ export const subjectRef = (s: Subject, paperId?: string): ContentRef => ({ kind:
 export const chapterRef = (c: Chapter): ContentRef => {
   const [stage, subjectId] = c.key.split('/')
   return { kind: 'chapter', stage: stage as ExamStage, subjectId, topicId: c.topicId, chapterId: c.id }
+}
+
+/** What a study timer tracks: a chapter, or one section of it, with its place in the hierarchy. */
+export function studyContext(subject: Subject, chapter: Chapter, section?: { id: string; title: string }): StudyContext {
+  const at = navNode(chapter.key)?.target ?? chapterRef(chapter) // carries the paper and topic
+  const ref: ContentRef = { ...at, taxonomyId: chapter.taxonomy[0], ...(section ? { kind: 'section' as const, sectionId: section.id } : {}) }
+  // no undefined fields: the context is stored and synced as plain data
+  return JSON.parse(JSON.stringify({ ref, subjectTitle: subject.title, topicTitle: chapter.topicTitle, chapterTitle: chapter.title, sectionTitle: section?.title }))
 }
 
 export interface NavTree {

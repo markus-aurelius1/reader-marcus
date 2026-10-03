@@ -44,6 +44,17 @@ The frozen v2 architecture, data contract and route table are in [`docs/READER_V
 
 `scripts/e2e.mjs` → "Navigation v2" covers all of the above; extend its subject lists when a subject is added.
 
+## Study timer (Reader v2)
+
+The reader header carries a study timer: **Start** on any chapter, then a running `01:24:37` with Pause / Resume / Stop. It follows the reader — changing chapter closes the span for the previous chapter and opens the next without breaking the clock — and survives navigation, refresh, closing the browser and reopening the installed app, because elapsed time is always computed from stored timestamps. Paused time is never counted.
+
+- **Stop** writes one immutable `StudySession` (its spans carry stage, paper, subject, topic, chapter and optionally section). Sessions are the only record of study time; nothing keeps a running total, and later statistics are derived from them.
+- **One timer per account.** Another signed-in device shows `Timer running — Economy · 42:18` with **Continue here** (takes over the same session) and **Open topic**.
+- **Closed for a while with the timer running?** On return the timer is still running; the reader offers **Keep the time** or **Stop at** the moment it was last open.
+- **Offline.** Everything works; changes queue as usual. A timer started offline on a signed-in device is marked provisional. If another device turns out to have a timer running, that one stays and the offline one is saved as its own session (`source: "recovered"`) — no time is dropped.
+
+Code: `src/lib/timer.ts` (pure rules), `src/lib/study.ts` (state, IndexedDB, sync adapter), `src/components/Timer.tsx` (header control and notices). Rules and reconciliation: [`docs/READER_V2_CONTRACT.md`](docs/READER_V2_CONTRACT.md) → "Timer rules as built".
+
 ## Adding the next subject
 
 1. **Place the source** — put the Source Pack in `source/`.
@@ -163,20 +174,21 @@ Troubleshooting
 | `auth/unauthorized-domain` | hostname missing from Firebase Authorized domains |
 | Google `redirect_uri_mismatch` | `https://<host>/__/auth/handler` missing from the OAuth client's redirect URIs |
 | Popup opens the reader itself | an old service worker is intercepting `/__/auth/*` — reload once |
-| `Sync paused — will retry` with `permission-denied` | rules not deployed, or signed in to a different Firebase project than the build's |
+| `Sync paused — will retry` with `permission-denied` | rules not deployed (the study timer needs the `studySessions` / `studyRuntime` rules — deploy `firestore.rules` before the app), or signed in to a different Firebase project than the build's |
 | Stays on `Offline — changes queued` while online | Firestore unreachable (network filter / ad-blocker); the queue is kept and retried |
 
 ### Sync behaviour
 
 | | |
 |---|---|
-| **What syncs** | Section edits (heading + body), highlights and colours, section done / ★ / ↻, chapter status, reading position and last-opened chapter, theme, Recall Mode, collapsed sections. Never the notes themselves, the Source Pack or build assets. |
+| **What syncs** | Section edits (heading + body), highlights and colours, section done / ★ / ↻, chapter status, reading position and last-opened chapter, theme, Recall Mode, collapsed sections, completed study sessions, the active study timer and timer preferences. Never the notes themselves, the Source Pack or build assets. |
 | **Granularity** | One small cloud document per section edit, per highlight, per section's flags, per chapter's status/position, and one for preferences — scrolling or ticking a box never rewrites an edit. |
 | **Local-first** | Every change updates the screen, is written to IndexedDB and is added to a persistent queue. The queue is sent when you are signed in and online; nothing waits on the network. |
 | **Offline** | Status shows `Offline — changes queued`. The queue survives reloads and restarts and drains automatically on reconnect. |
 | **First sign-in** | Nothing local is replaced. Every local record is compared with the cloud: local-only records are uploaded, cloud-only records downloaded, flags and preferences merged field by field. |
 | **Merging** | Flags, status, position and preferences: newest change per field wins, so progress from one device and a highlight from another both survive. Highlights: newest change per highlight wins; removals propagate. |
 | **Conflicts** | Only when the *same section's text* was edited on two devices before they synced. Both versions are kept; status shows `Conflict`; choose **Keep this device**, **Keep cloud version** or **View both**. Until you choose, this device keeps its own text and the cloud copy is stored locally. |
+| **Study timer** | Completed sessions are written once and never changed. The active timer is one record with one owning device; it is the only record with a live listener, so a timer started on one device appears on the others within a moment. Two timers that diverged offline are reconciled without dropping time (see *Study timer* above). |
 | **Sign out** | Stops syncing; everything stays on the device. Signing in to a different account merges this device's data into that account. |
 | **Local-only mode** | Leave the `VITE_FIREBASE_*` values empty, or simply don't sign in ("Continue locally"). |
 
@@ -185,7 +197,7 @@ Troubleshooting
 ## Checks
 
 ```bash
-npm run test     # merge, queue, conflict, anchoring, migration and cross-link unit tests
+npm run test     # merge, queue, conflict, anchoring, migration, cross-link, study-timer and timer-sync unit tests
 npm run check    # content contract (taxonomy coverage, cross-links across subjects, markers)
 npm run e2e      # headless-Chrome regression of the production build: reader, migration, print-to-PDF,
                  # cross-links, offline, responsive, and two-device sync against the mock cloud  → e2e-out/
@@ -202,6 +214,8 @@ There is no linter: typescript-eslint does not yet support the TypeScript 7 comp
 | Highlights | IndexedDB → `highlights` (one row each: position, quoted words, colour) |
 | Progress, flags, reading position | IndexedDB → `kv` → `progress` (+ `stamps`: when each field changed) |
 | Sync queue · unresolved conflicts | IndexedDB → `outbox` · `conflicts` |
+| Completed study sessions | IndexedDB → `studySessions` (one immutable row each) · cloud `users/{uid}/studySessions/{sessionId}` |
+| The active study timer | IndexedDB → `activeStudySession` (one row) · cloud `users/{uid}/studyRuntime/active` |
 | Theme, Recall Mode, explorer panel, collapsed sections, favourites, recent destinations | localStorage `upsc-prefs` (all but the panel state sync as `pref~main`) |
 
 Highlights are stored apart from the text and re-attached to it when a section is shown. **Reset Local Edits** therefore restores the original text and keeps highlights, progress, status, flags and reading position. A highlight made on words that existed only in your edit cannot be placed on the original text: it is kept and listed on the Highlights page as "not in the current text", where you can remove it.

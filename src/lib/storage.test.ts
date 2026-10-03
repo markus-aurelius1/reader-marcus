@@ -127,7 +127,7 @@ describe('v1 → v2 migration', () => {
       req.onsuccess = () => resolve(req.result)
       req.onerror = () => reject(req.error)
     })
-    expect([...db.objectStoreNames].sort()).toEqual(['conflicts', 'highlights', 'kv', 'outbox', 'overrides'])
+    expect([...db.objectStoreNames].sort()).toEqual(['activeStudySession', 'conflicts', 'highlights', 'kv', 'outbox', 'overrides', 'studyGoals', 'studySessions'])
     const get = <T>(store: string, key: string) =>
       new Promise<T>((resolve) => {
         const r = db.transaction(store).objectStore(store).get(key)
@@ -135,6 +135,46 @@ describe('v1 → v2 migration', () => {
       })
     expect((await get<{ html: string }>('overrides', 'prelims/polity/parliament/x')).html).toBe(v1Highlighted)
     expect((await get<{ chapters: Record<string, { scroll: number }> }>('kv', 'progress')).chapters.c.scroll).toBe(300)
+    db.close()
+  })
+
+  it('v2 → v3 adds the study stores beside the existing ones and rewrites nothing', async () => {
+    const name = 'upsc-notes-v2-copy'
+    const rows = { overrides: { key: 'prelims/polity/parliament/x', html: '<p>edit</p>', updatedAt: 5, rev: 'r1' }, highlights: { id: 'h1', sectionKey: 's', color: 'pink' }, outbox: { id: 'hl~h1', seq: 4 }, conflicts: { id: 'edit~s', remote: { id: 'edit~s' } } }
+    // the database exactly as the previous build left it
+    await new Promise<void>((resolve, reject) => {
+      const req = indexedDB.open(name, 2)
+      req.onupgradeneeded = () => {
+        req.result.createObjectStore('overrides', { keyPath: 'key' })
+        req.result.createObjectStore('kv')
+        for (const s of ['highlights', 'outbox', 'conflicts']) req.result.createObjectStore(s, { keyPath: 'id' })
+      }
+      req.onsuccess = () => {
+        const tx = req.result.transaction(['overrides', 'kv', 'highlights', 'outbox', 'conflicts'], 'readwrite')
+        for (const [s, row] of Object.entries(rows)) tx.objectStore(s).put(row)
+        tx.objectStore('kv').put({ sections: { a: { done: true } }, chapters: {} }, 'progress')
+        tx.objectStore('kv').put(2, 'schema')
+        tx.oncomplete = () => {
+          req.result.close()
+          resolve()
+        }
+      }
+      req.onerror = () => reject(req.error)
+    })
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const req = indexedDB.open(name, DB_VERSION)
+      req.onupgradeneeded = () => upgrade(req.result)
+      req.onsuccess = () => resolve(req.result)
+      req.onerror = () => reject(req.error)
+    })
+    const all = <T>(store: string) =>
+      new Promise<T[]>((resolve) => {
+        const r = db.transaction(store).objectStore(store).getAll()
+        r.onsuccess = () => resolve(r.result as T[])
+      })
+    for (const [s, row] of Object.entries(rows)) expect(await all(s)).toEqual([row])
+    expect(await all('kv')).toHaveLength(2)
+    for (const s of ['studySessions', 'activeStudySession', 'studyGoals']) expect(await all(s)).toEqual([])
     db.close()
   })
 })

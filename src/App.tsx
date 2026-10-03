@@ -13,11 +13,14 @@ import { Palette } from './components/Palette'
 import { Explorer, SubjectSwitcher } from './components/Explorer'
 import { Rail, TabBar, areaOf } from './components/Nav'
 import { Related } from './components/Related'
-import { navPath, refHref } from './lib/nav'
+import { navPath, refHref, studyContext } from './lib/nav'
 import { neighbours, placeKey } from './lib/links'
 import { AccountButton, AccountPanel } from './components/Account'
 import { initSync, statusLabel, useSync } from './sync'
 import { promptInstall, useInstall } from './lib/install'
+import { TimerBanner, TimerControl } from './components/Timer'
+import { clearNotice, followContext, initStudy, useStudy } from './lib/study'
+import { contextKey } from './lib/timer'
 
 const isTyping = (e: KeyboardEvent) => {
   const t = e.target as HTMLElement
@@ -63,7 +66,7 @@ export function App() {
   const toggleSide = () => (matchMedia('(min-width: 1024px)').matches ? setPref({ sidebar: !useStore.getState().prefs.sidebar }) : setDrawer((d) => !d))
 
   useEffect(() => {
-    useStore.getState().init().then(initSync)
+    useStore.getState().init().then(initStudy).then(initSync)
   }, [])
 
   // Theme
@@ -82,6 +85,24 @@ export function App() {
 
   const subject = route.name === 'reader' || route.name === 'subject' ? subjects.find((s) => s.key === route.subjectKey) : undefined
   const chapter = route.name === 'reader' ? subject?.chapters.find((c) => c.id === route.chapterId) : undefined
+  // What a study timer would track here: the chapter, or the section in view when tracking by section.
+  const spySection = chapter?.sections.find((s) => s.id === spy)
+  const timerCtx = subject && chapter ? studyContext(subject, chapter, prefs.timer.trackingGranularity === 'section' && spySection ? { id: spySection.id, title: secTitle(overrides, spySection) } : undefined) : null
+  const timerKey = timerCtx ? contextKey(timerCtx) : ''
+  const studyReady = useStudy((s) => s.ready)
+  const timerAway = useStudy((s) => s.away)
+  // A running timer follows the reader: the span for the previous chapter ends, the next begins.
+  useEffect(() => {
+    if (studyReady && timerCtx && prefs.timer.followNavigation) followContext(timerCtx)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timerKey, studyReady, timerAway, prefs.timer.followNavigation])
+  const timerNotice = useStudy((s) => s.notice)
+  useEffect(() => {
+    if (!timerNotice) return
+    say(timerNotice, 7000)
+    clearNotice()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timerNotice])
   // Leaving the reader ends edit mode; mobile drawer closes on navigation.
   useEffect(() => {
     if (route.name !== 'reader' && editMode) set({ editMode: false })
@@ -96,10 +117,10 @@ export function App() {
   }, [chapter, subject, route.name])
 
   const toastTimer = useRef(0)
-  const say = (m: string) => {
+  const say = (m: string, ms = 3200) => {
     setToast(m)
     clearTimeout(toastTimer.current) // an earlier toast must not cut this one short
-    toastTimer.current = window.setTimeout(() => setToast(''), 3200)
+    toastTimer.current = window.setTimeout(() => setToast(''), ms)
   }
   useEffect(() => {
     if (inst.installed) say('App installed')
@@ -155,7 +176,7 @@ export function App() {
 
   if (!ready) return <div className="page"><p className="empty">Loading notes…</p></div>
 
-  const section = chapter?.sections.find((s) => s.id === spy)
+  const section = spySection
   // Breadcrumbs follow the navigation tree (stage › paper › subject › chapter), then the section in view.
   const trail = (id: string) => navPath(id).filter((x) => x.kind !== 'topic').map((x) => ({ label: x.title, to: refHref(x.target), sw: x.kind === 'subject' }))
   const crumbs: { label: string; to?: string; sw?: boolean }[] =
@@ -207,6 +228,7 @@ export function App() {
             </span>
           ))}
         </nav>
+        <TimerControl context={timerCtx} say={say} />
         {editMode && <span className="save hide-sm">{saveState === 'editing' ? 'Editing' : saveState === 'saving' ? 'Saving…' : saveState === 'saved' ? 'Saved' : ''}</span>}
         {chapter && (
           <span className="pager hide-sm">
@@ -319,6 +341,7 @@ export function App() {
 
       <TabBar area={area} more={menu} onMore={() => { setAccount(false); setMenu(!menu) }} />
 
+      <TimerBanner context={timerCtx} say={say} />
       {focus && <button className="ib focus-exit no-print" onClick={() => set({ focus: false })} title="Exit Focus Mode (Esc)"><Minimize2 /></button>}
       {palette && <Palette onClose={() => setPalette(false)} />}
       {help && (

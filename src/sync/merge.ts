@@ -6,8 +6,12 @@
 //   sec~<sectionKey>    done / difficult / revise                 → merged field by field
 //   chap~<chapterKey>   status / scroll / section / at            → merged field by field
 //   pref~main           theme / recall / collapsed                → merged field by field
+//   ses~<sessionId>     one completed study session               → written once, never changed
+//   run~active          the one active study timer                → one owner; forks keep their time
+import { isActive, salvage, salvageSession, sesRec, type Env, type Runtime } from '../lib/timer'
+import type { StudySession } from '../lib/contract'
 
-export type Kind = 'edit' | 'hl' | 'sec' | 'chap' | 'pref'
+export type Kind = 'edit' | 'hl' | 'sec' | 'chap' | 'pref' | 'ses' | 'run'
 
 export interface Field {
   v: unknown
@@ -20,16 +24,16 @@ export interface Rec {
   kind: Kind
   t: number // last local modification time (ms)
   dev: string
-  rev?: string // edit: identity of this content version
-  del?: boolean // edit / hl: tombstone
-  data?: Record<string, unknown> // edit: { title, html } · hl: anchor + colour
+  rev?: string // edit: identity of this content version · run: session + revision
+  del?: boolean // edit / hl: tombstone · run: the timer has stopped
+  data?: Record<string, unknown> // edit: { title, html } · hl: anchor + colour · ses: StudySession · run: timer state
   f?: Record<string, Field> // sec / chap / pref
 }
 
 export type Decision =
   | { type: 'noop' }
   | { type: 'push'; rec: Rec } // write local to cloud
-  | { type: 'pull'; rec: Rec } // write cloud to local
+  | { type: 'pull'; rec: Rec; also?: Rec[] } // write cloud to local (+ records split off to keep local-only data)
   | { type: 'both'; rec: Rec } // merged result differs from both sides
   | { type: 'conflict'; remote: Rec } // keep both; the user decides
 
@@ -66,7 +70,7 @@ const sameContent = (a: Rec, b: Rec) => !!a.del === !!b.del && same(a.data ?? nu
  * `dirty`  — changed on this device since it last agreed with the cloud.
  * `synced` — (edits) the cloud `rev` this device's version was based on.
  */
-export function reconcile(local: Rec | null, remote: Rec | null, ctx: { dirty: boolean; synced?: string | null }): Decision {
+export function reconcile(local: Rec | null, remote: Rec | null, ctx: { dirty: boolean; synced?: string | null; env?: Env }): Decision {
   if (!local && !remote) return { type: 'noop' }
   const kind = (local ?? remote)!.kind
 
@@ -80,6 +84,30 @@ export function reconcile(local: Rec | null, remote: Rec | null, ctx: { dirty: b
 
   if (!remote) return local ? { type: 'push', rec: local } : { type: 'noop' }
   if (!local) return { type: 'pull', rec: remote }
+
+  const env = ctx.env ?? { now: Date.now(), dev: local.dev, tz: 'UTC' }
+  const split = (s: StudySession | null) => (s ? [sesRec(s)] : undefined)
+
+  if (kind === 'ses') {
+    // Immutable: the cloud copy stands. Spans only this device recorded become a session of their own.
+    const mine = local.data as unknown as StudySession
+    const theirs = remote.data as unknown as StudySession
+    const known = new Set(theirs.spans.map((s) => s.id))
+    if (mine.spans.length === theirs.spans.length && mine.spans.every((s) => known.has(s.id))) return { type: 'noop' }
+    return { type: 'pull', rec: remote, also: split(salvageSession(mine, theirs, env)) }
+  }
+
+  if (kind === 'run') {
+    if (local.rev === remote.rev) return { type: 'noop' }
+    if (!ctx.dirty) return { type: 'pull', rec: remote }
+    if (remote.rev === ctx.synced) return { type: 'push', rec: local } // cloud unchanged since our base
+    // Both sides moved. There is one timer per user, and the cloud's is the one other devices follow.
+    const mine = local.data as unknown as Runtime
+    const theirs = remote.data as unknown as Runtime
+    if (!isActive(mine)) return { type: 'pull', rec: remote } // nothing running here
+    if (!isActive(theirs) && theirs.sessionId !== mine.sessionId) return { type: 'push', rec: local } // theirs already ended
+    return { type: 'pull', rec: remote, also: split(salvage(mine, theirs, env)) }
+  }
 
   if (kind === 'hl') {
     if (sameContent(local, remote)) return { type: 'noop' }

@@ -1,11 +1,14 @@
-// Firebase backend: Google sign-in + one Firestore document per synced record under
-// users/{uid}/state/{docId}. Loaded lazily — only after the user chooses to sign in.
+// Firebase backend: Google sign-in + one Firestore document per synced record:
+//   users/{uid}/state/{docId}               edits, highlights, progress, preferences
+//   users/{uid}/studySessions/{sessionId}   completed study sessions (create-only)
+//   users/{uid}/studyRuntime/active         the one active timer
+// Loaded lazily — only after the user chooses to sign in.
 import { initializeApp } from 'firebase/app'
 import { GoogleAuthProvider, getAuth, getRedirectResult, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth'
 import { Timestamp, collection, doc, getDocs, getFirestore, orderBy, query, runTransaction, serverTimestamp, where } from 'firebase/firestore/lite'
 import type { Backend } from './index'
 import type { Remote } from './engine'
-import type { Rec } from './merge'
+import { keyOf, kindOf, type Rec } from './merge'
 
 const env = import.meta.env
 
@@ -29,20 +32,26 @@ export function createFirebaseBackend(): Backend {
   return {
     remote(uid): Remote {
       const col = collection(store, 'users', uid, 'state')
+      const sessions = collection(store, 'users', uid, 'studySessions')
+      const runtime = collection(store, 'users', uid, 'studyRuntime')
+      const refOf = (id: string) => (kindOf(id) === 'ses' ? doc(sessions, keyOf(id)) : kindOf(id) === 'run' ? doc(runtime, keyOf(id)) : doc(col, enc(id)))
       return {
         async pull(cursor) {
-          const snap = await getDocs(query(col, where('st', '>', Timestamp.fromMillis(cursor)), orderBy('st')))
+          const since = Timestamp.fromMillis(cursor)
+          const snaps = await Promise.all([col, sessions, runtime].map((c) => getDocs(query(c, where('st', '>', since), orderBy('st')))))
           let max = cursor
           const recs: Rec[] = []
-          snap.forEach((d) => {
-            const { st, ...rec } = d.data() as Rec & { st?: Timestamp }
-            if (st) max = Math.max(max, st.toMillis() - OVERLAP_MS)
-            recs.push(rec as Rec)
-          })
+          for (const snap of snaps) {
+            snap.forEach((d) => {
+              const { st, ...rec } = d.data() as Rec & { st?: Timestamp }
+              if (st) max = Math.max(max, st.toMillis() - OVERLAP_MS)
+              recs.push(rec as Rec)
+            })
+          }
           return { recs, cursor: max }
         },
         async transact(id, fn) {
-          const ref = doc(col, enc(id))
+          const ref = refOf(id)
           await runTransaction(store, async (tx) => {
             const snap = await tx.get(ref)
             let cur: Rec | null = null
@@ -54,6 +63,28 @@ export function createFirebaseBackend(): Backend {
             if (out) tx.set(ref, { ...plain(out), st: serverTimestamp() })
           })
         },
+      }
+    },
+
+    // The active timer is the one record worth hearing about at once. The listener only reports
+    // that it changed; the change itself arrives through the normal pull, so there is one code
+    // path for applying cloud state. The streaming SDK is loaded for this alone.
+    watch(uid, cb) {
+      let off = () => {}
+      let closed = false
+      import('firebase/firestore')
+        .then((fs) => {
+          if (closed) return
+          off = fs.onSnapshot(
+            fs.doc(fs.getFirestore(app), 'users', uid, 'studyRuntime', 'active'),
+            (snap) => cb((snap.data() as Rec | undefined)?.rev),
+            (e) => console.warn('[sync] timer listener stopped; periodic sync continues', e),
+          )
+        })
+        .catch((e) => console.warn('[sync] timer listener unavailable; periodic sync continues', e))
+      return () => {
+        closed = true
+        off()
       }
     },
 

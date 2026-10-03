@@ -10,6 +10,24 @@ service cloud.firestore {
         && request.resource.data.kind in ['edit', 'hl', 'sec', 'chap', 'pref']
         && request.resource.data.st == request.time;
     }
+    // Completed study sessions: written once, never changed.
+    match /users/{uid}/studySessions/{sessionId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.kind == 'ses'
+        && request.resource.data.id == 'ses~' + sessionId
+        && request.resource.data.st == request.time;
+    }
+    // The one active study timer (or the marker left when it stopped).
+    match /users/{uid}/studyRuntime/{docId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && docId == 'active'
+        && request.resource.data.kind == 'run'
+        && request.resource.data.st == request.time;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

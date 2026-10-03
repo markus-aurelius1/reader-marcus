@@ -12,6 +12,8 @@ export interface SyncUser {
 }
 export interface Backend {
   remote(uid: string): Remote
+  /** Report the cloud revision of the active study timer whenever it changes. Returns a stop function. */
+  watch?(uid: string, cb: (rev: string | undefined) => void): () => void
   onUser(cb: (u: SyncUser | null) => void): void
   signIn(): Promise<void>
   signOut(): Promise<void>
@@ -40,6 +42,7 @@ let again = false
 let timer = 0
 let dueAt = 0
 let backoff = 0
+let unwatch = () => {}
 
 function loadBackend(): Promise<Backend> {
   if (!backend) {
@@ -58,6 +61,8 @@ function loadBackend(): Promise<Backend> {
 const refreshPending = () => useSync.setState({ pending: Math.max(0, syncLocal.pending() - syncLocal.conflicts().size) })
 
 async function onUser(user: SyncUser | null) {
+  unwatch()
+  unwatch = () => {}
   if (!user) {
     remote = null
     clearTimeout(timer)
@@ -68,10 +73,13 @@ async function onUser(user: SyncUser | null) {
   // First sign-in on this device (or a different account): nothing local is replaced — every
   // local record is queued and reconciled against the cloud one by one.
   await syncLocal.rebind(user.uid)
-  remote = (await backend!).remote(user.uid)
+  const b = await backend!
+  remote = b.remote(user.uid)
   useSync.setState({ user })
   refreshPending()
   run()
+  // another device started, moved or stopped the timer: fetch it now rather than at the next sync
+  unwatch = b.watch?.(user.uid, (rev) => rev !== syncLocal.get('run~active')?.rev && run()) ?? unwatch
 }
 
 const isNetworkError = (e: unknown) => {
@@ -144,6 +152,15 @@ export function initSync() {
     /* storage unavailable: stay local */
   }
   if (configured && on) loadBackend().catch((e) => console.error('[sync] could not start', e))
+}
+
+/** This device is linked to an account, even if the backend has not loaded or is offline. */
+export function linked() {
+  try {
+    return configured && localStorage.getItem(FLAG) === '1'
+  } catch {
+    return false
+  }
 }
 
 export async function signIn() {

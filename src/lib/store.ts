@@ -3,9 +3,10 @@ import { db } from './db'
 import { anchor, newHid, textStream, type Color, type FoundMark, type Highlight } from './highlight'
 import { migrateOverrides, newRev, type V2Override } from './migrate'
 import { sectionByKey, type Chapter, type Section, type Subject } from './content'
-import { keyOf, kindOf, type Field, type Rec } from '../sync/merge'
+import { keyOf, kindOf, type Field, type Kind, type Rec } from '../sync/merge'
 import { relink } from './links'
-import type { ContentRef, RecentDestination } from './contract'
+import type { ContentRef, RecentDestination, StudyTimerPreferences } from './contract'
+import { timeZone, type Env } from './timer'
 
 export type Override = V2Override
 export type { Highlight }
@@ -40,16 +41,19 @@ export interface Prefs {
   // NavigationPreferences (docs/READER_V2_CONTRACT.md)
   favourites: ContentRef[]
   recents: RecentDestination[]
+  // StudyTimerPreferences
+  timer: StudyTimerPreferences
 }
 export type SaveState = 'idle' | 'editing' | 'saving' | 'saved'
 /** docId → field → [time, device]: when each progress / preference field last changed. */
 type Stamps = Record<string, Record<string, [number, string]>>
 
 const PREFS_KEY = 'upsc-prefs'
-const SYNCED_PREFS = ['theme', 'recall', 'collapsed', 'favourites', 'recents'] as const
+const SYNCED_PREFS = ['theme', 'recall', 'collapsed', 'favourites', 'recents', 'timer'] as const
 // changed by ordinary reading; they ride with the next sync instead of starting one
 const LAZY_PREFS = ['collapsed', 'recents']
-const defaultPrefs: Prefs = { theme: 'system', recall: false, sidebar: true, collapsed: [], favourites: [], recents: [] }
+const defaultTimer: StudyTimerPreferences = { trackingGranularity: 'chapter', followNavigation: true }
+const defaultPrefs: Prefs = { theme: 'system', recall: false, sidebar: true, collapsed: [], favourites: [], recents: [], timer: defaultTimer }
 function readPrefs(): Prefs {
   try {
     return { ...defaultPrefs, ...JSON.parse(localStorage.getItem(PREFS_KEY) || '{}') }
@@ -109,7 +113,7 @@ let cursor = 0
 /** Set by the sync module; called whenever something is queued. `lazy` = reading position only. */
 export const syncHooks = { onDirty: (_lazy: boolean) => {}, onConflicts: () => {} }
 
-function markDirty(id: string, lazy = false) {
+export function markDirty(id: string, lazy = false) {
   seq++
   outbox.set(id, seq)
   db.put('outbox', { id, seq }).catch(() => {})
@@ -397,6 +401,22 @@ if (typeof window !== 'undefined') {
 }
 
 // ---- sync adapter: the store seen as a set of independent records -------------
+/** Record kinds kept outside this store (study sessions and the timer: see study.ts). */
+export interface KindAdapter {
+  get(id: string): Rec | null
+  apply(rec: Rec): void
+  synced?(id: string): string | null | undefined
+  markSynced?(id: string, rev: string | undefined): void
+  /** The record reached the cloud. */
+  sent?(id: string): void
+  ids(): string[]
+  /** A different account: forget what the previous cloud knew. */
+  rebind?(): void
+}
+const adapters: Partial<Record<Kind, KindAdapter>> = {}
+export const registerKind = (kind: Kind, adapter: KindAdapter) => {
+  adapters[kind] = adapter
+}
 const FIELDS = { sec: ['done', 'difficult', 'revise'], chap: ['status', 'scroll', 'section', 'at'], pref: [...SYNCED_PREFS] } as const
 
 function fieldRec(id: string, values: Record<string, unknown> | undefined): Rec | null {
@@ -412,6 +432,9 @@ export const syncLocal = {
     const s = useStore.getState()
     const key = keyOf(id)
     switch (kindOf(id)) {
+      case 'ses':
+      case 'run':
+        return adapters[kindOf(id)]?.get(id) ?? null
       case 'edit': {
         const o = s.overrides[key]
         if (!o) return null
@@ -432,12 +455,13 @@ export const syncLocal = {
     }
   },
 
-  synced: (id: string) => useStore.getState().overrides[keyOf(id)]?.synced,
+  synced: (id: string) => (adapters[kindOf(id)] ? adapters[kindOf(id)]!.synced?.(id) : useStore.getState().overrides[keyOf(id)]?.synced),
 
   apply(rec: Rec) {
     const s = useStore.getState()
     const key = keyOf(rec.id)
-    if (rec.kind === 'edit') {
+    if (rec.kind === 'ses' || rec.kind === 'run') adapters[rec.kind]?.apply(rec)
+    else if (rec.kind === 'edit') {
       const d = (rec.data ?? {}) as { title?: string | null; html?: string | null }
       const row: Override = rec.del
         ? { key, deleted: true, updatedAt: rec.t, rev: rec.rev, synced: rec.rev, deviceId: rec.dev }
@@ -454,7 +478,7 @@ export const syncLocal = {
       const values: Record<string, unknown> = {}
       const st: Record<string, [number, string]> = {}
       for (const [name, fld] of Object.entries(rec.f ?? {})) {
-        if (!(FIELDS[rec.kind] as readonly string[]).includes(name)) continue
+        if (!(FIELDS[rec.kind as keyof typeof FIELDS] as readonly string[]).includes(name)) continue
         values[name] = fld.v ?? undefined
         st[name] = [fld.t, fld.d]
       }
@@ -462,6 +486,7 @@ export const syncLocal = {
       if (rec.kind === 'pref') {
         const prefs = { ...s.prefs, ...(values as Partial<Prefs>) }
         for (const k of ['collapsed', 'favourites', 'recents'] as const) if (!Array.isArray(prefs[k])) prefs[k] = []
+        if (!prefs.timer || typeof prefs.timer !== 'object') prefs.timer = defaultTimer
         useStore.setState({ prefs })
         localStorage.setItem(PREFS_KEY, JSON.stringify(prefs))
       } else if (rec.kind === 'sec') {
@@ -478,6 +503,7 @@ export const syncLocal = {
   },
 
   markSynced(id: string, rev: string | undefined) {
+    if (adapters[kindOf(id)]) return adapters[kindOf(id)]!.markSynced?.(id, rev)
     const s = useStore.getState()
     const key = keyOf(id)
     const o = s.overrides[key]
@@ -492,8 +518,10 @@ export const syncLocal = {
     if (outbox.get(id) !== at) return
     outbox.delete(id)
     db.del('outbox', id).catch(() => {})
+    adapters[kindOf(id)]?.sent?.(id)
   },
   markDirty: (id: string) => markDirty(id),
+  env: (): Env => ({ now: Date.now(), dev: deviceId, tz: timeZone() }),
   cursor: () => cursor,
   setCursor(c: number) {
     if (c === cursor) return
@@ -526,6 +554,10 @@ export const syncLocal = {
     for (const k of Object.keys(overrides)) markDirty(`edit~${k}`)
     for (const k of Object.keys(s.highlights)) markDirty(`hl~${k}`)
     for (const id of Object.keys(stamps)) markDirty(id)
+    for (const a of Object.values(adapters)) {
+      a.rebind?.()
+      a.ids().forEach((id) => markDirty(id))
+    }
     this.setCursor(0)
     await db.put('kv', uid, 'syncUid')
     return true

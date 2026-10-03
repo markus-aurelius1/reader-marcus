@@ -2,8 +2,10 @@
 //   v1: overrides (edited section content), kv (progress)
 //   v2: + highlights, outbox (sync queue), conflicts — existing stores and rows are untouched;
 //       row-level migration of v1 data happens in store.init (see migrate.ts).
+//   v3: + studySessions (completed, immutable), activeStudySession (one row: the timer),
+//       studyGoals — added beside the existing stores; nothing existing is read or rewritten.
 export const DB_NAME = 'upsc-notes'
-export const DB_VERSION = 2
+export const DB_VERSION = 3
 let dbp: Promise<IDBDatabase> | null = null
 
 export function upgrade(db: IDBDatabase) {
@@ -15,6 +17,9 @@ export function upgrade(db: IDBDatabase) {
   need('highlights', { keyPath: 'id' })
   need('outbox', { keyPath: 'id' })
   need('conflicts', { keyPath: 'id' })
+  need('studySessions', { keyPath: 'id' })
+  need('activeStudySession')
+  need('studyGoals', { keyPath: 'id' })
 }
 
 function open(): Promise<IDBDatabase> {
@@ -53,4 +58,16 @@ export const db = {
   putMany: (store: string, values: unknown[]) => tx(store, 'readwrite', (s) => values.forEach((v) => s.put(v))),
   del: (store: string, key: string) => tx(store, 'readwrite', (s) => void s.delete(key)),
   delMany: (store: string, keys: string[]) => tx(store, 'readwrite', (s) => keys.forEach((k) => s.delete(k))),
+  /** Several stores in one transaction: either every row is written or none is. */
+  putAll: (rows: { store: string; value: unknown; key?: string }[]) =>
+    open().then(
+      (db) =>
+        new Promise<void>((resolve, reject) => {
+          const t = db.transaction([...new Set(rows.map((r) => r.store))], 'readwrite')
+          for (const r of rows) t.objectStore(r.store).put(r.value, r.key)
+          t.oncomplete = () => resolve()
+          t.onerror = () => reject(t.error)
+          t.onabort = () => reject(t.error)
+        }),
+    ),
 }
