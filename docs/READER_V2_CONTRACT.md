@@ -528,8 +528,8 @@ IndexedDB
 │
 ├── studySessions
 ├── activeStudySession
-├── studyGoals
-├── studyQueue
+├── studyGoals              one row, id "default"
+├── studyQueue              one row per item
 ├── pyqUserState
 └── optionalAnalyticsCache   ← regenerable only
 ```
@@ -662,6 +662,8 @@ studyRuntime/active   holds the ActiveStudySession, or once it stops a marker
 
 Cloud documents  the existing sync record envelope { id, kind, t, dev, rev?, del?, data, st }
                  with data = the contract object; kind "ses" (create-only) and "run".
+                 Goals and queue items use the envelope's field form { id, kind, t, dev, f, st }
+                 (kind "goal" / "q"): see "Dashboard rules as built".
 ```
 
 Only the owning device changes the timer. Any other device shows it and offers
@@ -753,6 +755,46 @@ Filters          stage / paper / subject / topic / chapter (AnalyticsFilter). In
 Attribution      by the span's own StudyContext; time tracked by section counts towards its
                  chapter, topic, subject and stage.
 Last studied     the end of the latest span on that section / chapter / subject.
+```
+
+## Dashboard rules as built (Job 4)
+
+```text
+View model       DashboardViewModel is built on every render by buildDashboard (src/lib/dashboard.ts,
+                 pure) from the study index, the reader's progress state, the queue and the goal.
+                 Home calculates nothing itself and stores nothing: no totals, no streak, no
+                 goal progress, no view model — on disk or in the cloud.
+Study time       the Job 3 functions, unchanged: today ↔ yesterday, week-to-date ↔ the same
+                 elapsed part of last week. A running timer is shown on Home but is not in any
+                 figure until it is stopped.
+Heatmap          the last 13 Monday–Sunday weeks, ending today (the full year is Insights → Time).
+
+Streak           consecutive local calendar days with any study time, ending today — or
+                 yesterday while nothing has been studied yet today. longestDays over all time.
+Goal streak      consecutive days on which study time reached the daily target, ending today —
+                 or yesterday while today is still short of it. Measured against the target as
+                 it is now; earlier targets are not kept.
+
+Goals            opt-in. No StudyGoal exists until the user sets a target, and no target is
+                 suggested. enabled = at least one target is set; removing both keeps the
+                 record with enabled false (so the removal syncs).
+                 daily progress  = today's study time ÷ dailyTargetMs
+                 weekly progress = this week's study time so far ÷ weeklyTargetMs
+
+Queue            StudyQueueItem rows; target is a chapter or a section. One waiting item per
+                 target. reason: "continue" (the chapter in progress, added from Home),
+                 "revision" / "difficult" (added from a flagged section), "manual" (added in
+                 the reader).
+order            ascending; a new item goes last. Moving an item gives it an order between its
+                 new neighbours, so a reorder rewrites one record, not the list.
+Complete         sets completedAt; the item leaves the waiting list and can be put back.
+Remove           a removed: true field on the stored row (a tombstone, so it reaches other
+                 devices). StudyQueueItem itself is unchanged; removed rows are never listed.
+
+Sync             goal~default and q~<itemId> are merged field by field, like progress and
+                 preferences: the newest change to each field wins, so completing an item on
+                 one device and reordering it on another both survive. updatedAt of a goal is
+                 the newest field timestamp.
 ```
 
 ---
@@ -856,4 +898,5 @@ Earlier links keep working and are rewritten in place (no extra history entry):
 | 2026-10-03 | Routes section | Job 1 fixed the stable routes |
 | 2026-10-03 | Routes: `#/insights/{tab}`; `#/progress` → `#/insights/progress`; `#/revision` becomes an alias of `#/insights/revision` | Job 3: Insights has five tabs; Progress and the Revision queue live inside it, so each has one address |
 | 2026-10-03 | "Analytics rules as built"; `ProgressSummary` units documented | Job 3 fixed the calculation rules the contract left open (timezone used, week start, overlap, session attribution, percentage rule); types unchanged |
+| 2026-10-03 | "Dashboard rules as built": streak and goal-streak rules, goal semantics, queue order / completion / removal, field-merged `goal` and `q` records | Job 4 built Home, the study queue and goals; a removal has to reach other devices, and two devices must be able to change one queue item without losing either change. Types unchanged |
 | 2026-10-03 | "Timer rules as built": span ids, stopped marker in `studyRuntime/active`, record envelope for study documents, meaning of `source: "recovered"`, two-device reconciliation | Job 2 needed a deterministic, loss-free rule for timers that diverge offline; types unchanged |

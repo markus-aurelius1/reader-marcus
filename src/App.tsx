@@ -8,7 +8,8 @@ import { flushOverrides, secTitle, useStore } from './lib/store'
 import { go, href, useRoute } from './lib/router'
 import { exportHTML, exportMarkdown } from './lib/export'
 import { Reader, useSpy } from './views/Reader'
-import { Highlights, Home, PyqHub, StudyHome, SubjectView } from './views/Pages'
+import { Highlights, PyqHub, StudyHome, SubjectView } from './views/Pages'
+import { Home } from './views/Home'
 import { InsightsPage, TAB_LABEL } from './views/Insights'
 import { Palette } from './components/Palette'
 import { Explorer, SubjectSwitcher } from './components/Explorer'
@@ -22,6 +23,7 @@ import { promptInstall, useInstall } from './lib/install'
 import { TimerBanner, TimerControl } from './components/Timer'
 import { clearNotice, followContext, initStudy, useStudy } from './lib/study'
 import { contextKey } from './lib/timer'
+import { initPlan } from './lib/plan'
 
 const isTyping = (e: KeyboardEvent) => {
   const t = e.target as HTMLElement
@@ -67,7 +69,7 @@ export function App() {
   const toggleSide = () => (matchMedia('(min-width: 1024px)').matches ? setPref({ sidebar: !useStore.getState().prefs.sidebar }) : setDrawer((d) => !d))
 
   useEffect(() => {
-    useStore.getState().init().then(initStudy).then(initSync)
+    useStore.getState().init().then(initStudy).then(initPlan).then(initSync)
   }, [])
 
   // Theme
@@ -334,7 +336,7 @@ export function App() {
         ) : route.name === 'highlights' ? (
           <Highlights subjects={subjects} />
         ) : route.name === 'home' ? (
-          <Home subjects={subjects} />
+          <Home subjects={subjects} say={say} />
         ) : (
           <div className="page"><p className="empty">That page isn't in the library. <a href={href.study()} style={{ color: 'var(--accent)' }}>Back to the library →</a></p></div>
         )}

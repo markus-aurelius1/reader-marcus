@@ -103,9 +103,9 @@ const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct
 
 /**
  * Calendar heatmap: one column per week (Monday at the top), one cell per day, darker for more
- * study time. `days` starts on a Monday and ends today.
+ * study time. `days` starts on a Monday and ends today. `compact` leaves out the colour key.
  */
-export function Heatmap({ days, describe, summary }: { days: StudyHeatmapDay[]; describe: (d: StudyHeatmapDay) => string; summary: string }) {
+export function Heatmap({ days, describe, summary, compact }: { days: StudyHeatmapDay[]; describe: (d: StudyHeatmapDay) => string; summary: string; compact?: boolean }) {
   const [at, setAt] = useState(-1)
   const box = useRef<HTMLDivElement>(null)
   // the newest weeks are on the right: start there when the grid is wider than the screen
@@ -137,7 +137,7 @@ export function Heatmap({ days, describe, summary }: { days: StudyHeatmapDay[]; 
           })}
         </div>
       </div>
-      <div className="heat-key" aria-hidden="true">Less{[0, 1, 2, 3, 4].map((l) => <i key={l} data-l={l} />)}More</div>
+      {!compact && <div className="heat-key" aria-hidden="true">Less{[0, 1, 2, 3, 4].map((l) => <i key={l} data-l={l} />)}More</div>}
     </figure>
   )
 }

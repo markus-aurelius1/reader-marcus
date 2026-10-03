@@ -254,8 +254,8 @@ try {
   await L.hash('#/revision')
   check('Revision queue shows ↻ / ★ sections', (await L.ev(() => [...document.querySelectorAll('.row')].map((r) => r.textContent).join('|'))).includes('Sessions & Devices'))
   await L.hash('#/')
-  check('Resume card points at the last chapter and section', (await L.text('.resume')).includes('Parliament'))
-  await L.click('.resume'); await sleep(500)
+  check('Resume card points at the last chapter and section', (await L.text('.cont')).includes('Parliament'))
+  await L.click('.cont .btn.primary'); await sleep(500)
   check('Resume returns to the saved position', Math.abs((await L.ev(() => scrollY)) - 2400) < 150 && (await L.ev(() => location.hash)).includes('parliament'))
 
   // search
@@ -764,7 +764,7 @@ try {
   check('Revision: Clear takes a section off the queue', (await L.count('.row.rv')) === rvBefore - 1 && (await L.idb('kv')).some((v) => v?.sections?.['prelims/polity/parliament/bills-types-and-procedure']?.revise === false))
 
   const disk = await L.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { const out = { stores: [...db.objectStoreNames].sort().join(), kv: g.result.join(), ls: Object.keys(localStorage).join() }; db.close(); res(out) } } }))
-  check('analytics stored nothing: no new IndexedDB store, no counters or caches on disk', disk.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,studyGoals,studySessions' && !/analytic|insight|total|heat|streak|cache|index/i.test(disk.kv + disk.ls), disk)
+  check('analytics stored nothing: no new IndexedDB store, no counters or caches on disk', disk.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,studyGoals,studyQueue,studySessions' && !/analytic|insight|total|heat|streak|cache|index/i.test(disk.kv + disk.ls), disk)
   check('the sessions themselves were not touched', JSON.stringify(await L.idb('studySessions')) === JSON.stringify(sesAll))
   for (const [w, h, name] of [[375, 812, 'phone'], [768, 1024, 'tablet']]) {
     await L.page.setViewport({ width: w, height: h })
@@ -777,6 +777,148 @@ try {
     if (w === 375) { await L.go('#/insights'); await L.page.screenshot({ path: join(OUT, 'phone-insights-overview.png'), fullPage: true }) }
   }
   await L.page.setViewport({ width: 1280, height: 860 })
+
+  // ==========================================================================
+  section('Home dashboard')
+  const home = async (d = L) => { await d.go('#/'); await sleep(700) }
+  const fin = (d, sel) => d.ev((s) => document.querySelector(s)?.dataset.final ?? null, sel)
+  const qTitles = (d = L) => d.ev(() => [...document.querySelectorAll('.queue .qlist li .qt b')].map((b) => b.textContent))
+  const btn = async (d, scope, label) => { await d.ev((s, l) => [...document.querySelectorAll(`${s} button, ${s} a.btn`)].find((b) => b.textContent.trim() === l).click(), scope, label); await sleep(350) }
+  // the figures Insights shows: Home must show the same ones
+  await L.go('#/insights')
+  const kpi = await L.ev(() => Object.fromEntries([...document.querySelectorAll('.kpi')].map((k) => [k.dataset.k, [k.querySelector('b').textContent, k.querySelector('span').textContent]])))
+  await L.hash('#/insights/progress')
+  const prelimsPct = await L.text('.kpi[data-stage="prelims"] b')
+  await L.hash('#/insights/revision')
+  const revStat = await L.ev(() => [...document.querySelectorAll('.stat b')].map((b) => b.textContent))
+  await home()
+  const lastKey = (await L.idb('kv')).find((v) => v?.last)?.last.chapterKey
+  const hero = await L.ev(() => ({ cont: document.querySelector('.cont-t')?.textContent, path: document.querySelector('.cont-p')?.textContent, meta: document.querySelector('.cont-m')?.textContent, resume: document.querySelector('.cont .btn.primary')?.getAttribute('href'), tstate: document.querySelector('.tcard').dataset.state, tbtn: document.querySelector('.tcard .btn')?.textContent, today: document.querySelector('.today .big').dataset.final, shown: document.querySelector('.today .big').textContent, sub: document.querySelector('.today .sub').textContent, tops: ['.cont', '.tcard', '.today'].map((s) => Math.round(document.querySelector(s).getBoundingClientRect().top)), h: document.querySelector('.hero').getBoundingClientRect().height }))
+  check('Continue studying: the last-opened chapter, its subject, status and progress, with Resume', !!hero.cont && hero.resume === `#/study/${lastKey}?resume` && hero.path.startsWith('Prelims › ') && /sections done/.test(hero.meta), hero)
+  check('the hero is one compact row on desktop', new Set(hero.tops).size === 1 && hero.h < 280, [hero.tops, hero.h])
+  check('timer stopped: Start studying is offered for the resume chapter', hero.tstate === 'idle' && hero.tbtn === 'Start studying', [hero.tstate, hero.tbtn])
+  check('Today and its comparison with yesterday are the figures Insights gives', hero.today === kpi.day[0] && hero.shown === hero.today && hero.sub === kpi.day[1], [hero.today, hero.sub, kpi.day])
+  const thisWeek = await L.ev(() => { const c = [...document.querySelectorAll('.week .heat i[data-date]')]; return { total: document.querySelector('.week .big').dataset.final, sub: document.querySelector('.week .sub').textContent, bars: document.querySelectorAll('.week .vb').length, labels: [...document.querySelectorAll('.week .vb span')].map((s) => s.textContent).join(), cells: c.length, last: c[c.length - 1]?.dataset.date, streak: document.querySelector('.week .streak').textContent, link: document.querySelector('.week h3 a').getAttribute('href') } })
+  check('This week: total and previous-week comparison match Insights; seven daily bars', thisWeek.total === kpi.week[0] && thisWeek.sub === kpi.week[1] && thisWeek.bars === 7 && thisWeek.labels === 'Mon,Tue,Wed,Thu,Fri,Sat,Sun', thisWeek)
+  check('mini heatmap: the last 13 weeks ending today, each day with its real time', thisWeek.cells >= 85 && thisWeek.cells <= 91 && thisWeek.last === seeded.today && (await L.ev((k) => document.querySelector(`.week .heat i[data-date="${k}"]`)?.title, seeded.d3))?.includes('· 1 h 00 min · 1 session'), [thisWeek.cells, thisWeek.last])
+  check('streak is stated plainly: study days in a row', /^\d+-day study streak/.test(thisWeek.streak), thisWeek.streak)
+  const prog = await L.ev(() => ({ stages: [...document.querySelectorAll('.stage')].map((s) => s.dataset.stage + ' ' + s.querySelector('.ring b').dataset.final).join(), legend: document.querySelector('.slegend').textContent, link: document.querySelector('.prog h3 a').getAttribute('href'), subs: [...document.querySelectorAll('.srow')].map((r) => [r.querySelector('.sn b').textContent, r.querySelector('.sn small').textContent, r.querySelector('.num').textContent, r.querySelector('.chip').textContent, r.querySelector('.chip').getAttribute('href'), r.querySelector('.sn').getAttribute('href')]) }))
+  check('Study progress: Prelims overall as on Insights → Progress; no Mains card while Mains has no content', prog.stages === `prelims ${prelimsPct}` && /Not started.*Reading.*Revised.*Mastered/.test(prog.legend) && prog.link === '#/insights/progress', prog.stages)
+  check('Subjects: compact rows with progress, time studied, last studied and Resume / Open', prog.subs.map((s) => s[0]).join('|') === 'Polity|Economy & Social Development|History & Culture' && /studied · last (today|yesterday|\d+ days ago)$/.test(prog.subs[0][1]) && prog.subs[2][1] === 'Not timed yet' && prog.subs.every((s) => /^\d+%$/.test(s[2]) && (s[3] === 'Resume' ? s[4].endsWith('?resume') : s[3] === 'Open' && s[4] === s[5])) && prog.subs[0][5] === '#/study/prelims/polity', prog.subs)
+  const rev = await L.ev(() => ({ stat: [...document.querySelectorAll('.rev .mstat b')].map((b) => b.textContent), rows: document.querySelectorAll('.rev .qlist li').length, link: document.querySelector('.rev h3 a').getAttribute('href'), first: document.querySelector('.rev .qlist li .qt')?.getAttribute('href') }))
+  check('Revision: ★ / ↻ counts as on Insights → Revision, at most five rows, each opening its section', rev.stat[0] === revStat[0] && rev.stat[1] === revStat[1] && rev.rows >= 1 && rev.rows <= 5 && rev.link === '#/insights/revision' && /^#\/study\/prelims\/[^/]+\/[^/]+\/[^/?]+$/.test(rev.first), [rev, revStat])
+  await L.page.screenshot({ path: join(OUT, 'desktop-home.png'), fullPage: true })
+
+  // study queue
+  check('the queue starts empty and nothing is stored for it', (await qTitles()).length === 0 && (await L.idb('studyQueue')).length === 0 && /^Empty/.test(await L.text('.queue .none')))
+  await btn(L, '.queue', 'Add current chapter')
+  check('Add current chapter queues the chapter in progress, once', (await qTitles()).join() === hero.cont && !(await L.ev(() => [...document.querySelectorAll('.queue button')].some((b) => b.textContent.includes('Add current chapter')))))
+  await L.click('.rev .qlist li .tg'); await sleep(200)
+  const q2 = await qTitles()
+  check('＋ on a revision row queues that section and marks the row', q2.length === 2 && (await L.text('.rev .qlist li .chip')) === 'In queue' && (await L.idb('studyQueue')).some((r) => r.target.kind === 'section' && ['revision', 'difficult'].includes(r.reason)), q2)
+  const otherKey = lastKey === 'prelims/polity/judiciary' ? 'prelims/polity/parliament' : 'prelims/polity/judiciary'
+  await L.hash('#/study/' + otherKey); await L.click('.chap-meta .fav.q')
+  const inReader = await L.text('.chap-meta .fav.q')
+  await home()
+  const q3 = await qTitles()
+  check('the reader adds its chapter too ("Add to queue" → "In queue")', inReader === 'In queue' && q3.length === 3 && q3[0] === q2[0] && q3[1] === q2[1], [inReader, q3])
+  await L.click('.queue .qlist li:nth-child(3) button[title="Move up"]')
+  await L.click('.queue .qlist li:nth-child(1) button[title="Move down"]')
+  const q4 = await qTitles()
+  check('reorder: move up / move down', q4.join('|') === [q3[2], q3[0], q3[1]].join('|'), q4)
+  await L.reload(); await sleep(600)
+  const qRows = await L.idb('studyQueue')
+  check('the queue and its order survive a reload; items are StudyQueueItem rows queued for sync', (await qTitles()).join('|') === q4.join('|') && qRows.length === 3 && qRows.every((r) => r.id && r.target.stage === 'prelims' && r.title && typeof r.order === 'number' && !!Date.parse(r.createdAt)) && qRows.every((r) => !r.completedAt) && (await L.idb('outbox')).filter((o) => o.id.startsWith('q~')).length === 3, qRows)
+  await L.click('.queue .qlist li:nth-child(2) .tg.done'); await sleep(200)
+  const doneRow = (await L.idb('studyQueue')).find((r) => r.completedAt)
+  check('mark complete: off the waiting list, kept as completed', (await qTitles()).join('|') === [q4[0], q4[2]].join('|') && (await L.text('.qdone span')) === '1 completed' && doneRow?.title === q4[1] && !!Date.parse(doneRow.completedAt), [await qTitles(), doneRow])
+  await L.click('.qdone .chip'); await sleep(200)
+  check('a completed item can be put back', (await qTitles()).length === 3 && (await L.count('.qdone')) === 0)
+  await L.click('.queue .qlist li:nth-child(3) button[title^="Remove"]'); await sleep(200)
+  check('remove takes an item out', (await qTitles()).join('|') === [q4[0], q4[1]].join('|'), await qTitles())
+  await btn(L, '.queue', 'Start next'); await sleep(1500)
+  const startedRow = await activeRow(L)
+  check('Start next opens the first item and starts the timer on it', (await L.ev(() => location.hash)) === `#/study/${otherKey}?resume` && startedRow.state === 'running' && `prelims/${startedRow.currentContext.ref.subjectId}/${startedRow.currentContext.ref.chapterId}` === otherKey && (await L.count('.tchip')) === 1, startedRow?.currentContext)
+
+  // active timer on Home
+  await home()
+  const onHome = await L.ev(() => ({ state: document.querySelector('.tcard').dataset.state, clock: document.querySelector('.tcard time').textContent, path: document.querySelector('.tc-path').textContent, ops: [...document.querySelectorAll('.tcard .btn')].map((b) => b.textContent).join('|'), note: document.querySelector('.today .sub.dim')?.textContent ?? '' }))
+  const c1 = await L.text('.tcard time'); await sleep(1200); const c2 = await L.text('.tcard time')
+  check('running timer: Home shows the onHome clock, its topic and Pause / Stop / Open topic', onHome.state === 'running' && /^\d\d:\d\d:\d\d$/.test(onHome.clock) && c2 > c1 && onHome.path.includes('Prelims → Polity → ') && onHome.ops === 'Pause|Stop|Open topic', onHome)
+  check('…and says its time is counted once stopped: Today is still only completed sessions', /counted once it is stopped/.test(onHome.note) && (await fin(L, '.today .big')) === hero.today, [onHome.note, await fin(L, '.today .big')])
+  await btn(L, '.tcard', 'Pause')
+  check('Pause from Home', (await L.ev(() => document.querySelector('.tcard').dataset.state)) === 'paused' && (await activeRow(L)).state === 'paused' && (await L.count('.tchip.paused')) === 1)
+  await btn(L, '.tcard', 'Resume'); await btn(L, '.tcard', 'Stop'); await sleep(300)
+  check('Stop from Home saves the session and the card returns to Start studying', /^Session saved/.test(await L.text('.toast')) && (await L.ev(() => document.querySelector('.tcard').dataset.state)) === 'idle' && (await L.idb('studySessions')).length === sesAll.length + 1 && (await L.text('.tcard .btn')) === 'Start studying', await L.text('.toast'))
+
+  // goals
+  check('goals are opt-in: none exists, none is suggested, nothing is stored', (await L.count('.goal')) === 0 && (await L.idb('studyGoals')).length === 0 && (await L.text('.goal-set')) === 'Set a daily or weekly goal')
+  await L.click('.goal-set')
+  const blank = await L.ev(() => [...document.querySelectorAll('.goal-form input')].map((i) => i.value + '/' + i.placeholder).join('|'))
+  await L.page.type('input[aria-label="Daily target in hours"]', '2')
+  await btn(L, '.goal-form', 'Save')
+  const goal1 = (await L.idb('studyGoals'))[0]
+  check('setting a daily target: the form starts blank; StudyGoal is saved and progress appears', blank === '/none|/none' && goal1?.id === 'default' && goal1.enabled === true && goal1.dailyTargetMs === 7200000 && goal1.weeklyTargetMs === undefined && (await L.count('.goal')) === 1 && (await L.text('.goal .gv')).endsWith(`${await fin(L, '.today .big')} of 2 h 00 min`), [blank, goal1, await L.text('.goal .gv')])
+  check('only the targets are stored — no progress, total or streak', Object.keys(goal1).sort().join() === 'dailyTargetMs,enabled,id,st,updatedAt', Object.keys(goal1))
+  await L.reload(); await sleep(600)
+  await L.click('.goal-set'); await L.page.type('input[aria-label="Weekly target in hours"]', '10'); await btn(L, '.goal-form', 'Save')
+  const goals2 = await L.ev(() => [...document.querySelectorAll('.goal')].map((g) => g.querySelector('.gl').textContent + ': ' + g.querySelector('.gv').textContent))
+  check('the goal survives a reload; a weekly target shows week-to-date progress', goals2.length === 2 && goals2[0].startsWith('Daily goal: ') && goals2[1].replace('✓ ', '') === `Weekly goal: ${await fin(L, '.week .big')} of 10 h 00 min`, goals2)
+  await L.page.screenshot({ path: join(OUT, 'desktop-home-goals.png'), fullPage: true })
+  await L.click('.goal-set'); await btn(L, '.goal-form', 'Remove goals')
+  check('goals can be removed again', (await L.count('.goal')) === 0 && (await L.idb('studyGoals'))[0].enabled === false && (await L.text('.goal-set')) === 'Set a daily or weekly goal')
+
+  // nothing derived is stored
+  const disk2 = await L.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { const out = { stores: [...db.objectStoreNames].sort().join(), kv: g.result.join(), ls: Object.keys(localStorage).join() }; db.close(); res(out) } } }))
+  check('the dashboard stored nothing: no totals, streaks or view model on disk', disk2.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,studyGoals,studyQueue,studySessions' && !/dash|total|heat|streak|week|today|cache/i.test(disk2.kv + disk2.ls) && !/"(\w*Ms|\w*[Ss]treak\w*|\w*[Pp]ercent\w*)":/.test(JSON.stringify([await L.idb('studyQueue'), await L.idb('studyGoals')]).replace(/"(daily|weekly)TargetMs"/g, '"target"')), disk2)
+
+  // deep links
+  await L.click('.week h3 a'); await sleep(350)
+  const toTime = await L.ev(() => location.hash)
+  await home()
+  const resumeTo = await L.ev(() => document.querySelector('.srow .chip').getAttribute('href'))
+  await L.click('.srow .chip'); await sleep(450)
+  check('cards open what they name: This week → Insights → Time; a subject Resume → its chapter', toTime === '#/insights/time' && resumeTo.endsWith('?resume') && (await L.ev(() => location.hash)) === resumeTo && (await L.count('.sec')) > 0, [toTime, await L.ev(() => location.hash)])
+
+  // themes
+  await home()
+  const look = () => L.ev(() => [document.documentElement.dataset.theme, getComputedStyle(document.querySelector('.card')).backgroundColor, getComputedStyle(document.querySelector('.big')).color, getComputedStyle(document.querySelector('.btn.primary')).backgroundColor].join(' | '))
+  const lookA = await look(); await L.key('t'); const lookB = await look()
+  await L.page.screenshot({ path: join(OUT, `desktop-home-${lookB.split(' | ')[0]}.png`), fullPage: true })
+  await L.key('t')
+  check('light and dark: cards, text and buttons all follow the theme', lookA.split(' | ').every((v, i) => v !== lookB.split(' | ')[i]), [lookA, lookB])
+
+  // responsive
+  const layout = () => L.ev(() => { const r = (s) => { const b = document.querySelector(s).getBoundingClientRect(); return { l: Math.round(b.left), t: Math.round(b.top + scrollY), w: Math.round(b.width) } }; const h = document.querySelector('.week .heat-scroll'); return { o: Object.fromEntries(['cont', 'tcard', 'today', 'queue', 'rev', 'week', 'prog', 'subs'].map((k) => [k, r('.card.' + k)])), overflow: document.documentElement.scrollWidth > innerWidth + 1, heatFits: h.scrollWidth <= h.clientWidth + 1 } })
+  const desk = await layout()
+  check('desktop: three-part hero over two dense columns', desk.o.cont.t === desk.o.tcard.t && desk.o.tcard.t === desk.o.today.t && desk.o.prog.t === desk.o.week.t && desk.o.prog.l < desk.o.week.l && desk.o.subs.l === desk.o.prog.l && desk.o.queue.l === desk.o.week.l && !desk.overflow, desk)
+  await L.page.setViewport({ width: 768, height: 1024 }); await home()
+  const tabl = await layout()
+  check('tablet: Continue across the top, then two columns', tabl.o.cont.w > tabl.o.tcard.w * 1.8 && tabl.o.tcard.t === tabl.o.today.t && tabl.o.tcard.t > tabl.o.cont.t && tabl.o.prog.t === tabl.o.week.t && tabl.o.prog.l < tabl.o.week.l && !tabl.overflow && tabl.heatFits, tabl)
+  await L.page.screenshot({ path: join(OUT, 'tablet-home.png'), fullPage: true })
+  await L.page.setViewport({ width: 375, height: 812 }); await home()
+  const ph = await layout()
+  const phOrder = ['cont', 'tcard', 'today', 'queue', 'rev', 'week', 'prog', 'subs'].map((k) => ph.o[k])
+  check('phone: one column, important actions first (continue, timer, today, queue, revision) — nothing scrolls sideways', phOrder.every((c, i) => c.l === phOrder[0].l && c.w === phOrder[0].w && c.w > 320 && (i === 0 || c.t > phOrder[i - 1].t)) && !ph.overflow && ph.heatFits, ph)
+  await L.page.screenshot({ path: join(OUT, 'phone-home-dashboard.png'), fullPage: true })
+  await L.page.setViewport({ width: 1280, height: 860 })
+
+  // motion
+  await L.go('#/')
+  const moving = await L.ev(() => ({ card: parseFloat(getComputedStyle(document.querySelector('.card')).animationDuration), fill: parseFloat(getComputedStyle(document.querySelector('.home .meter > i')).animationDuration), ring: parseFloat(getComputedStyle(document.querySelector('.ring .rv')).animationDuration) }))
+  await L.page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }])
+  await L.page.reload(); await L.page.waitForSelector('.card')
+  const calm = await L.ev(() => ({ card: parseFloat(getComputedStyle(document.querySelector('.card.favs')).animationDuration), delay: parseFloat(getComputedStyle(document.querySelector('.card.favs')).animationDelay), fill: parseFloat(getComputedStyle(document.querySelector('.home .meter > i')).animationDuration), opacity: getComputedStyle(document.querySelector('.card.favs')).opacity, nums: [...document.querySelectorAll('[data-final]')].every((b) => b.textContent === b.dataset.final) }))
+  await L.page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }])
+  check('motion: cards rise in, fills and rings grow; with reduced motion everything is in place at once', moving.card > 0.2 && moving.fill > 0.2 && moving.ring > 0.2 && calm.card < 0.001 && calm.delay === 0 && calm.fill < 0.001 && calm.nums, [moving, calm])
+
+  // a brand-new profile: nothing to show, and nothing invented
+  const N = await device(P.local, 'new')
+  await N.go('#/'); await sleep(700)
+  const fresh = await N.ev(() => ({ cont: document.querySelector('.cont-t').textContent, today: document.querySelector('.today .big').dataset.final, sub: document.querySelector('.today .sub').textContent, week: document.querySelector('.week .none')?.textContent ?? '', charts: document.querySelectorAll('.week .vbars, .week .heat, .week .big').length, queue: document.querySelectorAll('.queue .qlist li').length, goal: document.querySelectorAll('.goal').length, rev: document.querySelector('.rev .none')?.textContent ?? '', start: document.querySelector('.tcard .btn').textContent, pct: document.querySelector('.ring b').dataset.final, recent: document.querySelectorAll('.card.recent').length, subs: [...document.querySelectorAll('.srow .sn small')].map((s) => s.textContent).join('|'), text: document.querySelector('.page').textContent }))
+  check('no history: Home says so in words — no charts, no sample figures, no default goal', fresh.cont === 'Nothing opened yet' && fresh.today === '0 min' && fresh.sub === 'None yesterday either' && fresh.week.startsWith('No tracked study time yet') && fresh.charts === 0 && fresh.queue === 0 && fresh.goal === 0 && fresh.rev.startsWith('Nothing flagged') && fresh.start === 'Choose a chapter' && fresh.pct === '0%' && fresh.recent === 0 && fresh.subs === 'Not timed yet|Not timed yet|Not timed yet' && !/NaN|undefined|Infinity|∞/.test(fresh.text), fresh)
+  await N.page.screenshot({ path: join(OUT, 'desktop-home-empty.png'), fullPage: true })
+  await N.ctx.close()
 
   // ==========================================================================
   section('Print / PDF')
@@ -888,6 +1030,9 @@ try {
   await L.hash('#/study/prelims/history-culture/communal-politics-ina-partition/communal-award-poona')
   await L.ev(() => document.querySelector('#s-communal-award-poona a.xref[data-xref^="prelims/polity/"]').click()); await sleep(400)
   check('offline: History and its cross-subject links work', (await L.ev(() => location.hash)) === '#/study/prelims/polity/elections/reservation-in-legislatures' && (await L.count('.sec')) > 3)
+  await L.hash('#/study/prelims/economy/taxation'); await L.click('.chap-meta .fav.q'); await L.reload(); await L.hash('#/'); await sleep(700)
+  const offHome = await L.ev(() => ({ cards: document.querySelectorAll('.card').length, cells: document.querySelectorAll('.week .heat i[data-date]').length, bars: document.querySelectorAll('.week .vb').length, today: document.querySelector('.today .big').dataset.final }))
+  check('offline: Home is drawn from this device — figures, charts, and a queue change that persists', offHome.cards >= 8 && offHome.cells >= 85 && offHome.bars === 7 && /min$/.test(offHome.today) && (await L.idb('studyQueue')).some((r) => r.target.chapterId === 'taxation' && !r.removed) && (await qTitles()).length === (await L.idb('studyQueue')).filter((r) => !r.removed && !r.completedAt).length, offHome)
   await L.hash('#/insights/time')
   check('offline: Insights is drawn from the sessions on this device', (await L.count('.heat i[data-date]')) >= 365 && (await L.count('.vbars .vb')) >= 7 && (await L.count('.nodata')) === 0)
   await L.hash('#/study/prelims/polity/judiciary')
@@ -898,7 +1043,7 @@ try {
   await L.reload()
   const offRun = await activeRow(L)
   await L.click('button[aria-label="Stop timer"]'); await sleep(400)
-  check('offline: the timer starts, survives a reload and saves its session; local-only timers are never provisional', offRun.state === 'running' && offRun.offlineProvisional === undefined && (await L.idb('studySessions')).length === 7 && (await L.idb('studySessions')).some((x) => x.id === offRun.sessionId && x.spans[0].context.ref.chapterId === 'judiciary'))
+  check('offline: the timer starts, survives a reload and saves its session; local-only timers are never provisional', offRun.state === 'running' && offRun.offlineProvisional === undefined && (await L.idb('studySessions')).length === 8 && (await L.idb('studySessions')).some((x) => x.id === offRun.sessionId && x.spans[0].context.ref.chapterId === 'judiciary'))
   await L.page.setOfflineMode(false)
   await L.ctx.close()
 
@@ -933,8 +1078,8 @@ try {
   const themeB0 = await B.ev(() => document.documentElement.dataset.theme)
   await B.panelClick('Sign in with Google'); await sleep(600); await B.syncNow()
   check('theme preference restored', themeB0 !== themeA && (await B.ev(() => document.documentElement.dataset.theme)) === themeA, [themeB0, themeA])
-  check('Resume points at the chapter last read on device A', (await B.text('.resume'))?.includes('Parliament'))
-  await B.click('.resume'); await sleep(600)
+  check('Resume points at the chapter last read on device A', (await B.text('.cont'))?.includes('Parliament'))
+  await B.click('.cont .btn.primary'); await sleep(600)
   check('reading position restored', Math.abs((await B.ev(() => scrollY)) - 1800) < 60, await B.ev(() => scrollY))
   check('chapter edit restored', (await B.text('#s-presiding-officers .sec-body')).includes('DEVICE-A local edit'))
   check('highlight + colour restored', (await B.marks('bills-types-and-procedure')).join() === 'green:All Money Bills are Financial Bills')
@@ -1104,6 +1249,28 @@ try {
   const insightOf = async (d) => { await d.hash('#/insights'); await d.ev(() => [...document.querySelectorAll('.filters .chip')].find((b) => b.textContent === 'All time').click()); await sleep(250); return d.ev(() => [...document.querySelectorAll('.kpi b, .stat b')].map((b) => b.textContent).join('|')) }
   const insA = await insightOf(A); const insB = await insightOf(B)
   check('Insights on both devices is derived from the same synced sessions and agrees', insA === insB && insA.split('|').length === 9 && Number(insA.split('|')[5]) >= 2, [insA, insB])
+
+  section('Sync — study queue and goals')
+  await A.go('#/'); await sleep(700)
+  const onA = await A.text('.cont-t')
+  await btn(A, '.queue', 'Add current chapter')
+  await A.hash(onA === 'Parliament' ? INF : PARL); await A.click('.chap-meta .fav.q'); await A.hash('#/'); await sleep(500)
+  await A.click('.goal-set'); await A.page.type('input[aria-label="Daily target in hours"]', '3'); await btn(A, '.goal-form', 'Save')
+  const qA = await qTitles(A)
+  await A.syncNow(); await B.syncNow(); await B.hash('#/'); await sleep(700)
+  check('the queue, in order, and the goal reach the second device', qA.length === 2 && (await qTitles(B)).join('|') === qA.join('|') && (await B.text('.goal .gv')).endsWith('of 3 h 00 min'), [qA, await qTitles(B)])
+  const planDocs = (await cloudDump()).filter((d) => ['q', 'goal'].includes(d.rec.kind))
+  check('they are small records of their own; no dashboard figure is ever uploaded', planDocs.filter((d) => d.rec.kind === 'q').length === 2 && planDocs.filter((d) => d.rec.kind === 'goal').length === 1 && planDocs.every((d) => d.rec.f) && !/streak|heatmap|todayStudyMs|weekStudyMs|completionPercent|studyTimeMs/.test(JSON.stringify(await cloudDump())), planDocs.map((d) => d.rec.id))
+  // one device completes an item while the other reorders the list
+  await B.click('.queue .qlist li:nth-child(1) .tg.done')
+  await A.click('.queue .qlist li:nth-child(2) button[title="Move up"]')
+  await B.syncNow(); await A.syncNow(); await B.syncNow(); await sleep(300)
+  const [endA, endB] = [await qTitles(A), await qTitles(B)]
+  check('complete on one device + reorder on the other: both changes survive, both devices agree', endA.join() === qA[1] && endB.join() === qA[1] && (await A.text('.qdone span')) === '1 completed' && (await B.text('.qdone span')) === '1 completed', [endA, endB])
+  await B.click('.goal-set'); await btn(B, '.goal-form', 'Remove goals'); await B.syncNow(); await A.syncNow(); await sleep(300)
+  check('removing the goal syncs too', (await A.count('.goal')) === 0 && (await B.count('.goal')) === 0)
+  await A.click('.queue .qlist li button[title^="Remove"]'); await A.syncNow(); await B.syncNow(); await sleep(300)
+  check('a removed item leaves the other device as well', (await qTitles(A)).length === 0 && (await qTitles(B)).length === 0)
   await A.hash(PARL); await B.hash(PARL)
 
   section('Sync — reset and sign-out')

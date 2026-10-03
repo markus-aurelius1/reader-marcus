@@ -168,3 +168,49 @@ export interface RevisionSummary {
   reviseCount: number
   targets: ContentRef[]
 }
+
+// ---- goals, queue, streak, dashboard ----------------------------------------------------
+
+/** Opt-in. No target exists until the user sets one. */
+export interface StudyGoal {
+  id: 'default'
+  enabled: boolean
+  dailyTargetMs?: number
+  weeklyTargetMs?: number
+  updatedAt: string
+}
+
+export interface StudyQueueItem {
+  id: string
+  target: ContentRef
+  title: string
+  reason: 'manual' | 'revision' | 'difficult' | 'continue'
+  order: number
+  createdAt: string
+  completedAt?: string
+}
+
+/** Derived from the days with study time. */
+export interface StudyStreak {
+  /** Consecutive local calendar days with study time, ending today (or yesterday, if nothing yet today). */
+  currentDays: number
+  longestDays: number
+  lastStudyDate?: string // YYYY-MM-DD
+}
+
+/** Calculated at runtime (lib/dashboard.ts). Never stored or synced. */
+export interface DashboardViewModel {
+  todayStudyMs: number
+  yesterdayStudyMs: number
+  weekStudyMs: number
+  previousWeekEquivalentMs: number
+  activeSession?: ActiveStudySession
+  prelimsProgress?: ProgressSummary
+  mainsProgress?: ProgressSummary
+  subjectProgress: SubjectProgressSummary[]
+  heatmap: StudyHeatmapDay[]
+  streak: StudyStreak
+  revision: RevisionSummary
+  recentTargets: RecentDestination[]
+  queue: StudyQueueItem[]
+}

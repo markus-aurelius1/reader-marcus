@@ -8,10 +8,12 @@
 //   pref~main           theme / recall / collapsed                → merged field by field
 //   ses~<sessionId>     one completed study session               → written once, never changed
 //   run~active          the one active study timer                → one owner; forks keep their time
+//   goal~default        study goals                               → merged field by field
+//   q~<itemId>          one study-queue item                      → merged field by field
 import { isActive, salvage, salvageSession, sesRec, type Env, type Runtime } from '../lib/timer'
 import type { StudySession } from '../lib/contract'
 
-export type Kind = 'edit' | 'hl' | 'sec' | 'chap' | 'pref' | 'ses' | 'run'
+export type Kind = 'edit' | 'hl' | 'sec' | 'chap' | 'pref' | 'ses' | 'run' | 'goal' | 'q'
 
 export interface Field {
   v: unknown
@@ -27,7 +29,7 @@ export interface Rec {
   rev?: string // edit: identity of this content version · run: session + revision
   del?: boolean // edit / hl: tombstone · run: the timer has stopped
   data?: Record<string, unknown> // edit: { title, html } · hl: anchor + colour · ses: StudySession · run: timer state
-  f?: Record<string, Field> // sec / chap / pref
+  f?: Record<string, Field> // sec / chap / pref / goal / q
 }
 
 export type Decision =
@@ -39,7 +41,7 @@ export type Decision =
 
 export const kindOf = (id: string) => id.slice(0, id.indexOf('~')) as Kind
 export const keyOf = (id: string) => id.slice(id.indexOf('~') + 1)
-export const isFieldKind = (k: Kind) => k === 'sec' || k === 'chap' || k === 'pref'
+export const isFieldKind = (k: Kind) => k === 'sec' || k === 'chap' || k === 'pref' || k === 'goal' || k === 'q'
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 const newer = (at: number, ad: string, bt: number, bd: string) => at > bt || (at === bt && ad > bd)

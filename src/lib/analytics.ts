@@ -5,7 +5,7 @@
 // buildIndex turns the sessions into day-sized slices of active study, with no wall-clock
 // moment counted twice. Every figure the Insights pages show is a sum over those slices. The
 // index is a regenerable in-memory cache (indexOf); it is never authoritative.
-import type { AnalyticsFilter, StudyAnalytics, StudyContext, StudyDistribution, StudyHeatmapDay, StudySession, TimeBucket } from './contract'
+import type { AnalyticsFilter, StudyAnalytics, StudyContext, StudyDistribution, StudyHeatmapDay, StudySession, StudyStreak, TimeBucket } from './contract'
 
 const DAY = 86400000
 const HOUR = 3600000
@@ -404,6 +404,46 @@ export function heatmap(ix: StudyIndex, first: number, lastDay: number, scope?: 
     const a = acc.get(first + i)
     return { date: dateKey(first + i), durationMs: a?.ms ?? 0, sessionCount: a?.sessions.size ?? 0 }
   })
+}
+
+// ---- streaks -------------------------------------------------------------------------
+/** Study time on each local calendar day that has any (up to and including today). */
+function dayTotals(ix: StudyIndex, today: number) {
+  const days = new Map<number, number>()
+  for (const s of ix.slices) {
+    if (s.day > today) break
+    days.set(s.day, (days.get(s.day) ?? 0) + s.to - s.from)
+  }
+  return days
+}
+
+/** Consecutive local calendar days with study time. A streak is still alive today if yesterday had study. */
+export function streak(ix: StudyIndex, now: number): StudyStreak {
+  const today = dayOf(now, ix.tz)
+  let run = 0
+  let longest = 0
+  let prev = -Infinity
+  for (const d of dayTotals(ix, today).keys()) {
+    run = d === prev + 1 ? run + 1 : 1
+    longest = Math.max(longest, run)
+    prev = d
+  }
+  return { currentDays: prev >= today - 1 ? run : 0, longestDays: longest, ...(Number.isFinite(prev) ? { lastStudyDate: dateKey(prev) } : {}) }
+}
+
+/** Consecutive days on which study time reached `targetMs`, ending today — or yesterday while today is still short of it. */
+export function goalStreak(ix: StudyIndex, now: number, targetMs: number): number {
+  if (!(targetMs > 0)) return 0
+  const today = dayOf(now, ix.tz)
+  const days = dayTotals(ix, today)
+  const met = (d: number) => (days.get(d) ?? 0) >= targetMs
+  let d = met(today) ? today : today - 1
+  let n = 0
+  while (met(d)) {
+    n++
+    d--
+  }
+  return n
 }
 
 // ---- session lengths -----------------------------------------------------------------

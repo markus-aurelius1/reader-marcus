@@ -28,21 +28,23 @@ interface Data {
 type Span = 'week' | 'month' | 'year' | 'all'
 const SPANS: [Span, string][] = [['week', 'This week'], ['month', 'This month'], ['year', 'This year'], ['all', 'All time']]
 
-const timeText = (ms: number) => (ms < 1000 ? '0 min' : durationText(ms))
-const plural = (n: number, one: string, many = one + 's') => `${n} ${n === 1 ? one : many}`
+export const timeText = (ms: number) => (ms < 1000 ? '0 min' : durationText(ms))
+export const plural = (n: number, one: string, many = one + 's') => `${n} ${n === 1 ? one : many}`
 const linkOf = (id: string) => {
   const n = navNode(id)
   return n ? refHref(n.target) : undefined
 }
 const nameOf = (id: string, fallback: string) => navNode(id)?.title ?? fallback
-function agoText(at: number, now: number, tz: string) {
+export function agoText(at: number, now: number, tz: string) {
   const d = dayOf(now, tz) - dayOf(at, tz)
   return d <= 0 ? 'today' : d === 1 ? 'yesterday' : `${d} days ago`
 }
+/** Sat 3 Oct 2026 · 1 h 00 min · 1 session */
+export const describeDay = (d: StudyHeatmapDay) => `${dayText(dayNo(+d.date.slice(0, 4), +d.date.slice(5, 7), +d.date.slice(8, 10)))} · ${d.durationMs ? `${timeText(d.durationMs)} · ${plural(d.sessionCount, 'session')}` : 'no tracked study'}`
 const spanFrom = (span: Span, { ix, now, tz }: Data) => (span === 'all' ? (ix.slices[0]?.from ?? now) : period(span, now, tz).from)
 
 /** The index for the stored sessions, and a `now` that moves on each minute and with each new session. */
-function useData(): Data {
+export function useData(): Data {
   const sessions = useStudy((s) => s.sessions)
   const tz = timeZone()
   const [tick, setTick] = useState(0)
@@ -130,7 +132,7 @@ const share = (d: StudyDistribution): DistRow => ({ id: d.id, label: d.label, ms
 const VS: Record<PeriodKind, string> = { day: 'yesterday', week: 'last week by now', month: 'last month by now', year: 'last year by now' }
 
 /** What changed against the comparison period, in words; a percentage only when there is a base for one. */
-function changeText(c: Comparison, vs: string) {
+export function changeText(c: Comparison, vs: string) {
   if (c.comparisonMs < 1000) return c.currentMs < 1000 ? `None ${vs} either` : `None ${vs}`
   const diff = c.changeAbsoluteMs
   if (Math.abs(diff) < 30000) return `Same as ${vs}: ${timeText(c.comparisonMs)}`
@@ -241,7 +243,6 @@ function Time(data: Data) {
   const earliest = ix.slices[0].from
   const bins: Datum[] = durationBins(sum.sessions).map((b) => ({ key: b.label, label: b.label, title: b.title, value: b.count }))
   const active = cells.filter((d) => d.durationMs > 0)
-  const describe = (d: StudyHeatmapDay) => `${dayText(dayNo(+d.date.slice(0, 4), +d.date.slice(5, 7), +d.date.slice(8, 10)))} · ${d.durationMs ? `${timeText(d.durationMs)} · ${plural(d.sessionCount, 'session')}` : 'no tracked study'}`
   const longest = [...sum.sessions].sort((a, b) => b.ms - a.ms).slice(0, 5)
   const recent = [...sum.sessions].reverse().slice(0, 5)
   const scopeName = scopeKey ? nameOf(scopeKey, scopeKey) : ''
@@ -274,7 +275,7 @@ function Time(data: Data) {
         : <p className="empty" style={{ padding: '4px 0' }}>No tracked study in this period.</p>}
 
       <h3 className="gh">Calendar · last 53 weeks</h3>
-      <Heatmap days={cells} describe={describe} summary={`Study time on each day of the last 53 weeks: ${plural(active.length, 'day')} with study, ${timeText(active.reduce((n, d) => n + d.durationMs, 0))} in all.`} />
+      <Heatmap days={cells} describe={describeDay} summary={`Study time on each day of the last 53 weeks: ${plural(active.length, 'day')} with study, ${timeText(active.reduce((n, d) => n + d.durationMs, 0))} in all.`} />
 
       <h3 className="gh">Trend · {TREND[kind][0]} {TREND[kind][1]} to {p.label}</h3>
       {trend.some((d) => d.value > 0)

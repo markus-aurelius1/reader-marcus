@@ -28,6 +28,23 @@ service cloud.firestore {
         && request.resource.data.kind == 'run'
         && request.resource.data.st == request.time;
     }
+    // Study goals (opt-in) and the personal study queue: small records merged field by field.
+    match /users/{uid}/studyGoals/{docId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && docId == 'default'
+        && request.resource.data.kind == 'goal'
+        && request.resource.data.st == request.time;
+    }
+    match /users/{uid}/studyQueue/{itemId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.kind == 'q'
+        && request.resource.data.id == 'q~' + itemId
+        && request.resource.data.st == request.time;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

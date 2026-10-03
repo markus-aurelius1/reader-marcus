@@ -127,7 +127,7 @@ describe('v1 → v2 migration', () => {
       req.onsuccess = () => resolve(req.result)
       req.onerror = () => reject(req.error)
     })
-    expect([...db.objectStoreNames].sort()).toEqual(['activeStudySession', 'conflicts', 'highlights', 'kv', 'outbox', 'overrides', 'studyGoals', 'studySessions'])
+    expect([...db.objectStoreNames].sort()).toEqual(['activeStudySession', 'conflicts', 'highlights', 'kv', 'outbox', 'overrides', 'studyGoals', 'studyQueue', 'studySessions'])
     const get = <T>(store: string, key: string) =>
       new Promise<T>((resolve) => {
         const r = db.transaction(store).objectStore(store).get(key)
@@ -174,7 +174,7 @@ describe('v1 → v2 migration', () => {
       })
     for (const [s, row] of Object.entries(rows)) expect(await all(s)).toEqual([row])
     expect(await all('kv')).toHaveLength(2)
-    for (const s of ['studySessions', 'activeStudySession', 'studyGoals']) expect(await all(s)).toEqual([])
+    for (const s of ['studySessions', 'activeStudySession', 'studyGoals', 'studyQueue']) expect(await all(s)).toEqual([])
     db.close()
   })
 })

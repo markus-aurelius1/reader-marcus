@@ -2,6 +2,8 @@
 //   users/{uid}/state/{docId}               edits, highlights, progress, preferences
 //   users/{uid}/studySessions/{sessionId}   completed study sessions (create-only)
 //   users/{uid}/studyRuntime/active         the one active timer
+//   users/{uid}/studyGoals/default          study goals
+//   users/{uid}/studyQueue/{itemId}         study-queue items
 // Loaded lazily — only after the user chooses to sign in.
 import { initializeApp } from 'firebase/app'
 import { GoogleAuthProvider, getAuth, getRedirectResult, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth'
@@ -16,6 +18,7 @@ const env = import.meta.env
 const enc = (id: string) => id.replace(/\//g, '|')
 // Firestore rejects `undefined`; a JSON round-trip drops it.
 const plain = <T>(v: T): T => JSON.parse(JSON.stringify(v))
+const STUDY: Record<string, string> = { ses: 'studySessions', run: 'studyRuntime', goal: 'studyGoals', q: 'studyQueue' }
 /** Commit times of concurrent writers can land slightly out of order; re-read a short window. */
 const OVERLAP_MS = 5000
 
@@ -32,13 +35,13 @@ export function createFirebaseBackend(): Backend {
   return {
     remote(uid): Remote {
       const col = collection(store, 'users', uid, 'state')
-      const sessions = collection(store, 'users', uid, 'studySessions')
-      const runtime = collection(store, 'users', uid, 'studyRuntime')
-      const refOf = (id: string) => (kindOf(id) === 'ses' ? doc(sessions, keyOf(id)) : kindOf(id) === 'run' ? doc(runtime, keyOf(id)) : doc(col, enc(id)))
+      // study records each have a collection of their own, keyed by the record's key
+      const study = Object.fromEntries(Object.entries(STUDY).map(([kind, name]) => [kind, collection(store, 'users', uid, name)]))
+      const refOf = (id: string) => (study[kindOf(id)] ? doc(study[kindOf(id)], keyOf(id)) : doc(col, enc(id)))
       return {
         async pull(cursor) {
           const since = Timestamp.fromMillis(cursor)
-          const snaps = await Promise.all([col, sessions, runtime].map((c) => getDocs(query(c, where('st', '>', since), orderBy('st')))))
+          const snaps = await Promise.all([col, ...Object.values(study)].map((c) => getDocs(query(c, where('st', '>', since), orderBy('st')))))
           let max = cursor
           const recs: Rec[] = []
           for (const snap of snaps) {

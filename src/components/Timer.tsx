@@ -9,11 +9,11 @@ import { clockText, contextKey, durationText, elapsed, shortClock } from '../lib
 import { linked } from '../sync'
 
 /** Prelims → Economy → Economic Concepts, National Income & Growth */
-const pathOf = (c: StudyContext) => [stageTitle(c.ref.stage), c.subjectTitle, c.chapterTitle, c.sectionTitle].filter(Boolean).join(' → ')
+export const pathOf = (c: StudyContext) => [stageTitle(c.ref.stage), c.subjectTitle, c.chapterTitle, c.sectionTitle].filter(Boolean).join(' → ')
 const sameChapter = (a: StudyContext, b: StudyContext | null) => !!b && contextKey({ ...a, ref: { ...a.ref, sectionId: undefined } }) === contextKey({ ...b, ref: { ...b.ref, sectionId: undefined } })
 
 /** Re-render twice a second while the timer runs; the time itself always comes from the timestamps. */
-function useElapsed(a: ActiveStudySession | null) {
+export function useElapsed(a: ActiveStudySession | null) {
   const [, tick] = useState(0)
   const running = a?.state === 'running'
   useEffect(() => {
@@ -24,7 +24,7 @@ function useElapsed(a: ActiveStudySession | null) {
   return a ? elapsed(a, clock.now()) : 0
 }
 
-function useTimerActions(context: StudyContext | null, say: (m: string) => void) {
+export function useTimerActions(context: StudyContext | null, say: (m: string) => void) {
   const follow = useStore((s) => s.prefs.timer.followNavigation)
   return {
     // a timer started offline on a linked device cannot know whether another device has one

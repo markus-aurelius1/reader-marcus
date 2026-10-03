@@ -401,7 +401,7 @@ if (typeof window !== 'undefined') {
 }
 
 // ---- sync adapter: the store seen as a set of independent records -------------
-/** Record kinds kept outside this store (study sessions and the timer: see study.ts). */
+/** Record kinds kept outside this store (study sessions and the timer: study.ts; goals and the queue: plan.ts). */
 export interface KindAdapter {
   get(id: string): Rec | null
   apply(rec: Rec): void
@@ -434,6 +434,8 @@ export const syncLocal = {
     switch (kindOf(id)) {
       case 'ses':
       case 'run':
+      case 'goal':
+      case 'q':
         return adapters[kindOf(id)]?.get(id) ?? null
       case 'edit': {
         const o = s.overrides[key]
@@ -460,7 +462,7 @@ export const syncLocal = {
   apply(rec: Rec) {
     const s = useStore.getState()
     const key = keyOf(rec.id)
-    if (rec.kind === 'ses' || rec.kind === 'run') adapters[rec.kind]?.apply(rec)
+    if (rec.kind === 'ses' || rec.kind === 'run' || rec.kind === 'goal' || rec.kind === 'q') adapters[rec.kind]?.apply(rec)
     else if (rec.kind === 'edit') {
       const d = (rec.data ?? {}) as { title?: string | null; html?: string | null }
       const row: Override = rec.del

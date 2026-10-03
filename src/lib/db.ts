@@ -4,8 +4,9 @@
 //       row-level migration of v1 data happens in store.init (see migrate.ts).
 //   v3: + studySessions (completed, immutable), activeStudySession (one row: the timer),
 //       studyGoals — added beside the existing stores; nothing existing is read or rewritten.
+//   v4: + studyQueue (one row per queue item), added the same way.
 export const DB_NAME = 'upsc-notes'
-export const DB_VERSION = 3
+export const DB_VERSION = 4
 let dbp: Promise<IDBDatabase> | null = null
 
 export function upgrade(db: IDBDatabase) {
@@ -20,6 +21,7 @@ export function upgrade(db: IDBDatabase) {
   need('studySessions', { keyPath: 'id' })
   need('activeStudySession')
   need('studyGoals', { keyPath: 'id' })
+  need('studyQueue', { keyPath: 'id' })
 }
 
 function open(): Promise<IDBDatabase> {

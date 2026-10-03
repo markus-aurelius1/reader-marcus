@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react'
-import { ArrowRight, Star, X } from 'lucide-react'
+import { Star, X } from 'lucide-react'
 import { getLoaded, stageTitle, stages, type Chapter, type PyqCluster, type Subject } from '../lib/content'
 import { STATUS_LABEL, chapterProgress, secHtml, secTitle, subjectProgress, useStore } from '../lib/store'
 import { href } from '../lib/router'
 import { COLORS, anchor, textStream, type Color, type Highlight } from '../lib/highlight'
 import { renderBody } from '../lib/md'
 import type { ContentRef } from '../lib/contract'
-import { destinations, isFavourite, subjectRef, toggleFavourite, type Destination } from '../lib/nav'
+import { isFavourite, subjectRef, toggleFavourite, type Destination } from '../lib/nav'
 
 export const Meter = ({ v, max }: { v: number; max: number }) => (
   <span className="meter"><i style={{ width: `${max ? (v / max) * 100 : 0}%` }} /></span>
@@ -36,7 +36,7 @@ export function FavButton({ target, what }: { target: ContentRef; what: string }
   )
 }
 
-function DestRows({ items }: { items: (Destination & { note?: string })[] }) {
+export function DestRows({ items }: { items: (Destination & { note?: string })[] }) {
   return (
     <div className="rows">
       {items.map((d) => (
@@ -45,63 +45,6 @@ function DestRows({ items }: { items: (Destination & { note?: string })[] }) {
           {d.note && <span className="num" style={{ width: 'auto' }}>{d.note}</span>}
         </a>
       ))}
-    </div>
-  )
-}
-
-const ago = (iso: string) => {
-  const d = Math.floor((Date.now() - Date.parse(iso)) / 86400000)
-  return d <= 0 ? 'Today' : d === 1 ? 'Yesterday' : `${d} days ago`
-}
-
-// ---- Home (structural shell; the dashboard is built on top of this later) ----
-export function Home({ subjects }: { subjects: Subject[] }) {
-  const resume = useResume(subjects)
-  const prefs = useStore((s) => s.prefs)
-  const sections = useStore((s) => s.progress.sections)
-  const recent = useMemo(
-    () => prefs.recents.flatMap((r) => destinations([r.target]).map((d) => ({ ...d, note: ago(r.visitedAt) }))).slice(0, 5),
-    [prefs.recents],
-  )
-  const favourites = useMemo(() => destinations(prefs.favourites), [prefs.favourites])
-  const queued = Object.values(sections).filter((x) => x.revise || x.difficult).length
-  return (
-    <div className="page">
-      <div className="eyebrow">UPSC CSE · UPPCS</div>
-      <h1 className="title">Home</h1>
-      {resume ? (
-        <a className="resume" href={href.reader(resume.chapter.key, undefined, { resume: true })}>
-          <div style={{ minWidth: 0 }}>
-            <small>Resume where I left off</small>
-            <b>{resume.chapter.title}</b>
-            <div style={{ fontSize: 13, color: 'var(--ink-2)' }}>
-              {stageTitle(resume.subject.stage)} › {resume.subject.title}
-              {resume.section ? ` › ${resume.section.title}` : ''}
-            </div>
-          </div>
-          <span className="go">Continue →</span>
-        </a>
-      ) : (
-        <a className="resume" href={href.study()}>
-          <div style={{ minWidth: 0 }}><small>Start here</small><b>Open the Study library</b></div>
-          <span className="go">Browse →</span>
-        </a>
-      )}
-      <div className="quick">
-        <a href={href.study()}>Study library<ArrowRight /></a>
-        <a href={href.revision()}>Revision queue{queued > 0 && <small>{queued}</small>}<ArrowRight /></a>
-        <a href={href.highlights()}>Highlights<ArrowRight /></a>
-      </div>
-      {recent.length > 0 && (
-        <section>
-          <h3 className="gh">Recent</h3>
-          <DestRows items={recent} />
-        </section>
-      )}
-      <section>
-        <h3 className="gh">Favourites</h3>
-        {favourites.length ? <DestRows items={favourites} /> : <p className="empty" style={{ padding: '4px 0 0' }}>Use “Add to favourites” on any chapter or subject to keep it here.</p>}
-      </section>
     </div>
   )
 }
@@ -366,7 +309,7 @@ function Insights({ subject }: { subject: Subject }) {
 }
 
 // ---- Highlights -------------------------------------------------------------
-function locate(subjects: Subject[], sectionKey: string) {
+export function locate(subjects: Subject[], sectionKey: string) {
   for (const s of subjects) {
     if (!sectionKey.startsWith(s.key + '/')) continue
     for (const c of s.chapters) {
