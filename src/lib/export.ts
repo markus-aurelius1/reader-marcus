@@ -1,9 +1,10 @@
 // Export of the CURRENT content (base notes + local edits + highlights) as a standalone
 // HTML file or as Markdown in the same dialect the content files use.
 import proseCss from '../styles/prose.css?inline'
-import { stageTitle, type Chapter, type Subject } from './content'
+import { availableKeys, stageTitle, type Chapter, type Subject } from './content'
 import { highlightsBySection, secHtml, secTitle, useStore, type Override } from './store'
 import { applyHighlights } from './highlight'
+import { refHref, relink } from './links'
 import type { Section } from './content'
 
 /** Current section HTML: edits applied, highlights laid over. */
@@ -30,6 +31,8 @@ const fileBase = (subject: Subject, chapters: Chapter[]) =>
 
 export function exportHTML(subject: Subject, chapters: Chapter[], o: Record<string, Override>) {
   const title = `${stageTitle(subject.stage)} · ${subject.title}${chapters.length === 1 ? ' · ' + chapters[0].title : ''}`
+  const here = location.href.split('#')[0]
+  const subjects = new Set(availableKeys())
   const toc = chapters
     .map((c) => `<li><a href="#${c.id}">${esc(c.title)}</a></li>`)
     .join('')
@@ -37,9 +40,11 @@ export function exportHTML(subject: Subject, chapters: Chapter[], o: Record<stri
     .map((c) => {
       const secs = c.sections
         .map((s) => {
-          const html = current(o, s).replace(
-            /data-xref="([^"#]+)#?([^"]*)"\s+href="[^"]*"/g,
-            (_m, ch, sec) => `href="#${ch}${sec ? '--' + sec : ''}"`,
+          // inside the file → its own anchors; anywhere else → the reader this was exported from
+          const html = relink(current(o, s), subject.key, (r) =>
+            r.subjectKey === subject.key && chapters.some((x) => x.id === r.chapterId)
+              ? `#${r.chapterId}${r.sectionId ? '--' + r.sectionId : ''}`
+              : subjects.has(r.subjectKey) ? here + refHref(r) : null,
           )
           return `<section id="${c.id}--${s.id}"><h2>${esc(secTitle(o, s))}</h2>\n${html}\n</section>`
         })
@@ -187,7 +192,7 @@ export function htmlToMarkdown(html: string): string {
 }
 
 export function chapterMarkdown(c: Chapter, o: Record<string, Override>): string {
-  const head = `---\ntitle: ${c.title}\ntaxonomy: ${c.taxonomy.join(', ')}\n---\n`
+  const head = `---\ntitle: ${c.title}\ntaxonomy: ${c.taxonomy.join(', ')}\n${c.related.length ? `related: ${c.related.join(', ')}\n` : ''}---\n`
   const secs = c.sections.map((s) => {
     const t = secTitle(o, s)
     return `## ${t} {#${s.id}}\n\n${htmlToMarkdown(current(o, s))}`

@@ -9,7 +9,7 @@
           "title": "General Studies",
           "subjects": [
             { "id": "polity", "title": "Polity" },
-            { "id": "economy", "title": "Economy" },
+            { "id": "economy", "title": "Economy & Social Development" },
             { "id": "history-culture", "title": "History & Culture" },
             { "id": "geography", "title": "Geography" },
             { "id": "agriculture", "title": "Agriculture" },

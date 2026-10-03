@@ -1,13 +1,15 @@
-import { allLoaded, type Chapter, type Section, type Subject } from './content'
+import { allLoaded, linkGraph, type Chapter, type Section, type Subject } from './content'
+import { neighbours, placeKey } from './links'
 import { secHtml, secTitle, type Override } from './store'
 
 export interface Hit {
-  kind: 'chapter' | 'section' | 'text'
+  kind: 'chapter' | 'section' | 'text' | 'related'
   subject: Subject
   chapter: Chapter
   section?: Section
   title: string
   snippet?: string
+  via?: string // related: the hit it is linked with
   score: number
 }
 
@@ -94,6 +96,23 @@ export function search(q: string, overrides: Record<string, Override>, limit = 4
     }
   }
   return hits.sort((a, b) => b.score - a.score).slice(0, limit)
+}
+
+/** Destinations cross-linked with the best hit, placed right after the leading results. */
+export function withRelated(hits: Hit[], max = 3, after = 3): Hit[] {
+  const top = hits[0]
+  if (!top) return hits
+  const g = linkGraph()
+  const keys = top.section ? [top.section.key] : [top.chapter.key, ...top.chapter.sections.map((s) => s.key)]
+  const shown = new Set(hits.map((h) => h.section?.key ?? h.chapter.key))
+  const extra: Hit[] = []
+  for (const p of keys.flatMap((k) => neighbours(g, k))) {
+    if (extra.length >= max) break
+    if (shown.has(placeKey(p))) continue
+    shown.add(placeKey(p))
+    extra.push({ kind: 'related', subject: p.subject, chapter: p.chapter, section: p.section, title: p.section?.title ?? p.chapter.title, via: top.title, score: 0 })
+  }
+  return [...hits.slice(0, after), ...extra, ...hits.slice(after)]
 }
 
 /** Briefly mark the first occurrence of `q` inside `root` and scroll to it. */

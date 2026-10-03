@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
+import './lib/install'
 import './styles/app.css'
 import './styles/prose.css'
 import { App } from './App'

@@ -1,0 +1,31 @@
+{
+  "title": "Economy & Social Development",
+  "source": "source/Economy-v01-source-pack-CLAUDE-READY.md",
+  "topics": [
+    { "id": "macro", "title": "Macroeconomy", "chapters": ["national-income-growth", "inflation", "planning-reform"] },
+    { "id": "money-finance", "title": "Money, Banking & Financial System", "chapters": ["money-rbi-monetary-policy", "banking-financial-inclusion", "financial-markets", "digital-payments"] },
+    { "id": "public-finance", "title": "Public Finance", "chapters": ["budget-fiscal-policy", "taxation"] },
+    { "id": "external", "title": "External Sector & Global Economy", "chapters": ["external-sector", "international-institutions"] },
+    { "id": "development", "title": "Development, Industry & Social Policy", "chapters": ["poverty-employment", "indices-reports", "industry-labour-infrastructure", "government-schemes"] },
+    { "id": "recall", "title": "Thinkers & Social Concepts", "chapters": ["economic-thinkers", "social-concepts"] }
+  ],
+  "taxonomy": [
+    "prelims-economy-and-social-development-macroeconomy-and-economic-thought-economic-concepts-national-income-and-growth",
+    "prelims-economy-and-social-development-macroeconomy-and-economic-thought-inflation-and-price-indices",
+    "prelims-economy-and-social-development-macroeconomy-and-economic-thought-planning-liberalisation-and-reform",
+    "prelims-economy-and-social-development-macroeconomy-and-economic-thought-economic-thinkers-books-and-theories",
+    "prelims-economy-and-social-development-money-banking-and-financial-system-banking-and-financial-inclusion",
+    "prelims-economy-and-social-development-money-banking-and-financial-system-money-rbi-and-monetary-policy",
+    "prelims-economy-and-social-development-money-banking-and-financial-system-financial-markets-and-instruments",
+    "prelims-economy-and-social-development-money-banking-and-financial-system-digital-payments",
+    "prelims-economy-and-social-development-public-finance-budget-and-fiscal-policy",
+    "prelims-economy-and-social-development-public-finance-taxation",
+    "prelims-economy-and-social-development-external-sector-and-global-economy-international-economic-institutions-and-trade-agreements",
+    "prelims-economy-and-social-development-external-sector-and-global-economy-external-sector-bop-capital-flows-exchange-rate-and-trade",
+    "prelims-economy-and-social-development-development-industry-and-social-policy-government-schemes-and-programmes-durable-architecture",
+    "prelims-economy-and-social-development-development-industry-and-social-policy-industry-labour-and-infrastructure",
+    "prelims-economy-and-social-development-development-industry-and-social-policy-poverty-inclusion-and-employment",
+    "prelims-economy-and-social-development-development-industry-and-social-policy-development-indices-and-reports",
+    "prelims-economy-and-social-development-development-industry-and-social-policy-basic-social-concepts-and-social-development"
+  ]
+}

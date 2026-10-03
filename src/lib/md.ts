@@ -4,9 +4,10 @@
 //   ==text==            high-yield emphasis
 //   !!text!!            red keyword
 //   `Art. 368`          article / act anchor
-//   [label](@chapter#section)   cross-reference inside the same subject
+//   [label](@chapter#section)   cross-link — same subject, or @stage/subject/chapter#section (see links.ts)
 //   > [!TRAP] …         callout. Kinds: trap, exc, uppcs, dyn, verify, flow, note
 import { marked } from 'marked'
+import { relink } from './links'
 
 export interface RawSection {
   id: string
@@ -37,7 +38,7 @@ marked.use({
     },
     link(token) {
       const text = this.parser.parseInline(token.tokens)
-      if (token.href.startsWith('@')) return `<a class="xref" data-xref="${token.href.slice(1)}">${text}</a>`
+      if (token.href.startsWith('@')) return `<a data-xref="${token.href.slice(1)}">${text}</a>`
       return `<a href="${token.href}" target="_blank" rel="noopener">${text}</a>`
     },
   },
@@ -49,9 +50,7 @@ export function renderBody(md: string, subjectKey: string): string {
     .replace(/\{\{(.+?)\}\}/g, '<span class="rc">$1</span>')
     .replace(/==(.+?)==/g, '<span class="hy">$1</span>')
     .replace(/!!(.+?)!!/g, '<span class="red">$1</span>')
-    .replace(/data-xref="([^"#]+)#?([^"]*)"/g, (_m, c, s) => {
-      return `data-xref="${c}${s ? '#' + s : ''}" href="#/r/${subjectKey}/${c}${s ? '/' + s : ''}"`
-    })
+  html = relink(html, subjectKey)
   return html.trim()
 }
 

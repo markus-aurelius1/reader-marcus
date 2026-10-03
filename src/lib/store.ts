@@ -4,6 +4,7 @@ import { anchor, newHid, textStream, type Color, type FoundMark, type Highlight 
 import { migrateOverrides, newRev, type V2Override } from './migrate'
 import { sectionByKey, type Chapter, type Section, type Subject } from './content'
 import { keyOf, kindOf, type Field, type Rec } from '../sync/merge'
+import { relink } from './links'
 
 export type Override = V2Override
 export type { Highlight }
@@ -528,7 +529,11 @@ export const syncLocal = {
 
 // ---- derived helpers -------------------------------------------------------
 export const secTitle = (o: Record<string, Override>, s: Section) => o[s.key]?.title ?? s.title
-export const secHtml = (o: Record<string, Override>, s: Section) => o[s.key]?.html ?? s.html
+/** Current section HTML. Cross-links inside a local edit are re-routed from their ids. */
+export const secHtml = (o: Record<string, Override>, s: Section) => {
+  const edited = o[s.key]?.html
+  return edited === undefined ? s.html : relink(edited, s.key.split('/', 2).join('/'))
+}
 export const isEdited = (o: Record<string, Override>, s: Section) => !!o[s.key] && !o[s.key].deleted
 
 /** Live highlights grouped by section. */

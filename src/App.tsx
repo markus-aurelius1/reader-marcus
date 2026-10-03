@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   BookOpen, ChartNoAxesColumn, Cloud, Download, Eye, EyeOff, FileText, Highlighter, Home as HomeIcon, Keyboard, Maximize2,
-  Menu, Minimize2, Moon, MoreHorizontal, PencilLine, Printer, RotateCcw, RotateCw, Search, Sun,
+  Menu, Minimize2, MonitorDown, Moon, MoreHorizontal, PencilLine, Printer, RotateCcw, RotateCw, Search, Sun,
 } from 'lucide-react'
 import { allSubjects, stageTitle, stages } from './lib/content'
 import { chapterProgress, flushOverrides, secTitle, subjectProgress, useStore } from './lib/store'
@@ -12,6 +12,7 @@ import { Highlights, Home, ProgressView, Revision, SubjectView } from './views/P
 import { Palette } from './components/Palette'
 import { AccountButton, AccountPanel } from './components/Account'
 import { initSync, statusLabel, useSync } from './sync'
+import { promptInstall, useInstall } from './lib/install'
 
 const isTyping = (e: KeyboardEvent) => {
   const t = e.target as HTMLElement
@@ -34,6 +35,8 @@ export function App() {
   const [menu, setMenu] = useState(false)
   const [help, setHelp] = useState(false)
   const [account, setAccount] = useState(false)
+  const inst = useInstall()
+  const [installHelp, setInstallHelp] = useState(false)
   const sync = useSync()
   const conflictCount = useStore((s) => Object.keys(s.conflicts).length)
   const [toast, setToast] = useState('')
@@ -87,6 +90,10 @@ export function App() {
     clearTimeout(toastTimer.current) // an earlier toast must not cut this one short
     toastTimer.current = window.setTimeout(() => setToast(''), 3200)
   }
+  useEffect(() => {
+    if (inst.installed) say('App installed')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inst.installed])
   const toggleEdit = async () => {
     if (editMode) await flushOverrides()
     set({ editMode: !editMode })
@@ -113,6 +120,7 @@ export function App() {
         if (menu) return setMenu(false)
         if (account) return setAccount(false)
         if (help) return setHelp(false)
+        if (installHelp) return setInstallHelp(false)
         if (useStore.getState().focus) return set({ focus: false })
       }
       if (isTyping(e) || e.ctrlKey || e.metaKey || e.altKey || palette) return
@@ -191,6 +199,11 @@ export function App() {
             <PencilLine /><span className="hide-sm">{editMode ? 'Done' : 'Edit'}</span>
           </button>
         )}
+        {inst.available && (
+          <button className={'ib install' + (chapter ? ' hide-sm' : '')} onClick={() => promptInstall()} title="Install this app on your device" aria-label="Install app">
+            <MonitorDown /><span className="hide-sm">Install</span>
+          </button>
+        )}
         <AccountButton open={account} onClick={() => { setMenu(false); setAccount(!account) }} />
         <button className="ib hide-sm" onClick={() => setPref({ theme: dark ? 'light' : 'dark' })} title="Theme (t)" aria-label="Toggle theme">{dark ? <Sun /> : <Moon />}</button>
         {chapter && <button className="ib hide-sm" onClick={() => set({ focus: true })} title="Focus Mode (f)" aria-label="Focus mode"><Maximize2 /></button>}
@@ -212,6 +225,11 @@ export function App() {
                 <hr />
               </>
             )}
+            {inst.available ? (
+              <><button onClick={() => { setMenu(false); promptInstall() }}><MonitorDown />Install app</button><hr /></>
+            ) : inst.manual ? (
+              <><button onClick={() => { setMenu(false); setInstallHelp(true) }}><MonitorDown />Install app…</button><hr /></>
+            ) : null}
             <button onClick={() => { setPref({ theme: dark ? 'light' : 'dark' }); setMenu(false) }}>{dark ? <Sun /> : <Moon />}{dark ? 'Light theme' : 'Dark theme'}<kbd>t</kbd></button>
             {chapter && <button onClick={() => { set({ focus: true }); setMenu(false) }}><Maximize2 />Focus Mode<kbd>f</kbd></button>}
             <button onClick={() => { setHelp(true); setMenu(false) }}><Keyboard />Keyboard shortcuts<kbd>?</kbd></button>
@@ -327,6 +345,26 @@ export function App() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+      {installHelp && (
+        <div className="overlay" onMouseDown={(e) => e.target === e.currentTarget && setInstallHelp(false)}>
+          <div className="palette" role="dialog" aria-label="Install app" style={{ padding: '16px 20px', fontSize: 14, lineHeight: 1.55 }}>
+            <b style={{ font: '600 18px var(--serif)' }}>Install app</b>
+            {inst.manual === 'ios' ? (
+              <ol style={{ margin: '10px 0 4px', paddingLeft: 20 }}>
+                <li>Open this page in <b>Safari</b>.</li>
+                <li>Tap <b>Share</b> (the square with an arrow).</li>
+                <li>Choose <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+              </ol>
+            ) : (
+              <ol style={{ margin: '10px 0 4px', paddingLeft: 20 }}>
+                <li>Open the browser menu (<b>⋮</b>).</li>
+                <li>Choose <b>Install</b> or <b>Add to Home screen</b>.</li>
+              </ol>
+            )}
+            <p style={{ margin: '6px 0 0', color: 'var(--ink-2)', fontSize: 13 }}>The app then opens full-screen from your home screen and works offline.</p>
           </div>
         </div>
       )}

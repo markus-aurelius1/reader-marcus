@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { allLoaded, stageTitle } from '../lib/content'
-import { search, type Hit } from '../lib/search'
+import { search, withRelated, type Hit } from '../lib/search'
 import { go, href } from '../lib/router'
 import { useStore } from '../lib/store'
 
@@ -12,7 +12,7 @@ export function Palette({ onClose }: { onClose: () => void }) {
   const overrides = useStore((s) => s.overrides)
 
   const hits: Hit[] = useMemo(() => {
-    if (q.trim()) return search(q, overrides)
+    if (q.trim()) return withRelated(search(q, overrides))
     // Empty query: jump list of every chapter.
     return allLoaded().flatMap((subject) =>
       subject.chapters.map((chapter) => ({ kind: 'chapter' as const, subject, chapter, title: chapter.title, score: 0 })),
@@ -53,7 +53,8 @@ export function Palette({ onClose }: { onClose: () => void }) {
                 <b>{h.title}</b>
                 <small>
                   {stageTitle(h.subject.stage)} › {h.subject.title}
-                  {h.kind !== 'chapter' ? ` › ${h.chapter.title}` : ` · ${h.chapter.topicTitle}`}
+                  {h.kind !== 'chapter' && h.section ? ` › ${h.chapter.title}` : ` · ${h.chapter.topicTitle}`}
+                  {h.kind === 'related' && <em> · related to {h.via}</em>}
                 </small>
                 {h.snippet && <p>{h.snippet}</p>}
               </li>

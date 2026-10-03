@@ -12,6 +12,8 @@ npm run preview    # http://localhost:4310  (or double-click Start-Notes.bat)
 
 `npm run dev` (http://localhost:5310) gives live reload while writing content. Install it as an app from the browser's address bar; after the first visit it opens offline.
 
+**Install** — when the browser reports the app as installable (Chrome / Edge / Samsung Internet, desktop and Android) an **Install** button appears in the top bar and in the ⋯ menu and opens the browser's own install prompt; it disappears once installed and never shows inside the installed app. On iPhone / iPad and Firefox for Android, ⋯ → **Install app…** shows the Add to Home Screen steps instead. Logic: `src/lib/install.ts`.
+
 Your edits and highlights are stored per browser and per address — keep using the same address (or sign in to sync, below), and use **⋯ → Export** for backups.
 
 ## Layout
@@ -24,7 +26,7 @@ content/                      ← all notes; the reader never names a subject in
     chapters/<chapter>.md     ← one file per reading unit; "## " starts a section
     pyq.json                  ← generated from the Source Pack (PYQs + Insights tabs)
 source/                       ← Source Packs as supplied (input only)
-scripts/check-content.mjs     ← coverage + link checks      (npm run check)
+scripts/check-content.mjs     ← coverage + cross-link checks (npm run check)
 scripts/extract-pyq.mjs       ← builds pyq.json from a Source Pack
 scripts/e2e.mjs               ← end-to-end regression         (npm run e2e)
 src/                          ← reader UI (lib/, views/, editor/, components/, styles/) + sync/
@@ -39,6 +41,7 @@ firestore.rules, .env.example ← optional cross-device sync
    ---
    title: Parliament
    taxonomy: <taxonomy_id of the leaf node(s) this chapter owns, comma-separated>
+   related: <optional — cross-link ids of closely related chapters, comma-separated>
    ---
    ```
 3. **Register metadata** — `content/<stage>/<subject>/subject.json`:
@@ -55,9 +58,31 @@ firestore.rules, .env.example ← optional cross-device sync
    npm run check
    npm run build
    ```
-   `npm run check` fails if a taxonomy node is covered zero or several times, a chapter is missing/unlisted, a cross-reference is broken, or a marker is unbalanced. The PYQs and Insights tabs appear only when `pyq.json` exists.
+   `npm run check` fails if a taxonomy node is covered zero or several times, a chapter is missing/unlisted, a cross-link is broken (in any subject), or a marker is unbalanced. The PYQs and Insights tabs appear only when `pyq.json` exists.
+   `extract-pyq` reads both pack layouts: leaf packs (`## 2. PYQ Demand Map` → `### UPSC`) and topic packs with a child-subtopic ledger (`### 3. PYQ Demand Map` → `#### A. <child>` → `##### UPSC`).
+6. **Cross-link** — link the new chapters to related sections in the subjects already present (next section). Nothing else is needed for backlinks, search or exports.
 
-No application code changes: reader, editor, highlights, progress, search, export and print pick the subject up automatically.
+No application code changes: reader, editor, highlights, progress, search, cross-links, export and print pick the subject up automatically.
+
+## Cross-links
+
+One mechanism for every subject, present and future. A link names its destination by **content id** — the folder, file and section ids — never by title or URL, so it survives edits, renamed headings, re-ordering and exports.
+
+| Write | Goes to |
+|---|---|
+| `[label](@chapter#section)` | a section in the same subject |
+| `[label](@stage/subject/chapter#section)` | any subject — Prelims ↔ Prelims, Prelims ↔ Mains, optional papers |
+| `[label](@stage/subject/chapter)` · `[label](@stage/subject)` | a whole chapter · a subject's overview |
+| `related: a, b#c, mains/gs2-polity/x` in the frontmatter | chapter-level "Related chapters", shown at the end of **both** chapters |
+
+- `stage/subject` is the folder under `content/` (`prelims/economy`, `mains/gs3-economy`, `mains/sociology`). Give a section a fixed id with `## Title {#id}` when other chapters link to it.
+- **Back** in the browser / app returns to where the link was followed; a link opens the exact section and expands it if collapsed.
+- **Related** — the destination lists, under the section, every section elsewhere that links to it. Nothing is written twice: one link gives both directions. Links inside a single chapter are not listed.
+- **Search (Ctrl K)** — destinations linked with the best match are offered right after the top results ("related to …").
+- **Edits and sync** — a link keeps its id inside edited text; its route is re-derived from the id whenever the section is shown, so old edits follow the current library.
+- **Exports** — Markdown keeps `[label](@id)`. In exported HTML a link inside the file jumps within the file; any other link opens the reader the file was exported from.
+- **Subjects not added yet** — a link into a subject that is not in the library renders as plain text, is reported by `npm run check` as *pending* (not an error), and switches on by itself when that subject is added. A wrong chapter or section id in an existing subject is an error.
+- Link only where it saves a look-up: a definition owned by another chapter, the constitutional side of an economic fact, the Mains treatment of a Prelims concept. One home per fact; link the rest.
 
 ## Notes dialect
 
@@ -69,7 +94,7 @@ No application code changes: reader, editor, highlights, progress, search, expor
 | `==text==` | high-yield emphasis |
 | `!!text!!` | red keyword |
 | `` `Art. 368` `` | article / act anchor |
-| `[label](@chapter-id#section-id)` | cross-reference inside the subject (browser Back returns) |
+| `[label](@chapter-id#section-id)` | cross-link inside the subject; `@stage/subject/chapter#section` for any other subject → [Cross-links](#cross-links) |
 | `> [!TRAP] …` | callout — kinds: `TRAP`, `EXC`, `UPPCS`, `DYN`, `VERIFY`, `FLOW`, `NOTE` |
 
 A callout may hold a list or a table (prefix each line with `> `). **⋯ → Export to Markdown** writes this same dialect, so an edited chapter can replace its file in `content/`.
@@ -149,10 +174,10 @@ Troubleshooting
 ## Checks
 
 ```bash
-npm run test     # merge, queue, conflict, anchoring and migration unit tests
-npm run check    # content contract (taxonomy coverage, links, markers)
+npm run test     # merge, queue, conflict, anchoring, migration and cross-link unit tests
+npm run check    # content contract (taxonomy coverage, cross-links across subjects, markers)
 npm run e2e      # headless-Chrome regression of the production build: reader, migration, print-to-PDF,
-                 # offline, responsive, and two-device sync against the mock cloud  → e2e-out/
+                 # cross-links, offline, responsive, and two-device sync against the mock cloud  → e2e-out/
 npm run verify   # typecheck + all of the above
 ```
 

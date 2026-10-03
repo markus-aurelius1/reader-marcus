@@ -1,0 +1,858 @@
+{
+ "source": "source/Economy-v01-source-pack-CLAUDE-READY.md",
+ "chapters": {
+  "national-income-growth": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q082",
+      "UPSC-CSE-2011-GS1-Q087",
+      "UPSC-CSE-2013-GS1-Q092",
+      "UPSC-CSE-2013-GS1-Q099",
+      "UPSC-CSE-2015-GS1-Q081",
+      "UPSC-CSE-2018-GS1-Q048",
+      "UPSC-CSE-2018-GS1-Q049",
+      "UPSC-CSE-2018-GS1-Q050",
+      "UPSC-CSE-2019-GS1-Q080",
+      "UPSC-CSE-2021-GS1-Q003",
+      "UPSC-CSE-2021-GS1-Q004",
+      "UPSC-CSE-2022-GS1-Q007",
+      "UPSC-CSE-2023-GS1-Q028",
+      "UPSC-CSE-2024-GS1-Q045",
+      "UPSC-CSE-2024-GS1-Q047",
+      "UPSC-CSE-2025-GS1-Q009"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q061",
+      "UPPCS-2019-GS1-Q075",
+      "UPPCS-2021-GS1-Q067",
+      "UPPCS-2021-GS1-Q102",
+      "UPPCS-2023-GS1-Q127",
+      "UPPCS-2023-GS1-Q137",
+      "UPPCS-2024-GS1-Q115",
+      "UPPCS-2025-GS1-Q013"
+     ]
+    }
+   ],
+   "synthesis": "- Highest elimination value = **classification + direction**: sector, capital type, intangible/tangible, real/financial, substitute/complement/inferior, nominal/real.\n- Recurrent mechanism = **saving → investment/capital formation → output**, mediated by productivity/ICOR/capital-output ratio.\n- National-income questions reward exact boundaries: **domestic vs national/resident; gross vs net; current vs constant price; value added vs final expenditure**.\n- “Growth” questions repeatedly test overclaiming: growth alone does not imply poverty reduction, employment expansion, equality or development.\n- UPPCS adds basic definitions and factor-of-growth/human-capital associations rather than deeper national-accounting algebra."
+  },
+  "inflation": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q004",
+      "UPSC-CSE-2011-GS1-Q013",
+      "UPSC-CSE-2013-GS1-Q066",
+      "UPSC-CSE-2013-GS1-Q082",
+      "UPSC-CSE-2013-GS1-Q084",
+      "UPSC-CSE-2015-GS1-Q029",
+      "UPSC-CSE-2015-GS1-Q087",
+      "UPSC-CSE-2020-GS1-Q067",
+      "UPSC-CSE-2021-GS1-Q010",
+      "UPSC-CSE-2021-GS1-Q012",
+      "UPSC-CSE-2022-GS1-Q068"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2021-GS1-Q003",
+      "UPPCS-2021-GS1-Q039",
+      "UPPCS-2021-GS1-Q147",
+      "UPPCS-2024-GS1-Q095"
+     ]
+    }
+   ],
+   "synthesis": "- Recurrent traps: **price level vs inflation rate; inflation vs disinflation vs deflation; demand-pull vs cost-push/structural; headline vs core; CPI vs WPI vs GDP deflator.**\n- UPSC repeatedly tests financing channels: **monetised/new-money financing is more inflationary** than borrowing from existing saving.\n- Institution questions require current framework, not memorised obsolete base years.\n- Winner/loser questions are conditional: unexpected inflation on **fixed nominal contracts** benefits debtors and hurts creditors; avoid blanket “producers always benefit”."
+  },
+  "planning-reform": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q019",
+      "UPSC-CSE-2013-GS1-Q069",
+      "UPSC-CSE-2013-GS1-Q098",
+      "UPSC-CSE-2014-GS1-Q029",
+      "UPSC-CSE-2014-GS1-Q057",
+      "UPSC-CSE-2015-GS1-Q042",
+      "UPSC-CSE-2017-GS1-Q077",
+      "UPSC-CSE-2019-GS1-Q070"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q015",
+      "UPPCS-2018-GS1-Q092",
+      "UPPCS-2018-GS1-Q138",
+      "UPPCS-2020-GS1-Q015",
+      "UPPCS-2021-GS1-Q141",
+      "UPPCS-2023-GS1-Q010",
+      "UPPCS-2025-GS1-Q111"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC emphasis = institutional status + plan objective + reform effects, not plan trivia alone.\n- UPPCS = significantly more chronology/body-person/plan-theme recall.\n- Permanent note should know **1st/2nd/3rd/Plan Holiday/4th/5th/Rolling/Annual Plans/8th–12th** landmarks; avoid obsolete numerical growth targets unless a PYQ directly demands them.\n- 1991 reforms should be understood as **stabilisation (short-run macro correction)** + **structural adjustment (longer-run supply/institutional reform)**, with LPG as the common mnemonic rather than a complete reform taxonomy."
+  },
+  "economic-thinkers": {
+   "upsc": [],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2021-GS1-Q108",
+      "UPPCS-2022-GS1-Q032",
+      "UPPCS-2023-GS1-Q122",
+      "UPPCS-2024-GS1-Q008",
+      "UPPCS-2024-GS1-Q094",
+      "UPPCS-2024-GS1-Q115",
+      "UPPCS-2025-GS1-Q147"
+     ]
+    }
+   ],
+   "synthesis": "- UPPCS theory questions are mostly **one-hop association**: thinker ↔ book, theory ↔ propounder, theory ↔ core proposition.\n- Highest-value set: Smith, Keynes, Malthus, Sen, Myrdal, Hirschman, Kaldor, Cannan, Henry George, Thompson, Gresham.\n- Avoid expanding into Nobel-year/current-award trivia unless the taxonomy later assigns it to a current-affairs node."
+  },
+  "banking-financial-inclusion": {
+   "upsc": [
+    {
+     "label": "Financial inclusion / rural credit / delivery architecture",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q038",
+      "UPSC-CSE-2011-GS1-Q083",
+      "UPSC-CSE-2011-GS1-Q084",
+      "UPSC-CSE-2012-GS1-Q080",
+      "UPSC-CSE-2013-GS1-Q076",
+      "UPSC-CSE-2013-GS1-Q100",
+      "UPSC-CSE-2014-GS1-Q032",
+      "UPSC-CSE-2015-GS1-Q001",
+      "UPSC-CSE-2016-GS1-Q073",
+      "UPSC-CSE-2019-GS1-Q061",
+      "UPSC-CSE-2020-GS1-Q066",
+      "UPSC-CSE-2021-GS1-Q014",
+      "UPSC-CSE-2023-GS1-Q074",
+      "UPSC-CSE-2026-GS1-Q053",
+      "UPSC-CSE-2026-GS1-Q058"
+     ]
+    },
+    {
+     "label": "Bank regulation / bank types / NBFC distinction",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q023",
+      "UPSC-CSE-2013-GS1-Q042",
+      "UPSC-CSE-2015-GS1-Q100",
+      "UPSC-CSE-2016-GS1-Q004",
+      "UPSC-CSE-2016-GS1-Q029",
+      "UPSC-CSE-2017-GS1-Q040",
+      "UPSC-CSE-2021-GS1-Q005",
+      "UPSC-CSE-2024-GS1-Q042",
+      "UPSC-CSE-2024-GS1-Q049",
+      "UPSC-CSE-2026-GS1-Q064"
+     ]
+    },
+    {
+     "label": "Cooperative / differentiated banking",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q004",
+      "UPSC-CSE-2017-GS1-Q040",
+      "UPSC-CSE-2020-GS1-Q059",
+      "UPSC-CSE-2021-GS1-Q005"
+     ]
+    },
+    {
+     "label": "Bank balance sheet / lending risk / stressed assets",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q080",
+      "UPSC-CSE-2017-GS1-Q064",
+      "UPSC-CSE-2019-GS1-Q064",
+      "UPSC-CSE-2019-GS1-Q072",
+      "UPSC-CSE-2020-GS1-Q062",
+      "UPSC-CSE-2024-GS1-Q043"
+     ]
+    },
+    {
+     "label": "Capital adequacy / governance",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q065",
+      "UPSC-CSE-2018-GS1-Q016",
+      "UPSC-CSE-2018-GS1-Q096",
+      "UPSC-CSE-2019-GS1-Q073",
+      "UPSC-CSE-2022-GS1-Q064",
+      "UPSC-CSE-2026-GS1-Q063"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2020-GS1-Q057",
+      "UPPCS-2020-GS1-Q147",
+      "UPPCS-2022-GS1-Q026",
+      "UPPCS-2022-GS1-Q090",
+      "UPPCS-2024-GS1-Q117"
+     ]
+    }
+   ],
+   "synthesis": "- Highest elimination value = **institution category → what it can accept/lend/issue → regulator → deposit insurance → central-bank access**.\n- UPSC repeatedly converts current banking developments into durable classification questions: NBFC vs bank; PB vs SFB; UCB/PACS; PSB governance; foreign-bank WOS.\n- Inclusion questions move from scheme names → **delivery architecture** (Lead Bank, Service Area, BC, SHG, PSL, TReDS, FI-Index).\n- NPA questions prefer **mechanism/purpose**, not current NPA ratios.\n- Basel questions test **why capital/liquidity buffers exist**, not memorisation of every transition schedule."
+  },
+  "money-rbi-monetary-policy": {
+   "upsc": [
+    {
+     "label": "RBI functions / legal architecture / lender of last resort",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q075",
+      "UPSC-CSE-2021-GS1-Q001",
+      "UPSC-CSE-2021-GS1-Q015",
+      "UPSC-CSE-2025-GS1-Q002"
+     ]
+    },
+    {
+     "label": "Monetary aggregates / liquidity / multiplier",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q077",
+      "UPSC-CSE-2013-GS1-Q074",
+      "UPSC-CSE-2019-GS1-Q090",
+      "UPSC-CSE-2020-GS1-Q050",
+      "UPSC-CSE-2021-GS1-Q011"
+     ]
+    },
+    {
+     "label": "Instruments + direction-of-effect",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q088",
+      "UPSC-CSE-2013-GS1-Q043",
+      "UPSC-CSE-2013-GS1-Q075",
+      "UPSC-CSE-2014-GS1-Q031",
+      "UPSC-CSE-2014-GS1-Q033",
+      "UPSC-CSE-2014-GS1-Q061",
+      "UPSC-CSE-2015-GS1-Q022",
+      "UPSC-CSE-2015-GS1-Q086",
+      "UPSC-CSE-2015-GS1-Q087",
+      "UPSC-CSE-2016-GS1-Q043",
+      "UPSC-CSE-2017-GS1-Q011",
+      "UPSC-CSE-2020-GS1-Q057",
+      "UPSC-CSE-2022-GS1-Q003",
+      "UPSC-CSE-2023-GS1-Q022",
+      "UPSC-CSE-2023-GS1-Q024"
+     ]
+    },
+    {
+     "label": "Bonds/yields as monetary-transmission bridge",
+     "ids": [
+      "UPSC-CSE-2021-GS1-Q006"
+     ]
+    },
+    {
+     "label": "Legal tender + CBDC",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q046",
+      "UPSC-CSE-2023-GS1-Q072",
+      "UPSC-CSE-2024-GS1-Q053",
+      "UPSC-CSE-2026-GS1-Q055"
+     ]
+    }
+   ],
+   "uppcs": [],
+   "synthesis": "- Memorise **direction chains**, not just definitions: tool ↑/↓ → bank reserves/funding cost → credit/money → demand → inflation/growth.\n- Distinguish **stock/aggregate identity** questions from **credit-creation process** questions.\n- RBI PYQs now include **balance-sheet/income, governance and CBDC** in addition to classic repo/CRR/SLR.\n- Monetary transmission bridge: policy rate → overnight rates → bank funding/deposit/lending rates + bond yields → consumption/investment → output/inflation."
+  },
+  "financial-markets": {
+   "upsc": [
+    {
+     "label": "Market classification / money-market instruments",
+     "ids": [
+      "UPSC-CSE-2020-GS1-Q070",
+      "UPSC-CSE-2023-GS1-Q025",
+      "UPSC-CSE-2024-GS1-Q040"
+     ]
+    },
+    {
+     "label": "Government securities / debt instruments",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q008",
+      "UPSC-CSE-2016-GS1-Q071",
+      "UPSC-CSE-2018-GS1-Q056",
+      "UPSC-CSE-2021-GS1-Q006",
+      "UPSC-CSE-2021-GS1-Q013",
+      "UPSC-CSE-2022-GS1-Q005",
+      "UPSC-CSE-2022-GS1-Q065",
+      "UPSC-CSE-2024-GS1-Q043",
+      "UPSC-CSE-2024-GS1-Q051",
+      "UPSC-CSE-2025-GS1-Q007",
+      "UPSC-CSE-2026-GS1-Q057"
+     ]
+    },
+    {
+     "label": "Equity / market structure / risk metric",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q073",
+      "UPSC-CSE-2025-GS1-Q008"
+     ]
+    },
+    {
+     "label": "Funds / pooled vehicles / infrastructure trusts",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q028",
+      "UPSC-CSE-2023-GS1-Q021",
+      "UPSC-CSE-2025-GS1-Q001"
+     ]
+    },
+    {
+     "label": "Regulators / disclosure / credit rating",
+     "ids": [
+      "UPSC-CSE-2022-GS1-Q063",
+      "UPSC-CSE-2025-GS1-Q004",
+      "UPSC-CSE-2026-GS1-Q063"
+     ]
+    },
+    {
+     "label": "Foreign/derivative participation",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q067",
+      "UPSC-CSE-2024-GS1-Q042",
+      "UPSC-CSE-2024-GS1-Q044"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2020-GS1-Q135",
+      "UPPCS-2021-GS1-Q109"
+     ]
+    }
+   ],
+   "synthesis": "- First elimination axis = **maturity + issuer + security/claim + regulator + tradability**.\n- UPSC increasingly asks unfamiliar instrument names but solvable by family: debt/equity/derivative/pooled vehicle/money-market claim.\n- Keep **legal rights** distinct: lender vs owner; coupon vs dividend; priority at liquidation; conversion rights.\n- Treat market statistics, index constituents and investment ceilings as current-layer examples only."
+  },
+  "digital-payments": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q043",
+      "UPSC-CSE-2017-GS1-Q079",
+      "UPSC-CSE-2018-GS1-Q006",
+      "UPSC-CSE-2018-GS1-Q015",
+      "UPSC-CSE-2018-GS1-Q028",
+      "UPSC-CSE-2019-GS1-Q087",
+      "UPSC-CSE-2025-GS1-Q068",
+      "UPSC-CSE-2025-GS1-Q069",
+      "UPSC-CSE-2026-GS1-Q055"
+     ]
+    }
+   ],
+   "uppcs": [],
+   "synthesis": "- Core traps = **operator/owner** (RBI vs NPCI), **settlement mode** (real-time gross vs batch), **underlying money** (bank deposit vs CBDC), **fee bearer** (MDR), **data residency**.\n- UPI international reach is dynamic; durable note = interoperability/cross-border linkage possible, not a permanent country list."
+  },
+  "budget-fiscal-policy": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q008",
+      "UPSC-CSE-2011-GS1-Q037",
+      "UPSC-CSE-2011-GS1-Q085",
+      "UPSC-CSE-2013-GS1-Q044",
+      "UPSC-CSE-2013-GS1-Q084",
+      "UPSC-CSE-2014-GS1-Q100",
+      "UPSC-CSE-2015-GS1-Q060",
+      "UPSC-CSE-2015-GS1-Q098",
+      "UPSC-CSE-2016-GS1-Q003",
+      "UPSC-CSE-2016-GS1-Q012",
+      "UPSC-CSE-2017-GS1-Q094",
+      "UPSC-CSE-2018-GS1-Q009",
+      "UPSC-CSE-2020-GS1-Q006",
+      "UPSC-CSE-2021-GS1-Q010",
+      "UPSC-CSE-2022-GS1-Q009",
+      "UPSC-CSE-2025-GS1-Q010",
+      "UPSC-CSE-2025-GS1-Q061",
+      "UPSC-CSE-2025-GS1-Q065",
+      "UPSC-CSE-2026-GS1-Q059"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2020-GS1-Q143",
+      "UPPCS-2021-GS1-Q134",
+      "UPPCS-2022-GS1-Q007",
+      "UPPCS-2023-GS1-Q121",
+      "UPPCS-2023-GS1-Q138",
+      "UPPCS-2023-GS1-Q140",
+      "UPPCS-2023-GS1-Q150",
+      "UPPCS-2024-GS1-Q095"
+     ]
+    }
+   ],
+   "synthesis": "Prioritise:\n1. **Revenue vs capital** classification.\n2. **RD / FD / PD** arithmetic and direction.\n3. Fiscal expansion/contraction and **crowding out**.\n4. FRBM: purpose, statements, historical recommendations vs current framework.\n5. Public debt/liability classification; off-budget borrowing.\n6. Disinvestment and non-debt capital receipts.\n7. UPPCS Budget-specific figures as **replaceable current-affairs**, never frozen permanent facts."
+  },
+  "taxation": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q016",
+      "UPSC-CSE-2012-GS1-Q033",
+      "UPSC-CSE-2014-GS1-Q027",
+      "UPSC-CSE-2015-GS1-Q004",
+      "UPSC-CSE-2016-GS1-Q060",
+      "UPSC-CSE-2017-GS1-Q081",
+      "UPSC-CSE-2018-GS1-Q008",
+      "UPSC-CSE-2018-GS1-Q097",
+      "UPSC-CSE-2021-GS1-Q009",
+      "UPSC-CSE-2022-GS1-Q008",
+      "UPSC-CSE-2023-GS1-Q029",
+      "UPSC-CSE-2025-GS1-Q005",
+      "UPSC-CSE-2026-GS1-Q082"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q065",
+      "UPPCS-2018-GS1-Q137",
+      "UPPCS-2021-GS1-Q035",
+      "UPPCS-2021-GS1-Q098"
+     ]
+    }
+   ],
+   "synthesis": "Prioritise:\n1. Direct vs indirect; progressive/regressive/proportional.\n2. VAT → ITC → GST anti-cascading logic.\n3. CGST/SGST/IGST + destination principle.\n4. Tax-to-GDP, **buoyancy vs elasticity**.\n5. Cess vs surcharge vs divisible pool.\n6. BEPS, transfer pricing, GAAR, indirect transfers.\n7. Agricultural-income boundaries.\n8. Historical tax instruments (Equalisation Levy / Angel Tax) only as dated PYQ/reform anchors, not current taxes."
+  },
+  "international-institutions": {
+   "upsc": [
+    {
+     "label": "IMF — institution, liquidity, SDR, lending",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q075",
+      "UPSC-CSE-2014-GS1-Q099",
+      "UPSC-CSE-2015-GS1-Q094",
+      "UPSC-CSE-2016-GS1-Q014",
+      "UPSC-CSE-2016-GS1-Q015",
+      "UPSC-CSE-2016-GS1-Q075",
+      "UPSC-CSE-2020-GS1-Q017",
+      "UPSC-CSE-2022-GS1-Q001"
+     ]
+    },
+    {
+     "label": "World Bank Group / MDBs / new development banks",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q003",
+      "UPSC-CSE-2015-GS1-Q021",
+      "UPSC-CSE-2016-GS1-Q008",
+      "UPSC-CSE-2016-GS1-Q067",
+      "UPSC-CSE-2017-GS1-Q056",
+      "UPSC-CSE-2019-GS1-Q071",
+      "UPSC-CSE-2022-GS1-Q066",
+      "UPSC-CSE-2025-GS1-Q035",
+      "UPSC-CSE-2025-GS1-Q067"
+     ]
+    },
+    {
+     "label": "WTO agreements / agriculture / TRIMs / trade facilitation",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q031",
+      "UPSC-CSE-2016-GS1-Q011",
+      "UPSC-CSE-2017-GS1-Q083",
+      "UPSC-CSE-2020-GS1-Q056"
+     ]
+    },
+    {
+     "label": "TRIPS / GI / Indian IPR interface",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q099",
+      "UPSC-CSE-2017-GS1-Q034",
+      "UPSC-CSE-2018-GS1-Q026",
+      "UPSC-CSE-2019-GS1-Q057"
+     ]
+    },
+    {
+     "label": "Regional / bilateral trade architecture",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q041",
+      "UPSC-CSE-2017-GS1-Q082",
+      "UPSC-CSE-2018-GS1-Q034",
+      "UPSC-CSE-2023-GS1-Q087"
+     ]
+    },
+    {
+     "label": "Global debt/fiscal governance",
+     "ids": [
+      "UPSC-CSE-2022-GS1-Q004",
+      "UPSC-CSE-2023-GS1-Q089"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2021-GS1-Q073",
+      "UPPCS-2024-GS1-Q006",
+      "UPPCS-2024-GS1-Q111",
+      "UPPCS-2024-GS1-Q145",
+      "UPPCS-2025-GS1-Q060",
+      "UPPCS-2025-GS1-Q140"
+     ]
+    }
+   ],
+   "synthesis": "- Highest elimination value = **term/report/agreement → correct institution**.\n- WTO questions prefer **fine distinctions**: goods vs services; trade-distorting vs permitted support; dated force/ratification; exceptions.\n- IMF questions repeatedly test **SDR ≠ currency**, reserve tranche, lending-window attribution, reports.\n- WBG/MDB questions test **who lends to whom**, public vs private sector, headquarters/origin, and governance—not just names.\n- Trade-agreement questions often use **membership/partner lists that age quickly** → retain agreement architecture + explicitly dated examples only."
+  },
+  "external-sector": {
+   "upsc": [
+    {
+     "label": "BoP account classification",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q006",
+      "UPSC-CSE-2011-GS1-Q010",
+      "UPSC-CSE-2013-GS1-Q041",
+      "UPSC-CSE-2013-GS1-Q056",
+      "UPSC-CSE-2014-GS1-Q030"
+     ]
+    },
+    {
+     "label": "FDI/FPI and instruments",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q028",
+      "UPSC-CSE-2012-GS1-Q078",
+      "UPSC-CSE-2019-GS1-Q067",
+      "UPSC-CSE-2020-GS1-Q051",
+      "UPSC-CSE-2021-GS1-Q007"
+     ]
+    },
+    {
+     "label": "Forex reserves / international liquidity / vulnerability",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q083",
+      "UPSC-CSE-2016-GS1-Q018",
+      "UPSC-CSE-2019-GS1-Q063",
+      "UPSC-CSE-2019-GS1-Q065",
+      "UPSC-CSE-2020-GS1-Q049"
+     ]
+    },
+    {
+     "label": "Exchange-rate formation / management",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q079",
+      "UPSC-CSE-2015-GS1-Q034",
+      "UPSC-CSE-2019-GS1-Q086",
+      "UPSC-CSE-2021-GS1-Q008",
+      "UPSC-CSE-2022-GS1-Q002",
+      "UPSC-CSE-2022-GS1-Q003",
+      "UPSC-CSE-2023-GS1-Q024",
+      "UPSC-CSE-2026-GS1-Q012"
+     ]
+    },
+    {
+     "label": "India trade pattern / current-data style",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q077",
+      "UPSC-CSE-2018-GS1-Q010",
+      "UPSC-CSE-2019-GS1-Q037",
+      "UPSC-CSE-2019-GS1-Q084",
+      "UPSC-CSE-2020-GS1-Q064",
+      "UPSC-CSE-2023-GS1-Q088",
+      "UPSC-CSE-2024-GS1-Q092"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2020-GS1-Q135",
+      "UPPCS-2021-GS1-Q122",
+      "UPPCS-2024-GS1-Q054",
+      "UPPCS-2024-GS1-Q116",
+      "UPPCS-2024-GS1-Q120"
+     ]
+    }
+   ],
+   "synthesis": "- Core UPSC pattern = **classification + direction of effect**, not memorising the latest dollar/rupee number.\n- Elimination pivots: current vs financial flow; FDI vs FPI; debt vs non-debt; reserve vs flow; appreciation vs depreciation; NEER vs REER; market determination vs central-bank intervention.\n- Trade-data questions recur, but taxonomy explicitly makes the **figures/rankings replaceable**. Final notes need a current-affairs slot, not frozen statistics."
+  },
+  "government-schemes": {
+   "upsc": [
+    {
+     "label": "Health / nutrition / maternal-child health",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q023",
+      "UPSC-CSE-2012-GS1-Q026",
+      "UPSC-CSE-2012-GS1-Q052",
+      "UPSC-CSE-2016-GS1-Q032",
+      "UPSC-CSE-2017-GS1-Q023",
+      "UPSC-CSE-2022-GS1-Q019",
+      "UPSC-CSE-2023-GS1-Q051",
+      "UPSC-CSE-2023-GS1-Q052",
+      "UPSC-CSE-2024-GS1-Q099"
+     ]
+    },
+    {
+     "label": "Skills / education",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q063",
+      "UPSC-CSE-2017-GS1-Q003",
+      "UPSC-CSE-2017-GS1-Q061",
+      "UPSC-CSE-2017-GS1-Q063",
+      "UPSC-CSE-2017-GS1-Q088",
+      "UPSC-CSE-2017-GS1-Q089",
+      "UPSC-CSE-2018-GS1-Q078"
+     ]
+    },
+    {
+     "label": "Pension / insurance / social security",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q030",
+      "UPSC-CSE-2012-GS1-Q055",
+      "UPSC-CSE-2016-GS1-Q076",
+      "UPSC-CSE-2017-GS1-Q029",
+      "UPSC-CSE-2024-GS1-Q100"
+     ]
+    },
+    {
+     "label": "Rural employment / livelihood",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q041",
+      "UPSC-CSE-2011-GS1-Q084",
+      "UPSC-CSE-2012-GS1-Q031"
+     ]
+    },
+    {
+     "label": "Financial inclusion",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q001",
+      "UPSC-CSE-2016-GS1-Q026",
+      "UPSC-CSE-2016-GS1-Q073"
+     ]
+    },
+    {
+     "label": "Energy",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q007",
+      "UPSC-CSE-2025-GS1-Q070"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q134",
+      "UPPCS-2019-GS1-Q037",
+      "UPPCS-2019-GS1-Q072",
+      "UPPCS-2019-GS1-Q101",
+      "UPPCS-2020-GS1-Q015",
+      "UPPCS-2020-GS1-Q019",
+      "UPPCS-2020-GS1-Q121",
+      "UPPCS-2020-GS1-Q137",
+      "UPPCS-2020-GS1-Q140",
+      "UPPCS-2020-GS1-Q141",
+      "UPPCS-2020-GS1-Q147",
+      "UPPCS-2020-GS1-Q149",
+      "UPPCS-2021-GS1-Q118",
+      "UPPCS-2021-GS1-Q141",
+      "UPPCS-2022-GS1-Q028",
+      "UPPCS-2022-GS1-Q090",
+      "UPPCS-2023-GS1-Q075",
+      "UPPCS-2023-GS1-Q131",
+      "UPPCS-2023-GS1-Q138",
+      "UPPCS-2023-GS1-Q143",
+      "UPPCS-2023-GS1-Q149",
+      "UPPCS-2024-GS1-Q007",
+      "UPPCS-2024-GS1-Q093",
+      "UPPCS-2024-GS1-Q114",
+      "UPPCS-2025-GS1-Q029",
+      "UPPCS-2025-GS1-Q072",
+      "UPPCS-2025-GS1-Q083",
+      "UPPCS-2025-GS1-Q115",
+      "UPPCS-2025-GS1-Q123",
+      "UPPCS-2025-GS1-Q129",
+      "UPPCS-2025-GS1-Q134"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC repeatedly converts a familiar scheme into a **fine-print elimination test**: compulsory vs voluntary; target group; whether an entitlement is guaranteed; exact scheme boundary; institutional owner; whether a benefit belongs to a sibling scheme.\n- Highest-return memory format = **Scheme → objective → target → ministry/agency → one eligibility/exclusion → financing/type → famous trap**.\n- “Ayushman Bharat”, “skill mission”, “social security” are umbrellas/families, not safe single labels; distinguish components.\n- Rural-employment law is a live correction point: old MGNREGA PYQs remain historically examinable, but current law changed in 2026."
+  },
+  "industry-labour-infrastructure": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q039",
+      "UPSC-CSE-2015-GS1-Q008",
+      "UPSC-CSE-2017-GS1-Q034",
+      "UPSC-CSE-2017-GS1-Q055",
+      "UPSC-CSE-2017-GS1-Q056",
+      "UPSC-CSE-2018-GS1-Q030",
+      "UPSC-CSE-2019-GS1-Q076",
+      "UPSC-CSE-2021-GS1-Q002",
+      "UPSC-CSE-2022-GS1-Q071",
+      "UPSC-CSE-2023-GS1-Q030",
+      "UPSC-CSE-2023-GS1-Q071",
+      "UPSC-CSE-2024-GS1-Q050",
+      "UPSC-CSE-2026-GS1-Q058"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q148",
+      "UPPCS-2020-GS1-Q046",
+      "UPPCS-2020-GS1-Q058",
+      "UPPCS-2020-GS1-Q131",
+      "UPPCS-2021-GS1-Q135",
+      "UPPCS-2022-GS1-Q128",
+      "UPPCS-2023-GS1-Q078",
+      "UPPCS-2023-GS1-Q136",
+      "UPPCS-2024-GS1-Q145"
+     ]
+    }
+   ],
+   "synthesis": "- High-elimination distinctions: **industry policy vs infrastructure-finance institution vs regulator**; **MSME definition vs PSL treatment**; **CSR applicability vs valid CSR activity**; **old labour Acts vs current Codes**.\n- Weight/base-year questions age rapidly. Preserve the **concept and publisher/agency**, update the current base/threshold in the correction layer."
+  },
+  "poverty-employment": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q084",
+      "UPSC-CSE-2012-GS1-Q032",
+      "UPSC-CSE-2013-GS1-Q067",
+      "UPSC-CSE-2018-GS1-Q048",
+      "UPSC-CSE-2019-GS1-Q024",
+      "UPSC-CSE-2026-GS1-Q065"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q063",
+      "UPPCS-2018-GS1-Q135",
+      "UPPCS-2018-GS1-Q141",
+      "UPPCS-2019-GS1-Q066",
+      "UPPCS-2019-GS1-Q143",
+      "UPPCS-2019-GS1-Q147",
+      "UPPCS-2020-GS1-Q003",
+      "UPPCS-2020-GS1-Q007",
+      "UPPCS-2020-GS1-Q119",
+      "UPPCS-2022-GS1-Q013",
+      "UPPCS-2022-GS1-Q018",
+      "UPPCS-2022-GS1-Q122",
+      "UPPCS-2023-GS1-Q126",
+      "UPPCS-2023-GS1-Q130",
+      "UPPCS-2023-GS1-Q142",
+      "UPPCS-2024-GS1-Q049",
+      "UPPCS-2024-GS1-Q050",
+      "UPPCS-2025-GS1-Q019",
+      "UPPCS-2025-GS1-Q065",
+      "UPPCS-2025-GS1-Q076",
+      "UPPCS-2025-GS1-Q101"
+     ]
+    },
+    {
+     "label": "Review flag",
+     "ids": [
+      "UPPCS-2019-GS1-Q143"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC: concept-first, often asks **why a line differs**, what an index actually measures, or best-fit unemployment type.\n- UPPCS: adds committee chronology, author/term recall and numeric trends.\n- Permanent payload should make all **method/definition** questions answerable without freezing transient poverty ratios or unemployment rates."
+  },
+  "indices-reports": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q032",
+      "UPSC-CSE-2016-GS1-Q002",
+      "UPSC-CSE-2016-GS1-Q037",
+      "UPSC-CSE-2017-GS1-Q009",
+      "UPSC-CSE-2019-GS1-Q003",
+      "UPSC-CSE-2019-GS1-Q077"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q067",
+      "UPPCS-2018-GS1-Q102",
+      "UPPCS-2018-GS1-Q105",
+      "UPPCS-2018-GS1-Q133",
+      "UPPCS-2019-GS1-Q065",
+      "UPPCS-2019-GS1-Q066",
+      "UPPCS-2019-GS1-Q112",
+      "UPPCS-2019-GS1-Q149",
+      "UPPCS-2019-GS1-Q150",
+      "UPPCS-2020-GS1-Q005",
+      "UPPCS-2020-GS1-Q113",
+      "UPPCS-2020-GS1-Q129",
+      "UPPCS-2020-GS1-Q133",
+      "UPPCS-2020-GS1-Q145",
+      "UPPCS-2021-GS1-Q052",
+      "UPPCS-2021-GS1-Q116",
+      "UPPCS-2021-GS1-Q142",
+      "UPPCS-2022-GS1-Q023",
+      "UPPCS-2022-GS1-Q029",
+      "UPPCS-2022-GS1-Q073",
+      "UPPCS-2022-GS1-Q118",
+      "UPPCS-2023-GS1-Q073",
+      "UPPCS-2023-GS1-Q133",
+      "UPPCS-2023-GS1-Q134",
+      "UPPCS-2023-GS1-Q148",
+      "UPPCS-2024-GS1-Q050",
+      "UPPCS-2024-GS1-Q092",
+      "UPPCS-2024-GS1-Q119",
+      "UPPCS-2025-GS1-Q059",
+      "UPPCS-2025-GS1-Q076",
+      "UPPCS-2025-GS1-Q111",
+      "UPPCS-2025-GS1-Q132"
+     ]
+    },
+    {
+     "label": "Review flags",
+     "ids": [
+      "UPPCS-2018-GS1-Q067",
+      "UPPCS-2019-GS1-Q065"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-return table = **Index/report | producer | components | current-status trap**.\n- Never memorize a current rank in the permanent layer; attach rank through the Current Affairs layer at revision time.\n- Distinguish **historical publisher at time of PYQ** from **current publisher** (especially GHI)."
+  },
+  "social-concepts": {
+   "upsc": [],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q046",
+      "UPPCS-2020-GS1-Q027",
+      "UPPCS-2021-GS1-Q071",
+      "UPPCS-2022-GS1-Q061",
+      "UPPCS-2023-GS1-Q135"
+     ]
+    }
+   ],
+   "synthesis": "- Pure recall + one-line concept recognition.\n- Five compact cards are sufficient; no Sociology-theory expansion is justified by taxonomy/PYQs."
+  }
+ }
+}

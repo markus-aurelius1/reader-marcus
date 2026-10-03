@@ -2,6 +2,7 @@
 // never imports a subject by name, so adding a subject needs no application code.
 import library from '../../content/library.json'
 import { parseChapter } from './md'
+import { buildGraph, setInstalled, type LinkGraph } from './links'
 
 export interface Section {
   id: string
@@ -17,6 +18,7 @@ export interface Chapter {
   topicTitle: string
   title: string
   taxonomy: string[]
+  related: string[] // cross-link ids from the chapter's `related:` frontmatter
   sections: Section[]
 }
 export interface SubjectMeta {
@@ -72,6 +74,8 @@ for (const [path, meta] of Object.entries(metaFiles)) {
   metas.set(`${stage}/${id}`, { ...meta, stage, id })
 }
 
+setInstalled((key) => metas.has(key))
+
 export const stages: LibStage[] = library.stages.map((st) => {
   const groups: LibGroup[] = st.groups.map((g) => ({
     id: g.id,
@@ -92,7 +96,9 @@ export const stages: LibStage[] = library.stages.map((st) => {
 })
 
 export const stageTitle = (id: string) => stages.find((s) => s.id === id)?.title ?? id
-export const availableKeys = () => [...metas.keys()]
+// library order (Prelims before Mains, in the order of library.json), not file-system order
+const ordered = stages.flatMap((st) => st.groups.flatMap((g) => g.subjects.filter((s) => s.available).map((s) => s.key)))
+export const availableKeys = () => ordered
 export const subjectTitle = (key: string) => metas.get(key)?.title ?? key
 
 const loaded = new Map<string, Subject>()
@@ -110,6 +116,8 @@ export function getSubject(key: string): Subject | null {
 export const getLoaded = getSubject
 export const allSubjects = () => availableKeys().map((k) => getSubject(k)!)
 export const allLoaded = allSubjects
+
+const list = (v?: string) => (v || '').split(',').map((s) => s.trim()).filter(Boolean)
 
 function build(key: string): Subject {
   const meta = metas.get(key)!
@@ -131,7 +139,8 @@ function build(key: string): Subject {
         topicId: t.id,
         topicTitle: t.title,
         title: raw.meta.title || id,
-        taxonomy: (raw.meta.taxonomy || '').split(',').map((s) => s.trim()).filter(Boolean),
+        taxonomy: list(raw.meta.taxonomy),
+        related: list(raw.meta.related),
         sections: raw.sections.map((s) => ({ ...s, key: `${ck}/${s.id}` })),
       })
     }
@@ -146,3 +155,7 @@ export function sectionByKey(key: string): Section | undefined {
     ?.chapters.find((c) => c.id === chapter)
     ?.sections.find((s) => s.key === key)
 }
+
+let graph: LinkGraph | null = null
+/** Cross-links between every section and chapter in the library (built once; the notes are static). */
+export const linkGraph = () => (graph ??= buildGraph(allSubjects()))

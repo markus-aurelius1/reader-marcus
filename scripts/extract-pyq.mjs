@@ -2,6 +2,11 @@
 // Only what the pack records is extracted: question IDs grouped by the pack's own
 // cluster labels, plus its "Demand synthesis" notes. Nothing is inferred.
 //
+// Two pack layouts are understood:
+//   leaf packs   "# … Source Pack" with **taxonomy_id** and "## 2. PYQ Demand Map" → "### UPSC"
+//   topic packs  "## … Topic Source Pack" with a child-subtopic ledger (name | taxonomy_id) and
+//                "### 3. PYQ Demand Map" → "#### A. <child>" → "##### UPSC"
+//
 //   node scripts/extract-pyq.mjs <source-pack.md> <content/stage/subject>
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -21,8 +26,9 @@ for (const f of readdirSync(join(subjectDir, 'chapters'))) {
 }
 
 const ID = /(?:UPSC-CSE|UPPCS)-\d{4}-GS\d-Q\d+/g
-// full IDs, plus short forms such as `Q106` that inherit the exam/year of the ID before them
-const ID_OR_SHORT = /((?:UPSC-CSE|UPPCS)-\d{4}-GS\d-)Q(\d+)|`Q(\d+)`/g
+// full IDs, plus the short forms packs use after one: `Q106`, "Q072, Q101", `2017-Q040`,
+// and year-led rows such as "2019 → `Q066, Q143`" (exam taken from the block being read)
+const TOKEN = /((?:UPSC-CSE|UPPCS)-)(\d{4})(-GS\d-)Q(\d+)|\b(\d{4})-Q(\d+)|(?<![\w-])Q(\d{2,3})\b/g
 const strip = (s) =>
   s
     .replace(/\[[^\]]*\]\([^)]*\)/g, '') // citation links
@@ -33,28 +39,33 @@ const cleanLabel = (s) =>
   s
     .replace(ID, '')
     .replace(/[`*|]/g, '')
+    .replace(/^\d+\.\s*/, '')
+    .replace(/\s*\(\d+\)\s*$/, '')
     .replace(/\s*[:—–-]\s*$/, '')
     .replace(/\s+/g, ' ')
     .trim()
+const slug = (s) => s.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
 
-function clusters(block) {
+function clusters(block, exam) {
   const out = new Map()
   let label = 'General'
   const add = (l, ids) => {
     if (!ids.length) return
-    const key = l || 'General'
+    const key = !l || /^canonical semantic set/i.test(l) ? 'General' : l
     out.set(key, [...new Set([...(out.get(key) ?? []), ...ids])])
   }
   for (const raw of block.split('\n')) {
     const line = raw.trim()
     if (!line || /^\|?\s*-{3}/.test(line)) continue
     const ids = []
-    let prefix = ''
-    for (const m of line.matchAll(ID_OR_SHORT)) {
-      if (m[1]) {
-        prefix = m[1]
-        ids.push(m[1] + 'Q' + m[2])
-      } else if (prefix) ids.push(prefix + 'Q' + m[3])
+    let pre = null // [exam, year, paper] carried from the last full ID on the line
+    const lead = line.match(/^(\d{4})\s*→/)
+    if (lead && exam) pre = [exam, lead[1], '-GS1-']
+    for (const m of line.matchAll(TOKEN)) {
+      if (m[1]) pre = [m[1], m[2], m[3]]
+      else if (!pre) continue
+      else if (m[5]) pre = [pre[0], m[5], pre[2]]
+      ids.push(`${pre[0]}${pre[1]}${pre[2]}Q${m[4] ?? m[6] ?? m[7]}`)
     }
     if (line.startsWith('|')) {
       const cells = line.split('|').map((c) => c.trim()).filter(Boolean)
@@ -68,26 +79,51 @@ function clusters(block) {
       else if (!/^demand/i.test(l)) label = l // heading line: the ID lines after it belong to it
       continue
     }
-    const lead = line.match(/^[-*]?\s*([A-Z][^`:]{3,60}):\s*`/)
-    add(lead ? cleanLabel(lead[1]) : label, ids)
+    const named = line.match(/^[-*]?\s*([A-Z][^`:]{3,60}):\s*`/)
+    add(named ? cleanLabel(named[1]) : label, ids)
   }
-  for (const k of [...out.keys()]) if (/^canonical|integrity|editable|^semantic-review/i.test(k)) out.delete(k)
+  // audit notes are not demand: integrity remarks, de-duplication pointers, rejected / cancelled records
+  for (const k of [...out.keys()]) if (/^canonical|integrity|editable|^semantic-review|^semantic de-?dup|^rejected/i.test(k)) out.delete(k)
   return [...out.entries()].map(([label, ids]) => ({ label, ids: ids.sort() }))
 }
 
 const pack = readFileSync(packPath, 'utf8').replace(/\r\n/g, '\n')
-const result = { source: packPath.replace(/\\/g, '/'), chapters: {} }
+const result = { source: packPath.replace(/[\\]/g, '/'), chapters: {} }
+const put = (chapter, entry) => {
+  const cur = result.chapters[chapter]
+  // a chapter that owns several taxonomy nodes collects all of their demand
+  result.chapters[chapter] = cur
+    ? { upsc: [...cur.upsc, ...entry.upsc], uppcs: [...cur.uppcs, ...entry.uppcs], synthesis: [cur.synthesis, entry.synthesis].filter(Boolean).join('\n\n') }
+    : entry
+}
+const entry = (body, h) => {
+  const sec = (name) => body.match(new RegExp(`${h} ${name}[\\n]([^]*?)(?=[\\n]#{2,${h.length}} |$)`))?.[1] ?? ''
+  return { upsc: clusters(sec('UPSC'), 'UPSC-CSE-'), uppcs: clusters(sec('UPPCS'), 'UPPCS-'), synthesis: strip(sec('Demand synthesis')).replace(/\n---\s*$/, '').trim() }
+}
+
+// leaf packs
 for (const part of pack.split(/\n(?=# [^\n]*Source Pack)/)) {
   const tax = part.match(/\*\*taxonomy_id:\*\*\s*`?([\w-]+)`?/)
   const chapter = tax && byTaxonomy.get(tax[1])
   if (!chapter) continue // parent aggregates and unmapped packs are skipped
   const demand = part.match(/\n## 2\. PYQ Demand Map\n([\s\S]*?)(?=\n## 3\.)/)
+  if (demand) put(chapter, entry(demand[1], '###'))
+}
+
+// topic packs: children are named in the ledger, then mapped A/B/C… in the demand map
+for (const part of pack.split(/\n(?=## [^\n]*Topic Source Pack)/).slice(1)) {
+  const byName = new Map()
+  for (const row of part.matchAll(/^\|\s*([^|`]+?)\s*\|\s*`([\w.-]+)`\s*\|/gm)) {
+    // the ledger may abbreviate an id as `...-suffix`
+    const id = row[2].startsWith('...') ? [...byTaxonomy.keys()].find((t) => t.endsWith(row[2].slice(3))) : row[2]
+    if (id && byTaxonomy.has(id)) byName.set(slug(row[1]), byTaxonomy.get(id))
+  }
+  const demand = part.match(/\n### 3\. PYQ Demand Map\n([\s\S]*?)(?=\n### 4\.)/)
   if (!demand) continue
-  const sec = (name) => demand[1].match(new RegExp(`### ${name}\\n([\\s\\S]*?)(?=\\n### |$)`))?.[1] ?? ''
-  result.chapters[chapter] = {
-    upsc: clusters(sec('UPSC')),
-    uppcs: clusters(sec('UPPCS')),
-    synthesis: strip(sec('Demand synthesis')).trim(),
+  for (const child of demand[1].split(/\n(?=#### [A-Z]\. )/)) {
+    const name = child.match(/^#### [A-Z]\. (.+)$/m)
+    const chapter = name && byName.get(slug(name[1]))
+    if (chapter) put(chapter, entry(child, '#####'))
   }
 }
 
