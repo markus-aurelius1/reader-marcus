@@ -51,7 +51,7 @@ function clusters(block, exam) {
   let label = 'General'
   const add = (l, ids) => {
     if (!ids.length) return
-    const key = !l || /^canonical semantic set/i.test(l) ? 'General' : l
+    const key = !l || /^canonical (semantic set|ids?$)/i.test(l) ? 'General' : l
     out.set(key, [...new Set([...(out.get(key) ?? []), ...ids])])
   }
   for (const raw of block.split('\n')) {

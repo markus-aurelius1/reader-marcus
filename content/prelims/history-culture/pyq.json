@@ -1,0 +1,1299 @@
+{
+ "source": "source/History-Culture-v01-source-pack-CLAUDE-READY.md",
+ "chapters": {
+  "society-economy-terms": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q056",
+      "UPSC-CSE-2012-GS1-Q021",
+      "UPSC-CSE-2012-GS1-Q082",
+      "UPSC-CSE-2014-GS1-Q021",
+      "UPSC-CSE-2015-GS1-Q055",
+      "UPSC-CSE-2016-GS1-Q038",
+      "UPSC-CSE-2016-GS1-Q088",
+      "UPSC-CSE-2019-GS1-Q001",
+      "UPSC-CSE-2019-GS1-Q010",
+      "UPSC-CSE-2019-GS1-Q012",
+      "UPSC-CSE-2020-GS1-Q025",
+      "UPSC-CSE-2020-GS1-Q029",
+      "UPSC-CSE-2020-GS1-Q082",
+      "UPSC-CSE-2021-GS1-Q040",
+      "UPSC-CSE-2021-GS1-Q045",
+      "UPSC-CSE-2022-GS1-Q052",
+      "UPSC-CSE-2022-GS1-Q058",
+      "UPSC-CSE-2022-GS1-Q060",
+      "UPSC-CSE-2023-GS1-Q043",
+      "UPSC-CSE-2026-GS1-Q017"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q037",
+      "UPPCS-2018-GS1-Q041",
+      "UPPCS-2019-GS1-Q015",
+      "UPPCS-2019-GS1-Q087",
+      "UPPCS-2020-GS1-Q038",
+      "UPPCS-2023-GS1-Q026",
+      "UPPCS-2024-GS1-Q002"
+     ]
+    }
+   ],
+   "synthesis": "Know the **term → period → function → closest confusable term**. UPSC tends to ask obscure terms through elimination; UPPCS broadens into officer-duty and direct-definition recall. Ports and land/revenue terms repeatedly bridge this child with Maurya, South India, Sultanate and Mughals."
+  },
+  "prehistory-harappan": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q092",
+      "UPSC-CSE-2013-GS1-Q045",
+      "UPSC-CSE-2017-GS1-Q002",
+      "UPSC-CSE-2019-GS1-Q007",
+      "UPSC-CSE-2021-GS1-Q032",
+      "UPSC-CSE-2024-GS1-Q055",
+      "UPSC-CSE-2025-GS1-Q072",
+      "UPSC-CSE-2026-GS1-Q018"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q036",
+      "UPPCS-2018-GS1-Q116",
+      "UPPCS-2020-GS1-Q010",
+      "UPPCS-2020-GS1-Q012",
+      "UPPCS-2020-GS1-Q021",
+      "UPPCS-2021-GS1-Q018",
+      "UPPCS-2022-GS1-Q056",
+      "UPPCS-2023-GS1-Q028",
+      "UPPCS-2025-GS1-Q087"
+     ]
+    }
+   ],
+   "synthesis": "Prepare through **phase + diagnostic material + site-feature matrix + evidence limits**. Dholavira, Lothal, Kalibangan, Mohenjo-daro, Harappa, Rakhigarhi, Alamgirpur/Hulas/Mandi are the elimination core. Avoid converting debated archaeological interpretations into certainties."
+  },
+  "mahajanapadas-mauryas": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q039",
+      "UPSC-CSE-2019-GS1-Q008",
+      "UPSC-CSE-2020-GS1-Q030",
+      "UPSC-CSE-2022-GS1-Q060",
+      "UPSC-CSE-2022-GS1-Q091",
+      "UPSC-CSE-2025-GS1-Q019"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q114",
+      "UPPCS-2020-GS1-Q004",
+      "UPPCS-2020-GS1-Q006",
+      "UPPCS-2021-GS1-Q125",
+      "UPPCS-2022-GS1-Q001",
+      "UPPCS-2023-GS1-Q029",
+      "UPPCS-2024-GS1-Q020"
+     ]
+    }
+   ],
+   "synthesis": "Three layers: **Mahajanapada map → Mauryan state/officers → Ashokan epigraphy**. Edict type/site/message and inscriptional evidence outrank later legends. UPPCS requires a wider post-Mauryan ruler–inscription–language matrix."
+  },
+  "mughals": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q093",
+      "UPSC-CSE-2015-GS1-Q041",
+      "UPSC-CSE-2019-GS1-Q001",
+      "UPSC-CSE-2019-GS1-Q016",
+      "UPSC-CSE-2019-GS1-Q017",
+      "UPSC-CSE-2021-GS1-Q045",
+      "UPSC-CSE-2022-GS1-Q094"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q041",
+      "UPPCS-2019-GS1-Q012",
+      "UPPCS-2019-GS1-Q089",
+      "UPPCS-2019-GS1-Q091",
+      "UPPCS-2019-GS1-Q092",
+      "UPPCS-2020-GS1-Q034",
+      "UPPCS-2020-GS1-Q036",
+      "UPPCS-2020-GS1-Q038",
+      "UPPCS-2020-GS1-Q042",
+      "UPPCS-2020-GS1-Q044",
+      "UPPCS-2021-GS1-Q001",
+      "UPPCS-2022-GS1-Q019",
+      "UPPCS-2022-GS1-Q143",
+      "UPPCS-2023-GS1-Q034",
+      "UPPCS-2023-GS1-Q038",
+      "UPPCS-2024-GS1-Q004",
+      "UPPCS-2024-GS1-Q018",
+      "UPPCS-2025-GS1-Q003",
+      "UPPCS-2025-GS1-Q049",
+      "UPPCS-2025-GS1-Q057",
+      "UPPCS-2025-GS1-Q079"
+     ]
+    }
+   ],
+   "synthesis": "UPSC prioritizes **administrative distinctions + cultural attribution**; UPPCS adds **chronology, battles, officers, Sur–Maratha–Deccan extensions**. The pack therefore retains a compact political spine but gives much more space to mansab–jagir–zamindar and revenue machinery."
+  },
+  "sangam-south-india": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2020-GS1-Q024",
+      "UPSC-CSE-2022-GS1-Q093",
+      "UPSC-CSE-2023-GS1-Q043",
+      "UPSC-CSE-2023-GS1-Q044",
+      "UPSC-CSE-2023-GS1-Q045",
+      "UPSC-CSE-2025-GS1-Q014",
+      "UPSC-CSE-2025-GS1-Q016",
+      "UPSC-CSE-2026-GS1-Q005"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q044",
+      "UPPCS-2019-GS1-Q090",
+      "UPPCS-2020-GS1-Q008",
+      "UPPCS-2024-GS1-Q038",
+      "UPPCS-2025-GS1-Q121"
+     ]
+    }
+   ],
+   "synthesis": "Prepare **Sangam polity/society/trade + Pallava ruler-title + Chola ruler-expansion + Chola local/land terminology**. Traditional literary narratives are useful only when labelled as tradition; inscriptions and secure chronology control corrections."
+  },
+  "vijayanagara": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q047",
+      "UPSC-CSE-2019-GS1-Q011",
+      "UPSC-CSE-2019-GS1-Q023",
+      "UPSC-CSE-2021-GS1-Q035",
+      "UPSC-CSE-2021-GS1-Q038",
+      "UPSC-CSE-2022-GS1-Q059",
+      "UPSC-CSE-2023-GS1-Q048",
+      "UPSC-CSE-2024-GS1-Q056"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2023-GS1-Q033"
+     ]
+    }
+   ],
+   "synthesis": "High-yield axis = **dynasty/ruler chronology + traveller → ruler + Tungabhadra irrigation + Portuguese/horse-trade connection + nayankara/amaram + Bahmani rivalry**. The corpus is low-volume but unusually specific, so site/ruler associations must be precise."
+  },
+  "delhi-sultanate": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q012",
+      "UPSC-CSE-2021-GS1-Q038",
+      "UPSC-CSE-2022-GS1-Q057"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q015",
+      "UPPCS-2019-GS1-Q016",
+      "UPPCS-2020-GS1-Q032",
+      "UPPCS-2022-GS1-Q044",
+      "UPPCS-2022-GS1-Q106",
+      "UPPCS-2023-GS1-Q034",
+      "UPPCS-2024-GS1-Q150",
+      "UPPCS-2025-GS1-Q030",
+      "UPPCS-2025-GS1-Q095"
+     ]
+    }
+   ],
+   "synthesis": "UPSC asks **synchronism + institutional precision**; UPPCS asks **order + names + buildings + chroniclers**. The minimum safe preparation is dynasty order, iqta mechanics, central departments, Alauddin reforms/campaigns, and Mongol timeline."
+  },
+  "historical-geography": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q035",
+      "UPSC-CSE-2017-GS1-Q051",
+      "UPSC-CSE-2019-GS1-Q023",
+      "UPSC-CSE-2020-GS1-Q082",
+      "UPSC-CSE-2020-GS1-Q097",
+      "UPSC-CSE-2023-GS1-Q043",
+      "UPSC-CSE-2025-GS1-Q017",
+      "UPSC-CSE-2026-GS1-Q003"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q044",
+      "UPPCS-2019-GS1-Q090",
+      "UPPCS-2024-GS1-Q038"
+     ]
+    }
+   ],
+   "synthesis": "This is a **pair-elimination** child. Memorize only historically consequential old-name/current-place, kingdom/capital, port/polity, and ancient-river pairs. Do not drift into generic physical geography."
+  },
+  "post-gupta-early-medieval": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2020-GS1-Q024",
+      "UPSC-CSE-2021-GS1-Q034",
+      "UPSC-CSE-2022-GS1-Q092",
+      "UPSC-CSE-2023-GS1-Q045",
+      "UPSC-CSE-2025-GS1-Q015",
+      "UPSC-CSE-2025-GS1-Q016"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q035",
+      "UPPCS-2018-GS1-Q044",
+      "UPPCS-2019-GS1-Q090",
+      "UPPCS-2024-GS1-Q149",
+      "UPPCS-2025-GS1-Q121"
+     ]
+    }
+   ],
+   "synthesis": "Think in three blocks: **c. 550–750 post-Gupta fragmentation → c. 750–1000 Pala–Pratihara–Rashtrakuta contest → c. 950–1200 regional powers**. UPSC repeatedly punishes dynasty displacement by 1–3 centuries."
+  },
+  "buddhism-jainism": {
+   "upsc": [
+    {
+     "label": "Doctrine / core concepts",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q077",
+      "UPSC-CSE-2012-GS1-Q022",
+      "UPSC-CSE-2013-GS1-Q037",
+      "UPSC-CSE-2013-GS1-Q047",
+      "UPSC-CSE-2016-GS1-Q050",
+      "UPSC-CSE-2020-GS1-Q031",
+      "UPSC-CSE-2020-GS1-Q071",
+      "UPSC-CSE-2023-GS1-Q047",
+      "UPSC-CSE-2024-GS1-Q054"
+     ]
+    },
+    {
+     "label": "Sects / schools / scholars / texts",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q053",
+      "UPSC-CSE-2018-GS1-Q071",
+      "UPSC-CSE-2018-GS1-Q074",
+      "UPSC-CSE-2019-GS1-Q009",
+      "UPSC-CSE-2020-GS1-Q022",
+      "UPSC-CSE-2022-GS1-Q055",
+      "UPSC-CSE-2022-GS1-Q056",
+      "UPSC-CSE-2023-GS1-Q046",
+      "UPSC-CSE-2024-GS1-Q064"
+     ]
+    },
+    {
+     "label": "Sites / regions / sacred landscape",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q025",
+      "UPSC-CSE-2014-GS1-Q089",
+      "UPSC-CSE-2015-GS1-Q039",
+      "UPSC-CSE-2023-GS1-Q041",
+      "UPSC-CSE-2023-GS1-Q082"
+     ]
+    },
+    {
+     "label": "Cross-topic but useful",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q072",
+      "UPSC-CSE-2013-GS1-Q036",
+      "UPSC-CSE-2017-GS1-Q069",
+      "UPSC-CSE-2023-GS1-Q042",
+      "UPSC-CSE-2026-GS1-Q002"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2021-GS1-Q057",
+      "UPPCS-2022-GS1-Q075",
+      "UPPCS-2023-GS1-Q024",
+      "UPPCS-2025-GS1-Q105"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC repeatedly tests **fine conceptual boundaries**, not biographies: nirvana, Bodhisattva, pāramitā, jīva, sect genealogy, epithets, text-author-tradition.\n- Sites are tested as **religion + place + sect** packages rather than isolated map points.\n- High elimination value: **Buddhist vs Jaina texts/scholars**, **Theravāda/Sthaviravāda vs Mahayana**, **Mahāsāṃghika/Lokottaravāda**, **Sautrāntika/Sarvāstivāda/Sammitīya**, **Śvetāmbara/Digambara/Sthānakavāsī**.\n- UPPCS adds **council sequence + Tirthankara site matching**."
+  },
+  "bhakti-sufi": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q069",
+      "UPSC-CSE-2013-GS1-Q052",
+      "UPSC-CSE-2014-GS1-Q090",
+      "UPSC-CSE-2016-GS1-Q017",
+      "UPSC-CSE-2019-GS1-Q013"
+     ]
+    },
+    {
+     "label": "Cross-linked",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q044",
+      "UPSC-CSE-2022-GS1-Q095"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q038",
+      "UPPCS-2020-GS1-Q040",
+      "UPPCS-2021-GS1-Q065",
+      "UPPCS-2022-GS1-Q066",
+      "UPPCS-2025-GS1-Q012",
+      "UPPCS-2025-GS1-Q074"
+     ]
+    }
+   ],
+   "synthesis": "- Core form = **person → teaching/text/order/site/contemporary**.\n- UPSC prefers **qualifier traps**: “all Bhakti saints rejected caste/idols,” “all Sufis avoided politics,” “Nirguna = same as Sufi,” etc. These are unsafe generalisations.\n- UPPCS prefers **chains and pairs**: guru–disciple, saint–centre, text–compiler, philosophy–teacher, chronological ordering."
+  },
+  "vedic-age-philosophy": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q100",
+      "UPSC-CSE-2012-GS1-Q073",
+      "UPSC-CSE-2013-GS1-Q058",
+      "UPSC-CSE-2014-GS1-Q047",
+      "UPSC-CSE-2014-GS1-Q054",
+      "UPSC-CSE-2022-GS1-Q095",
+      "UPSC-CSE-2024-GS1-Q058",
+      "UPSC-CSE-2026-GS1-Q001",
+      "UPSC-CSE-2026-GS1-Q010",
+      "UPSC-CSE-2026-GS1-Q020"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q111",
+      "UPPCS-2020-GS1-Q021",
+      "UPPCS-2022-GS1-Q066",
+      "UPPCS-2023-GS1-Q026",
+      "UPPCS-2023-GS1-Q030"
+     ]
+    }
+   ],
+   "synthesis": "- “Vedic Age” is not being asked as a generic narrative; demand is moving toward **textual micro-facts + evidence-based inference**.\n- Upanishads: chronology, source-text association, atman–brahman ideas, famous phrases/parables.\n- Philosophy: school–founder/text–ontology–epistemology–liberation mechanism; Vedanta sub-schools are especially match-question friendly."
+  },
+  "architecture-sculpture": {
+   "upsc": [
+    {
+     "label": "Temple architecture: styles + structural vocabulary",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q024",
+      "UPSC-CSE-2014-GS1-Q044",
+      "UPSC-CSE-2026-GS1-Q014"
+     ]
+    },
+    {
+     "label": "Rock-cut architecture / chaitya-vihara / cave-site religion",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q004",
+      "UPSC-CSE-2013-GS1-Q036",
+      "UPSC-CSE-2016-GS1-Q065",
+      "UPSC-CSE-2021-GS1-Q049",
+      "UPSC-CSE-2023-GS1-Q082"
+     ]
+    },
+    {
+     "label": "Stupa form and historical development",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q042",
+      "UPSC-CSE-2026-GS1-Q004"
+     ]
+    },
+    {
+     "label": "Sculpture + chronology",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q085",
+      "UPSC-CSE-2015-GS1-Q054",
+      "UPSC-CSE-2019-GS1-Q008",
+      "UPSC-CSE-2025-GS1-Q072"
+     ]
+    },
+    {
+     "label": "Temple/site obscurity + feature elimination",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q089",
+      "UPSC-CSE-2017-GS1-Q075",
+      "UPSC-CSE-2021-GS1-Q031"
+     ]
+    },
+    {
+     "label": "Indo-Islamic / Mughal cultural architecture",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q093",
+      "UPSC-CSE-2015-GS1-Q041",
+      "UPSC-CSE-2019-GS1-Q011",
+      "UPSC-CSE-2022-GS1-Q096"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Builder–monument / monument–place",
+     "ids": [
+      "UPPCS-2018-GS1-Q042",
+      "UPPCS-2018-GS1-Q117",
+      "UPPCS-2019-GS1-Q109",
+      "UPPCS-2025-GS1-Q049",
+      "UPPCS-2025-GS1-Q057"
+     ]
+    },
+    {
+     "label": "Chronology",
+     "ids": [
+      "UPPCS-2018-GS1-Q113",
+      "UPPCS-2019-GS1-Q091"
+     ]
+    },
+    {
+     "label": "Regional/Andhra Buddhist architecture",
+     "ids": [
+      "UPPCS-2022-GS1-Q075"
+     ]
+    },
+    {
+     "label": "Temple tradition/site lore",
+     "ids": [
+      "UPPCS-2020-GS1-Q014"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-return preparation = **form → feature → site → patron/dynasty → chronology**.\n- UPSC tests **comparative architecture and exceptions**; UPPCS increases **proper-noun recall** (builder, town, province, tomb, gateway).\n- A compact style table is insufficient unless accompanied by rock-cut/stupa terminology and a site-builder matrix."
+  },
+  "performing-arts": {
+   "upsc": [
+    {
+     "label": "Dance-form markers",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q068",
+      "UPSC-CSE-2013-GS1-Q079",
+      "UPSC-CSE-2014-GS1-Q083",
+      "UPSC-CSE-2014-GS1-Q088",
+      "UPSC-CSE-2017-GS1-Q012"
+     ]
+    },
+    {
+     "label": "Martial/folk/community traditions",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q087",
+      "UPSC-CSE-2014-GS1-Q091",
+      "UPSC-CSE-2018-GS1-Q022"
+     ]
+    },
+    {
+     "label": "Music genres and composers",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q067",
+      "UPSC-CSE-2018-GS1-Q044",
+      "UPSC-CSE-2019-GS1-Q016"
+     ]
+    },
+    {
+     "label": "Institutions/gharana/raga detail",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q018",
+      "UPSC-CSE-2026-GS1-Q009",
+      "UPSC-CSE-2026-GS1-Q011"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Treatise–author",
+     "ids": [
+      "UPPCS-2021-GS1-Q143",
+      "UPPCS-2022-GS1-Q091"
+     ]
+    },
+    {
+     "label": "Music and Indo-Persian interaction",
+     "ids": [
+      "UPPCS-2018-GS1-Q038"
+     ]
+    },
+    {
+     "label": "Tansen patronage",
+     "ids": [
+      "UPPCS-2019-GS1-Q089"
+     ]
+    },
+    {
+     "label": "Text/composition",
+     "ids": [
+      "UPPCS-2020-GS1-Q044"
+     ]
+    },
+    {
+     "label": "Genre development",
+     "ids": [
+      "UPPCS-2023-GS1-Q038"
+     ]
+    }
+   ],
+   "synthesis": "- Learn each classical dance through **state + movement/posture + repertoire/ritual context + music system + one distinctive prop/feature**.\n- Music needs **Hindustani vs Carnatic framework + Dhrupad/Khayal/Tappa + major treatises + high-yield exponents/gharanas**.\n- Martial/folk questions are state-pair elimination questions; broad encyclopaedic lists have low marginal value."
+  },
+  "literature-travellers": {
+   "upsc": [
+    {
+     "label": "Sanskrit drama/authors",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q010",
+      "UPSC-CSE-2020-GS1-Q036",
+      "UPSC-CSE-2021-GS1-Q041",
+      "UPSC-CSE-2024-GS1-Q063"
+     ]
+    },
+    {
+     "label": "Text–author elimination",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q046"
+     ]
+    },
+    {
+     "label": "Buddhist commentary",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q064"
+     ]
+    },
+    {
+     "label": "Foreign travellers",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q006",
+      "UPSC-CSE-2018-GS1-Q073",
+      "UPSC-CSE-2025-GS1-Q015"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Persian chronicle matrix",
+     "ids": [
+      "UPPCS-2019-GS1-Q016",
+      "UPPCS-2023-GS1-Q033"
+     ]
+    },
+    {
+     "label": "Translation/intellectual patronage",
+     "ids": [
+      "UPPCS-2023-GS1-Q037"
+     ]
+    },
+    {
+     "label": "Women poets / obscure matching",
+     "ids": [
+      "UPPCS-2023-GS1-Q039"
+     ]
+    },
+    {
+     "label": "Traveller chronology",
+     "ids": [
+      "UPPCS-2024-GS1-Q149"
+     ]
+    },
+    {
+     "label": "Classical author elimination",
+     "ids": [
+      "UPPCS-2025-GS1-Q048",
+      "UPPCS-2025-GS1-Q086"
+     ]
+    }
+   ],
+   "synthesis": "- Core unit = **text ↔ author ↔ patron/period/genre**; for travellers = **origin ↔ ruler/period ↔ work ↔ distinctive observation**.\n- UPPCS requires a denser Persian-chronicle matrix than UPSC.\n- Do not memorize doubtful authorship when the historical tradition itself is uncertain; use secure associations and mark ambiguity."
+  },
+  "painting-crafts-textiles": {
+   "upsc": [
+    {
+     "label": "Murals / cave paintings",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q057",
+      "UPSC-CSE-2017-GS1-Q069",
+      "UPSC-CSE-2026-GS1-Q016"
+     ]
+    },
+    {
+     "label": "Painting schools",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q042"
+     ]
+    },
+    {
+     "label": "Craft/textile–place pairing",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q076",
+      "UPSC-CSE-2015-GS1-Q096",
+      "UPSC-CSE-2018-GS1-Q054"
+     ]
+    },
+    {
+     "label": "GI mechanism + examples",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q099",
+      "UPSC-CSE-2018-GS1-Q026"
+     ]
+    },
+    {
+     "label": "Current-hook anniversary with durable history",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q083"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Craft terminology",
+     "ids": [
+      "UPPCS-2019-GS1-Q117"
+     ]
+    },
+    {
+     "label": "Prehistoric painting",
+     "ids": [
+      "UPPCS-2020-GS1-Q010"
+     ]
+    }
+   ],
+   "synthesis": "- Painting needs **site/school → theme → patron/period → visual marker**.\n- Crafts need **craft/textile → material/technique → state/region**; GI law is a separate legal-identification trap.\n- New GI registrations are dynamic; use old high-frequency examples only as durable anchors."
+  },
+  "festivals-calendars-heritage": {
+   "upsc": [
+    {
+     "label": "National calendar",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q084"
+     ]
+    },
+    {
+     "label": "Community/tradition pairing",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q070"
+     ]
+    },
+    {
+     "label": "UNESCO ICH recency",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q060"
+     ]
+    },
+    {
+     "label": "UNESCO WHS listing-year question",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q065"
+     ]
+    },
+    {
+     "label": "Heritage form behind current listing",
+     "ids": [
+      "UPSC-CSE-2026-GS1-Q027"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "National calendar misconceptions",
+     "ids": [
+      "UPPCS-2019-GS1-Q023"
+     ]
+    },
+    {
+     "label": "UNESCO session/listing",
+     "ids": [
+      "UPPCS-2019-GS1-Q035"
+     ]
+    },
+    {
+     "label": "Kumbh location/current-year hook",
+     "ids": [
+      "UPPCS-2025-GS1-Q097"
+     ]
+    }
+   ],
+   "synthesis": "- Static preparation = **festival ↔ community/state + calendar mechanics + UNESCO recognition framework + durable cultural form**.\n- Listing years, “latest inscription”, host session and year-specific mela questions require a separate current-affairs refresh."
+  },
+  "awards-institutions": {
+   "upsc": [
+    {
+     "label": "Civilian awards + Article 18 + rules",
+     "ids": [
+      "UPSC-CSE-2021-GS1-Q096"
+     ]
+    },
+    {
+     "label": "Sports award purpose",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q095"
+     ]
+    },
+    {
+     "label": "Gandhi Peace Prize jury",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q093"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "CURRENT_DYNAMIC prize/recipient demand",
+     "ids": [
+      "UPPCS-2018-GS1-Q109",
+      "UPPCS-2019-GS1-Q113",
+      "UPPCS-2019-GS1-Q118",
+      "UPPCS-2021-GS1-Q129",
+      "UPPCS-2023-GS1-Q076",
+      "UPPCS-2023-GS1-Q079",
+      "UPPCS-2024-GS1-Q056",
+      "UPPCS-2024-GS1-Q140",
+      "UPPCS-2025-GS1-Q020",
+      "UPPCS-2025-GS1-Q052",
+      "UPPCS-2025-GS1-Q081",
+      "UPPCS-2025-GS1-Q096",
+      "UPPCS-2025-GS1-Q107",
+      "UPPCS-2025-GS1-Q148"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC = rule/jury/purpose discrimination.\n- UPPCS = much heavier annual-recipient recall.\n- Permanent pack therefore stores **award architecture + institution identity**, while recipient-of-the-year facts are explicitly excluded from the static payload."
+  },
+  "constitutional-development": {
+   "upsc": [
+    {
+     "label": "Early Company/Charter Acts",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q004",
+      "UPSC-CSE-2023-GS1-Q050"
+     ]
+    },
+    {
+     "label": "Government of India Act 1919 / Montagu–Chelmsford",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q027",
+      "UPSC-CSE-2015-GS1-Q028",
+      "UPSC-CSE-2016-GS1-Q064",
+      "UPSC-CSE-2017-GS1-Q062",
+      "UPSC-CSE-2021-GS1-Q042",
+      "UPSC-CSE-2022-GS1-Q051",
+      "UPSC-CSE-2026-GS1-Q008"
+     ]
+    },
+    {
+     "label": "Simon + Nehru Report",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q070",
+      "UPSC-CSE-2013-GS1-Q039"
+     ]
+    },
+    {
+     "label": "Government of India Act 1935",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q083",
+      "UPSC-CSE-2018-GS1-Q038",
+      "UPSC-CSE-2024-GS1-Q062"
+     ]
+    },
+    {
+     "label": "Cripps/Cabinet Mission",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q040",
+      "UPSC-CSE-2015-GS1-Q051",
+      "UPSC-CSE-2016-GS1-Q093",
+      "UPSC-CSE-2022-GS1-Q054"
+     ]
+    },
+    {
+     "label": "Constituent Assembly",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q009",
+      "UPSC-CSE-2024-GS1-Q061"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Constituent Assembly chronology/symbols/committees",
+     "ids": [
+      "UPPCS-2018-GS1-Q095",
+      "UPPCS-2020-GS1-Q134",
+      "UPPCS-2021-GS1-Q115",
+      "UPPCS-2023-GS1-Q003",
+      "UPPCS-2025-GS1-Q082"
+     ]
+    },
+    {
+     "label": "1919 institutional extension",
+     "ids": [
+      "UPPCS-2021-GS1-Q082",
+      "UPPCS-2023-GS1-Q043"
+     ]
+    },
+    {
+     "label": "Simon/Nehru chronology",
+     "ids": [
+      "UPPCS-2019-GS1-Q020",
+      "UPPCS-2021-GS1-Q037"
+     ]
+    },
+    {
+     "label": "1940s proposal chronology",
+     "ids": [
+      "UPPCS-2018-GS1-Q115",
+      "UPPCS-2019-GS1-Q094",
+      "UPPCS-2024-GS1-Q016",
+      "UPPCS-2024-GS1-Q133",
+      "UPPCS-2025-GS1-Q041"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC repeatedly asks **feature discrimination**, not bare dates: what belongs to 1919 vs 1935; what operated only in provinces; who held residuary powers; which proposals allowed provincial non-accession; how CA members were chosen.\n- High-value qualifiers: **“introduced” vs “extended”; “provided” vs “came into operation”; “province” vs “centre”; “elected” vs “nominated”; “Dominion status” vs “complete independence.”**\n- UPPCS adds **chronology + committee-chairman + institutional founder/Act matching**. Every major constitutional milestone must therefore be stored as **date → mechanism → body/person → one distinctive feature → trap**."
+  },
+  "british-administration-economy": {
+   "upsc": [
+    {
+     "label": "Land revenue",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q053",
+      "UPSC-CSE-2012-GS1-Q037",
+      "UPSC-CSE-2017-GS1-Q013"
+     ]
+    },
+    {
+     "label": "Drain/economic critique",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q059",
+      "UPSC-CSE-2012-GS1-Q066",
+      "UPSC-CSE-2015-GS1-Q020"
+     ]
+    },
+    {
+     "label": "Colonial economic effects",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q052",
+      "UPSC-CSE-2020-GS1-Q023",
+      "UPSC-CSE-2020-GS1-Q033"
+     ]
+    },
+    {
+     "label": "Education",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q019",
+      "UPSC-CSE-2018-GS1-Q076",
+      "UPSC-CSE-2018-GS1-Q089",
+      "UPSC-CSE-2020-GS1-Q034"
+     ]
+    },
+    {
+     "label": "Civil service chronology",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q080"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q119",
+      "UPPCS-2020-GS1-Q020",
+      "UPPCS-2020-GS1-Q030",
+      "UPPCS-2025-GS1-Q040"
+     ]
+    }
+   ],
+   "synthesis": "- Treat land systems comparatively: **settlement party, region, permanence/revision, survey basis, intermediary status, liability, social consequence**.\n- Economic questions reward causal reasoning: **colonial fiscal/industrial policy → deindustrialisation/commercialisation/debt/drain**, not slogans alone.\n- Education/civil service are chronology-heavy and institution-founder prone; exact **“recommended” vs “established”** distinctions are recurring traps.\n- UPPCS expects a compact **Governor-General/Viceroy policy matrix**, especially Cornwallis–Bentinck–Dalhousie–Curzon."
+  },
+  "socio-religious-reform": {
+   "upsc": [
+    {
+     "label": "Brahmo/Rammohan",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q074",
+      "UPSC-CSE-2025-GS1-Q011"
+     ]
+    },
+    {
+     "label": "Reform organisations",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q028",
+      "UPSC-CSE-2013-GS1-Q080",
+      "UPSC-CSE-2016-GS1-Q069"
+     ]
+    },
+    {
+     "label": "Anti-caste",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q058",
+      "UPSC-CSE-2019-GS1-Q006",
+      "UPSC-CSE-2020-GS1-Q028",
+      "UPSC-CSE-2025-GS1-Q074",
+      "UPSC-CSE-2025-GS1-Q078"
+     ]
+    },
+    {
+     "label": "Women/social law",
+     "ids": [
+      "UPSC-CSE-2020-GS1-Q032",
+      "UPSC-CSE-2021-GS1-Q046"
+     ]
+    },
+    {
+     "label": "Chronology cross-check",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q080"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2021-GS1-Q069",
+      "UPPCS-2022-GS1-Q010",
+      "UPPCS-2022-GS1-Q040",
+      "UPPCS-2022-GS1-Q087",
+      "UPPCS-2024-GS1-Q013",
+      "UPPCS-2024-GS1-Q017"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-return structure is **person ↔ organisation ↔ date ↔ core idea ↔ publication/legal episode**.\n- Repeated traps arise from near-neighbour bodies: **Brahmo vs Arya; Theosophical founders vs Annie Besant; Phule vs Walangkar vs Ambedkar; SNDP founder/inspirers; Justice Party vs Self-Respect; Bethune vs Vidyasagar vs Karve vs Malabari**.\n- UPSC increasingly tests **lesser bodies/legal cases**, so obscure names must be retained only where they have demonstrated elimination value."
+  },
+  "europeans-british-expansion": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q081",
+      "UPSC-CSE-2018-GS1-Q068",
+      "UPSC-CSE-2018-GS1-Q075",
+      "UPSC-CSE-2021-GS1-Q033",
+      "UPSC-CSE-2022-GS1-Q059",
+      "UPSC-CSE-2023-GS1-Q049",
+      "UPSC-CSE-2024-GS1-Q056",
+      "UPSC-CSE-2025-GS1-Q075"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q093",
+      "UPPCS-2020-GS1-Q018",
+      "UPPCS-2025-GS1-Q026",
+      "UPPCS-2025-GS1-Q067",
+      "UPPCS-2025-GS1-Q114"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC’s dominant mode is **specific location/permission/commodity introduction**, not generic “arrival chronology.”\n- Must retain **factory + year + granting authority/political context** for high-value sites, but avoid encyclopaedic lists.\n- UPPCS requires **war → decisive battle → treaty → territorial/political result** chains for Mysore, Marathas, Sikhs, Nepal and Carnatic wars."
+  },
+  "tribal-peasant-uprisings": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q055",
+      "UPSC-CSE-2011-GS1-Q060",
+      "UPSC-CSE-2013-GS1-Q020",
+      "UPSC-CSE-2018-GS1-Q051",
+      "UPSC-CSE-2018-GS1-Q069",
+      "UPSC-CSE-2019-GS1-Q006",
+      "UPSC-CSE-2020-GS1-Q035",
+      "UPSC-CSE-2026-GS1-Q019"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q121",
+      "UPPCS-2019-GS1-Q018",
+      "UPPCS-2023-GS1-Q041",
+      "UPPCS-2023-GS1-Q047",
+      "UPPCS-2025-GS1-Q025",
+      "UPPCS-2025-GS1-Q127"
+     ]
+    },
+    {
+     "label": "1857 extension",
+     "ids": [
+      "UPPCS-2023-GS1-Q040",
+      "UPPCS-2023-GS1-Q046",
+      "UPPCS-2024-GS1-Q138"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC asks **cause/result/demand**; UPPCS adds **year + region + leader + sequence**.\n- Tribal questions should be organised by **agrarian/forest disruption → outsider/moneylender/missionary/administrative intrusion → leader/region → settlement/legislative aftermath**.\n- Peasant questions should retain the exact economic demand: **rent, revenue, tenancy, forced crop, debt, share of produce**—these are frequent distractor swaps."
+  },
+  "gandhian-mass-movements": {
+   "upsc": [
+    {
+     "label": "Early Gandhian experiments / transition to mass politics",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q060",
+      "UPSC-CSE-2012-GS1-Q070",
+      "UPSC-CSE-2015-GS1-Q016",
+      "UPSC-CSE-2018-GS1-Q069"
+     ]
+    },
+    {
+     "label": "Non-Cooperation / programme detail",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q014",
+      "UPSC-CSE-2025-GS1-Q012",
+      "UPSC-CSE-2025-GS1-Q020",
+      "UPSC-CSE-2025-GS1-Q073"
+     ]
+    },
+    {
+     "label": "Lahore → CDM → pact → RTC",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q071",
+      "UPSC-CSE-2014-GS1-Q082",
+      "UPSC-CSE-2015-GS1-Q046",
+      "UPSC-CSE-2017-GS1-Q093",
+      "UPSC-CSE-2025-GS1-Q071"
+     ]
+    },
+    {
+     "label": "Communal Award / Poona / anti-untouchability turn",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q036",
+      "UPSC-CSE-2019-GS1-Q006",
+      "UPSC-CSE-2025-GS1-Q074"
+     ]
+    },
+    {
+     "label": "Quit India",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q054",
+      "UPSC-CSE-2011-GS1-Q068",
+      "UPSC-CSE-2013-GS1-Q040",
+      "UPSC-CSE-2021-GS1-Q043"
+     ]
+    },
+    {
+     "label": "Context/chronology support",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q025",
+      "UPSC-CSE-2013-GS1-Q039"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q019",
+      "UPPCS-2019-GS1-Q020",
+      "UPPCS-2019-GS1-Q094",
+      "UPPCS-2020-GS1-Q024",
+      "UPPCS-2021-GS1-Q037",
+      "UPPCS-2021-GS1-Q042",
+      "UPPCS-2021-GS1-Q069",
+      "UPPCS-2023-GS1-Q047",
+      "UPPCS-2023-GS1-Q048",
+      "UPPCS-2024-GS1-Q133",
+      "UPPCS-2025-GS1-Q007",
+      "UPPCS-2025-GS1-Q135"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-return structure = **chronology + programme + named local variant + consequence**.\n- Repeated elimination pattern: one statement shifts an event by one year, attributes a later response to an earlier movement, or swaps a regional leader/location.\n- QIM demand is not only date/slogan: underground organisation, women, parallel governments, spontaneity after leadership arrest.\n- 1930–34 cluster requires **Gandhi-Irwin terms, RTC participation, Communal Award vs Poona Pact, exact order**."
+  },
+  "early-nationalism-swadeshi": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q028",
+      "UPSC-CSE-2012-GS1-Q066",
+      "UPSC-CSE-2013-GS1-Q080",
+      "UPSC-CSE-2014-GS1-Q081",
+      "UPSC-CSE-2015-GS1-Q020",
+      "UPSC-CSE-2015-GS1-Q048",
+      "UPSC-CSE-2015-GS1-Q068",
+      "UPSC-CSE-2016-GS1-Q049",
+      "UPSC-CSE-2016-GS1-Q092",
+      "UPSC-CSE-2017-GS1-Q037",
+      "UPSC-CSE-2018-GS1-Q079",
+      "UPSC-CSE-2019-GS1-Q005",
+      "UPSC-CSE-2020-GS1-Q026",
+      "UPSC-CSE-2023-GS1-Q083"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q024",
+      "UPPCS-2021-GS1-Q150",
+      "UPPCS-2024-GS1-Q015",
+      "UPPCS-2025-GS1-Q006"
+     ]
+    }
+   ],
+   "synthesis": "- Must know **association → year → place → founder/first president**, not merely names.\n- Swadeshi is tested as a **political + educational + economic + cultural** movement.\n- INC session questions are selective: 1905–07, 1916–17, 1920s, 1929, 1931, 1938–40 have much higher elimination value than exhaustive session lists.\n- Home Rule is frequently confused with Swadeshi and Gandhian mass politics; retain separate organisations, areas and dates."
+  },
+  "nationalist-personalities-books": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q067",
+      "UPSC-CSE-2012-GS1-Q066",
+      "UPSC-CSE-2013-GS1-Q080",
+      "UPSC-CSE-2015-GS1-Q020",
+      "UPSC-CSE-2015-GS1-Q048",
+      "UPSC-CSE-2018-GS1-Q011",
+      "UPSC-CSE-2019-GS1-Q015",
+      "UPSC-CSE-2020-GS1-Q026",
+      "UPSC-CSE-2021-GS1-Q036",
+      "UPSC-CSE-2021-GS1-Q044"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2020-GS1-Q026",
+      "UPPCS-2021-GS1-Q150",
+      "UPPCS-2022-GS1-Q125",
+      "UPPCS-2024-GS1-Q015"
+     ]
+    }
+   ],
+   "synthesis": "- Dominant form = **person ↔ institution ↔ newspaper/book ↔ office/session**.\n- UPSC often uses biography-description and multi-pair statements; UPPCS adds editor/publication-place micro-recall.\n- Build facts around identity bundles rather than isolated names."
+  },
+  "revolutionary-left-labour": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q086",
+      "UPSC-CSE-2015-GS1-Q026",
+      "UPSC-CSE-2017-GS1-Q015",
+      "UPSC-CSE-2017-GS1-Q024",
+      "UPSC-CSE-2018-GS1-Q070",
+      "UPSC-CSE-2019-GS1-Q015",
+      "UPSC-CSE-2022-GS1-Q053",
+      "UPSC-CSE-2026-GS1-Q006"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q120",
+      "UPPCS-2020-GS1-Q016",
+      "UPPCS-2021-GS1-Q094",
+      "UPPCS-2021-GS1-Q104",
+      "UPPCS-2022-GS1-Q060",
+      "UPPCS-2022-GS1-Q070",
+      "UPPCS-2022-GS1-Q144",
+      "UPPCS-2023-GS1-Q042",
+      "UPPCS-2024-GS1-Q014",
+      "UPPCS-2024-GS1-Q131"
+     ]
+    }
+   ],
+   "synthesis": "- Revolutionary questions test **organisation ↔ founder ↔ place ↔ event ↔ year**, with near-identical names as traps (HRA/HSRA, Anushilan/Jugantar, Ghadar/India House).\n- Left questions test organisational positioning inside/outside Congress and exact dates of formation.\n- Labour questions are legislation-heavy: what an Act **actually provided**, plus union founder/first-president matching."
+  },
+  "communal-politics-ina-partition": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q036",
+      "UPSC-CSE-2014-GS1-Q015",
+      "UPSC-CSE-2021-GS1-Q047"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q115",
+      "UPPCS-2019-GS1-Q019",
+      "UPPCS-2019-GS1-Q021",
+      "UPPCS-2019-GS1-Q096",
+      "UPPCS-2022-GS1-Q140",
+      "UPPCS-2023-GS1-Q045",
+      "UPPCS-2024-GS1-Q016",
+      "UPPCS-2025-GS1-Q041"
+     ]
+    }
+   ],
+   "synthesis": "- **No repeated exact cluster**, but the questions converge on a narrow elimination core:\n  1. **1932:** Communal Award ↔ Poona Pact distinction.\n  2. **1944–46 negotiation ladder:** C.R. Formula → Wavell/Simla → Cabinet Mission → Direct Action → Interim Government.\n  3. **INA:** formation/leadership → Rani Jhansi Regiment → Red Fort three → defence agitation.\n  4. **1947:** Mountbatten Plan → Independence Bill/Act → Radcliffe boundary process.\n- **UPPCS style:** dates, sequence, place, person–proposal/regiment association.\n- **UPSC style:** functional identification and discriminating associations rather than exhaustive narrative."
+  },
+  "post-independence-transition": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q001",
+      "UPSC-CSE-2018-GS1-Q091"
+     ]
+    }
+   ],
+   "uppcs": [],
+   "synthesis": "- Direct PYQ load is small: **2 UPSC, 0 UPPCS**.\n- Required preparation is therefore **compact but not empty**:\n  - first general election + opposition-party trap;\n  - 1953–61 chronology;\n  - durable party–leader pairs and major splits/formations through the 1970s;\n  - key state-reorganisation milestones that frequently function as chronology distractors.\n- Avoid turning this child into a full post-Independence textbook."
+  }
+ }
+}

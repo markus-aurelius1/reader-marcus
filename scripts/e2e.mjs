@@ -292,7 +292,7 @@ try {
   section('Economy + cross-links')
   const ECO = '#/r/prelims/economy/'
   await L.hash('#/')
-  check('Library lists Economy & Social Development under Prelims, after Polity', (await L.ev(() => [...document.querySelectorAll('a.row b')].map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development')
+  check('Library lists Economy & Social Development under Prelims, after Polity', (await L.ev(() => [...document.querySelectorAll('a.row b')].map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture')
   await L.hash('#/progress')
   check('Economy: 17 chapters, 107 sections', (await L.count('section:nth-of-type(2) .rows .row')) === 17 && (await L.ev(() => document.querySelectorAll('.stat')[1].textContent)).includes('/107)'))
   await L.hash('#/s/prelims/economy'); const ecoRows = await L.count('.rows .row'); const ecoTopics = await L.count('h3.gh')
@@ -363,6 +363,64 @@ try {
   check('Reset Local Edits works on Economy and keeps highlight + progress', !(await L.text('#s-fiscal-federalism .sec-body')).includes('ECO-E2E edit') && (await L.marks('fiscal-policy')).length === 1 && (await L.text('.chap-meta span')) === '1 / 7 sections done')
   await L.click('#s-fiscal-policy mark[data-hid]'); await sleep(150); await L.click('.hlpal .x')
   check('Economy highlight can be removed', (await L.marks('fiscal-policy')).length === 0)
+
+  // ==========================================================================
+  section('History & Culture + cross-links')
+  const HIS = '#/r/prelims/history-culture/'
+  await L.hash('#/progress')
+  check('History & Culture: 29 chapters, 204 sections', (await L.count('section:nth-of-type(3) .rows .row')) === 29 && (await L.ev(() => document.querySelectorAll('.stat')[2].textContent)).includes('/204)'))
+  await L.hash('#/s/prelims/history-culture'); const hisRows = await L.count('.rows .row'); const hisTopics = await L.count('h3.gh')
+  await L.hash('#/s/prelims/history-culture/pyq'); const hisPyq = await L.count('details.syn')
+  await L.hash('#/s/prelims/history-culture/insights'); const hisIns = await L.count('.hbar'); const hisFlags = await L.ev(() => [...document.querySelectorAll('.rows .chip')].map((c) => c.textContent))
+  check('History overview, PYQs and Insights tabs', hisRows === 29 && hisTopics === 6 && hisPyq === 29 && hisIns === 29, [hisRows, hisTopics, hisPyq, hisIns])
+  check('Insights lists History ↻ Dynamic and Verify items', hisFlags.includes('↻ Dynamic') && hisFlags.includes('Verify'), hisFlags.length)
+  const sHis = await search('Vattakirutal')
+  check('search finds History content', sHis[0] === 'Sangam Society', sHis.slice(0, 3))
+  // History → Polity, backlink, Back
+  await L.hash(HIS + 'awards-institutions/article-18')
+  const hFrom = await L.ev(() => location.hash)
+  await L.ev(() => document.querySelector('#s-article-18 a.xref[data-xref^="prelims/polity/"]').click()); await sleep(500)
+  const FR = '#/r/prelims/polity/fundamental-rights/right-to-equality-articles-14-18'
+  const hBack = await L.ev(() => [...document.querySelectorAll('#s-right-to-equality-articles-14-18 .related a')].map((a) => a.textContent + ' ' + a.getAttribute('href')))
+  check('History → Polity link opens the exact section, with a Related backlink', (await L.ev(() => location.hash)) === FR && hBack.some((t) => t.includes('History & Culture') && t.includes('Article 18') && t.endsWith(HIS + 'awards-institutions/article-18')), hBack)
+  check('Polity body untouched by History backlinks', await L.ev(() => document.querySelector('#s-right-to-equality-articles-14-18 .sec-body .related') === null))
+  await L.page.goBack(); await sleep(500)
+  check('browser Back returns to the History section', (await L.ev(() => location.hash)) === hFrom && (await L.ev(() => document.title)).startsWith('Awards'))
+  // History → Economy
+  await L.hash(HIS + 'painting-crafts-textiles/gi')
+  await L.ev(() => document.querySelector('#s-gi a.xref[data-xref^="prelims/economy/"]').click()); await sleep(500)
+  check('History → Economy link opens the exact section', (await L.ev(() => location.hash)) === '#/r/prelims/economy/international-institutions/trips-gi-patents' && (await L.ev(() => [...document.querySelectorAll('#s-trips-gi-patents .related a')].some((a) => a.textContent.includes('History & Culture')))))
+  await L.page.goBack(); await sleep(400)
+  check('Back returns from Economy to History', (await L.ev(() => location.hash)) === HIS + 'painting-crafts-textiles/gi')
+  // inside History, and a link into a subject that is not in the library yet
+  await L.hash(HIS + 'delhi-sultanate/iqta')
+  await L.ev(() => document.querySelector('#s-iqta a.xref').click()); await sleep(400)
+  check('cross-chapter link inside History', (await L.ev(() => location.hash)) === HIS + 'mughals/jagirdar-vs-zamindar' && (await L.count('#s-jagirdar-vs-zamindar .related a')) >= 1)
+  await L.hash(HIS + 'historical-geography/place-river')
+  check('link to a subject not added yet stays plain text', await L.ev(() => { const a = document.querySelector('#s-place-river a.xref.pending'); return !!a && !a.getAttribute('href') && a.getAttribute('data-xref') === 'prelims/geography' }))
+  // reader features on History: recall, progress, highlight, edit (links survive), export, reset
+  await L.hash(HIS + 'constitutional-development')
+  check('History chapter renders its sections with recall items and callouts', (await L.count('.sec')) === 8 && (await L.count('.sec-body .rc')) > 30 && (await L.count('.callout[data-kind="trap"]')) >= 3)
+  await L.key('r'); const hisBlur = await L.ev(() => getComputedStyle(document.querySelector('#s-act-1935 .rc')).filter); await L.click('#s-act-1935 .rc')
+  check('Recall Mode blurs and reveals History answers', hisBlur.includes('blur') && (await L.ev(() => document.querySelector('#s-act-1935 .rc').classList.contains('shown'))), hisBlur)
+  await L.key('r')
+  await L.highlight('act-1919', 'High Commissioner for India', 'blue'); await L.click('#s-act-1919 .tg.done'); await L.click('#s-simon-nehru .tg.rev')
+  await L.editMode(true); await L.edit('act-1935', '<p>HIS-E2E edit</p>'); await L.saved(); await L.editMode(false)
+  const hEdited = await L.ev(() => ({ text: document.querySelector('#s-act-1935 .sec-body').textContent.includes('HIS-E2E edit'), links: [...document.querySelectorAll('#s-act-1935 .sec-body a.xref')].map((a) => a.getAttribute('data-xref') + ' ' + a.getAttribute('href')) }))
+  check('edited History section keeps its cross-links', hEdited.text && hEdited.links.includes('prelims/polity/preamble#sources-of-the-constitution #/r/prelims/polity/preamble/sources-of-the-constitution') && hEdited.links.includes('prelims/polity/parts-schedules#seventh-schedule-lists #/r/prelims/polity/parts-schedules/seventh-schedule-lists'), hEdited)
+  await L.reload()
+  check('History edit, highlight and progress persist across reload', (await L.text('#s-act-1935 .sec-body')).includes('HIS-E2E edit') && (await L.marks('act-1919')).join() === 'blue:High Commissioner for India' && (await L.text('.chap-meta span')) === '1 / 8 sections done')
+  await L.hash('#/revision')
+  check('History section appears in the Revision queue', (await L.ev(() => [...document.querySelectorAll('.row')].map((r) => r.textContent).join('|'))).includes('Simon Commission'))
+  await L.hash(HIS + 'constitutional-development')
+  await L.menu('Export to Markdown — this chapter'); await sleep(1200)
+  const hm = dl('prelims-history-culture-constitutional-development.md')
+  check('History Markdown export keeps cross-links as stable ids', hm.includes('](@prelims/polity/preamble#sources-of-the-constitution)') && hm.includes('](@communal-politics-ina-partition#cabinet-mission-breakdown)') && hm.includes('HIS-E2E edit'))
+  L.page.once('dialog', (d) => d.accept())
+  await L.menu('Reset Local Edits — this chapter'); await sleep(700)
+  check('Reset Local Edits works on History and keeps highlight + progress', !(await L.text('#s-act-1935 .sec-body')).includes('HIS-E2E edit') && (await L.marks('act-1919')).length === 1 && (await L.text('.chap-meta span')) === '1 / 8 sections done')
+  await L.click('#s-act-1919 mark[data-hid]'); await sleep(150); await L.click('.hlpal .x')
+  check('History highlight can be removed', (await L.marks('act-1919')).length === 0)
   await L.hash(PARL)
 
   // reset
@@ -412,7 +470,7 @@ try {
 
   // ==========================================================================
   section('Responsive layout')
-  const routes = ['#/', '#/s/prelims/polity', '#/s/prelims/polity/insights', '#/highlights', '#/revision', '#/progress', PARL, '#/r/prelims/polity/constitutional-bodies', '#/r/prelims/polity/parts-schedules', '#/s/prelims/economy', '#/s/prelims/economy/insights', '#/r/prelims/economy/budget-fiscal-policy', '#/r/prelims/economy/government-schemes', '#/r/prelims/economy/money-rbi-monetary-policy', '#/r/prelims/economy/international-institutions']
+  const routes = ['#/', '#/s/prelims/polity', '#/s/prelims/polity/insights', '#/highlights', '#/revision', '#/progress', PARL, '#/r/prelims/polity/constitutional-bodies', '#/r/prelims/polity/parts-schedules', '#/s/prelims/economy', '#/s/prelims/economy/insights', '#/r/prelims/economy/budget-fiscal-policy', '#/r/prelims/economy/government-schemes', '#/r/prelims/economy/money-rbi-monetary-policy', '#/r/prelims/economy/international-institutions', '#/s/prelims/history-culture', '#/s/prelims/history-culture/insights', '#/r/prelims/history-culture/constitutional-development', '#/r/prelims/history-culture/architecture-sculpture', '#/r/prelims/history-culture/early-nationalism-swadeshi', '#/r/prelims/history-culture/british-administration-economy']
   for (const [name, w, h] of [['phone 375', 375, 812], ['tablet 768', 768, 1024], ['desktop 1280', 1280, 860]]) {
     await L.page.setViewport({ width: w, height: h })
     const bad = []
@@ -487,6 +545,9 @@ try {
   await L.hash('#/r/prelims/economy/taxation/gst')
   await L.ev(() => document.querySelector('#s-gst a.xref[data-xref^="prelims/polity/"]').click()); await sleep(400)
   check('offline: Economy and cross-subject links work', (await L.ev(() => location.hash)) === '#/r/prelims/polity/amendments-basic-structure/three-routes-of-change' && (await L.count('.sec')) > 3)
+  await L.hash('#/r/prelims/history-culture/communal-politics-ina-partition/communal-award-poona')
+  await L.ev(() => document.querySelector('#s-communal-award-poona a.xref[data-xref^="prelims/polity/"]').click()); await sleep(400)
+  check('offline: History and its cross-subject links work', (await L.ev(() => location.hash)) === '#/r/prelims/polity/elections/reservation-in-legislatures' && (await L.count('.sec')) > 3)
   await L.hash('#/r/prelims/polity/judiciary')
   await L.highlight('article-map', 'Supreme Court', 'green'); await L.click('#s-article-map .tg.done')
   await L.reload()
@@ -555,6 +616,15 @@ try {
   await B.hash('#/r/prelims/economy/inflation')
   const ecoB = { meta: await B.text('.chap-meta span'), marks: (await B.marks('base-effect')).join(), edit: (await B.text('#s-control .sec-body')).includes('A edits inflation control'), link: await B.ev(() => document.querySelector('#s-control .sec-body a.xref')?.getAttribute('href')) }
   check('Economy progress, highlight and edit reach the second device with links intact', ecoB.meta === '1 / 6 sections done' && ecoB.marks === 'green:same period last year' && ecoB.edit && ecoB.link === '#/r/prelims/economy/money-rbi-monetary-policy/policy-tools', ecoB)
+
+  section('Sync — History & Culture')
+  await A.hash('#/r/prelims/history-culture/gandhian-mass-movements')
+  await A.highlight('quit-india', 'Do or Die', 'green'); await A.click('#s-rowlatt-jallianwala .tg.done')
+  await A.editMode(true); await A.edit('gandhi-irwin-rtc', '<p>A edits the pact</p>'); await A.saved(); await A.editMode(false)
+  await A.syncNow(); await B.syncNow()
+  await B.hash('#/r/prelims/history-culture/gandhian-mass-movements')
+  const hisB = { meta: await B.text('.chap-meta span'), marks: (await B.marks('quit-india')).join(), edit: (await B.text('#s-gandhi-irwin-rtc .sec-body')).includes('A edits the pact'), link: await B.ev(() => document.querySelector('#s-gandhi-irwin-rtc .sec-body a.xref')?.getAttribute('href')) }
+  check('History progress, highlight and edit reach the second device with links intact', hisB.meta === '1 / 7 sections done' && hisB.marks === 'green:Do or Die' && hisB.edit && hisB.link === '#/r/prelims/history-culture/communal-politics-ina-partition/communal-award-poona', hisB)
   await A.hash(PARL); await B.hash(PARL)
   // highlight recolour / removal across devices
   await B.ev(() => { getSelection().removeAllRanges(); document.querySelector('#s-budget-and-financial-procedure mark').click() }); await sleep(250); await B.click('.hlpal .sw[data-c="blue"]')

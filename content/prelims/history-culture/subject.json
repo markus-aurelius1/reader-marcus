@@ -1,0 +1,43 @@
+{
+  "title": "History & Culture",
+  "source": "source/History-Culture-v01-source-pack-CLAUDE-READY.md",
+  "topics": [
+    { "id": "ancient", "title": "Ancient India", "chapters": ["prehistory-harappan", "vedic-age-philosophy", "mahajanapadas-mauryas", "buddhism-jainism", "society-economy-terms", "sangam-south-india", "post-gupta-early-medieval"] },
+    { "id": "medieval", "title": "Medieval India", "chapters": ["delhi-sultanate", "bhakti-sufi", "vijayanagara", "mughals", "historical-geography"] },
+    { "id": "art-culture", "title": "Art & Culture", "chapters": ["architecture-sculpture", "painting-crafts-textiles", "performing-arts", "literature-travellers", "festivals-calendars-heritage", "awards-institutions"] },
+    { "id": "colonial", "title": "Colonial Rule & Social Change", "chapters": ["europeans-british-expansion", "british-administration-economy", "socio-religious-reform", "tribal-peasant-uprisings", "constitutional-development"] },
+    { "id": "national-movement", "title": "Indian National Movement", "chapters": ["early-nationalism-swadeshi", "nationalist-personalities-books", "revolutionary-left-labour", "gandhian-mass-movements"] },
+    { "id": "independence", "title": "Independence, Partition & After", "chapters": ["communal-politics-ina-partition", "post-independence-transition"] }
+  ],
+  "taxonomy": [
+    "prelims-history-and-culture-ancient-and-medieval-india-social-economic-life-and-historical-terminology",
+    "prelims-history-and-culture-ancient-and-medieval-india-prehistory-chalcolithic-cultures-and-harappan-civilisation",
+    "prelims-history-and-culture-ancient-and-medieval-india-mahajanapadas-mauryas-and-ashokan-inscriptions",
+    "prelims-history-and-culture-ancient-and-medieval-india-mughals-polity-administration-and-culture",
+    "prelims-history-and-culture-ancient-and-medieval-india-sangam-and-south-indian-dynasties",
+    "prelims-history-and-culture-ancient-and-medieval-india-vijayanagara",
+    "prelims-history-and-culture-ancient-and-medieval-india-delhi-sultanate-and-mongol-invasions",
+    "prelims-history-and-culture-ancient-and-medieval-india-historical-geography-places-regions-and-old-names",
+    "prelims-history-and-culture-ancient-and-medieval-india-post-gupta-and-early-medieval-dynasties",
+    "prelims-history-and-culture-religions-philosophy-and-intellectual-traditions-buddhism-and-jainism-doctrine-sects-and-sites",
+    "prelims-history-and-culture-religions-philosophy-and-intellectual-traditions-bhakti-and-sufi-movements",
+    "prelims-history-and-culture-religions-philosophy-and-intellectual-traditions-vedic-age-upanishads-and-philosophical-schools",
+    "prelims-history-and-culture-art-and-culture-architecture-and-sculpture",
+    "prelims-history-and-culture-art-and-culture-performing-arts-music-dance-martial-and-folk-traditions",
+    "prelims-history-and-culture-art-and-culture-literature-authors-and-foreign-travellers",
+    "prelims-history-and-culture-art-and-culture-painting-crafts-and-textiles",
+    "prelims-history-and-culture-art-and-culture-festivals-calendars-and-heritage-recognition",
+    "prelims-history-and-culture-art-and-culture-awards-honours-and-cultural-institutions",
+    "prelims-history-and-culture-colonial-rule-and-social-change-constitutional-development-acts-commissions-and-constituent-assembly",
+    "prelims-history-and-culture-colonial-rule-and-social-change-british-administration-economy-and-policies",
+    "prelims-history-and-culture-colonial-rule-and-social-change-socio-religious-reform-and-anti-caste-movements",
+    "prelims-history-and-culture-colonial-rule-and-social-change-europeans-and-british-expansion",
+    "prelims-history-and-culture-colonial-rule-and-social-change-tribal-and-peasant-uprisings",
+    "prelims-history-and-culture-indian-national-movement-gandhian-phase-and-mass-movements",
+    "prelims-history-and-culture-indian-national-movement-early-nationalism-inc-and-swadeshi",
+    "prelims-history-and-culture-indian-national-movement-nationalist-personalities-organisations-and-books",
+    "prelims-history-and-culture-indian-national-movement-revolutionary-leftist-and-labour-movements",
+    "prelims-history-and-culture-independence-partition-and-post-independence-transition-communal-politics-ina-and-partition",
+    "prelims-history-and-culture-independence-partition-and-post-independence-transition-post-independence-political-transition"
+  ]
+}
