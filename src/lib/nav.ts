@@ -1,7 +1,7 @@
 // Navigation model. The tree is generated from content metadata (library.json + each subject's
 // subject.json and chapter files) — it is never stored or synced, and no route is spelled here.
 import { allSubjects, stages, type Chapter, type Subject } from './content'
-import type { ContentRef, ExamStage, NavigationNode, RecentDestination, StudyContext } from './contract'
+import type { ContentRef, ExamStage, NavigationNode, RecentDestination, StudyContext, StudyRef } from './contract'
 import { href } from './router'
 import { useStore } from './store'
 
@@ -16,7 +16,8 @@ export function refKey(r: ContentRef): string {
   }
 }
 
-export function refHref(r: ContentRef): string {
+export function refHref(r: StudyRef): string {
+  if (r.kind === 'current-affairs') return r.entryId ? href.caNote(r.entryId) : href.caDay(r.dayId)
   const subject = `${r.stage}/${r.subjectId}`
   switch (r.kind) {
     case 'stage':

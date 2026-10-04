@@ -8,7 +8,7 @@ import { db } from './db'
 import { deviceId, markDirty, registerKind, syncLocal, type KindAdapter } from './store'
 import { keyOf, kindOf } from '../sync/merge'
 import type { ActiveStudySession, SpanActivity, StudyContext, StudySession } from './contract'
-import { RUN_ID, durationText, finish, isActive, pause, resume, runRec, sesRec, start, switchContext, takeOver, timeZone, type Env, type Runtime } from './timer'
+import { RUN_ID, durationText, finish, isActive, isCaRef, pause, resume, runRec, sesRec, start, switchContext, takeOver, timeZone, type Env, type Runtime } from './timer'
 
 interface StudyState {
   ready: boolean
@@ -123,18 +123,18 @@ export function followContext(context: StudyContext) {
   const a = mine()
   if (!a) return
   // reading the notes of the unit under revision is part of revising it
-  const r = a.currentActivity?.activity === 'revision' ? a.currentContext.ref : null
-  if (r && r.stage === context.ref.stage && r.subjectId === context.ref.subjectId && r.chapterId === context.ref.chapterId) return
+  const r = a.currentActivity?.activity === 'revision' && !isCaRef(a.currentContext.ref) ? a.currentContext.ref : null
+  if (r && !isCaRef(context.ref) && r.stage === context.ref.stage && r.subjectId === context.ref.subjectId && r.chapterId === context.ref.chapterId) return
   const next = switchContext(a, context, clock.now())
   if (next !== a) commit(next)
 }
 
 /**
- * Scheduled revision of a unit begins: the one timer moves into a revision span. No second timer
- * is ever created — a timer running here is switched (and resumed if paused); with none, one is
- * started; one owned by another device is left alone.
+ * Scheduled revision of a unit, or reading the day's news, begins: the one timer moves into a
+ * span of that activity. No second timer is ever created — a timer running here is switched (and
+ * resumed if paused); with none, one is started; one owned by another device is left alone.
  */
-export function beginRevisionSpan(context: StudyContext, activity: SpanActivity, offlineProvisional = false): 'started' | 'switched' | 'remote' {
+export function beginActivitySpan(context: StudyContext, activity: SpanActivity, offlineProvisional = false): 'started' | 'switched' | 'remote' {
   const any = activeTimer(useStudy.getState())
   if (!any) {
     commit(start(context, clock.now(), deviceId, offlineProvisional, activity))
@@ -148,6 +148,20 @@ export function beginRevisionSpan(context: StudyContext, activity: SpanActivity,
     commit(next)
   }
   return 'switched'
+}
+
+export const beginRevisionSpan = beginActivitySpan
+
+/**
+ * Active time the timer has recorded so far for one news day (closed spans and the open one).
+ * Shown beside the day's completed sessions while the timer is still running; never stored.
+ */
+export function currentAffairsLiveMs(a: ActiveStudySession | null, dayId: string, now = clock.now()): number {
+  if (!a) return 0
+  const closed = a.completedSpans.filter((s) => s.activity === 'current-affairs' && s.currentAffairsDayId === dayId).reduce((n, s) => n + s.durationMs, 0)
+  const c = a.currentActivity
+  const open = c?.activity === 'current-affairs' && c.currentAffairsDayId === dayId && a.state === 'running' && a.currentSpanStartedAt ? Math.max(0, now - Date.parse(a.currentSpanStartedAt)) : 0
+  return closed + open
 }
 
 /** Active time recorded so far for one revision (its closed spans and the open one). */

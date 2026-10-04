@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { stageTitle } from '../lib/content'
 import type { RelatedItem } from '../lib/links'
 import type { PyqFilter } from '../lib/pyq'
+import { dayShort, parseDayId, type EntryLike } from '../lib/currentAffairsModel'
 import { href } from '../lib/router'
 import { secTitle, useStore } from '../lib/store'
 
@@ -16,7 +17,7 @@ const GROUPS = [
  * subject, in other subjects, in the other stage) and the previous-year questions recorded
  * against it. Shows `max` note links; "View all" opens the rest in place.
  */
-export function Related({ items, from, pyqs = 0, pyqFilter, label = 'Related', max = 6, grouped = false }: {
+export function Related({ items, from, pyqs = 0, pyqFilter, label = 'Related', max = 6, grouped = false, notes = [] }: {
   items: RelatedItem[]
   /** key of the subject being read: links inside it are shown without the subject name */
   from: string
@@ -27,10 +28,12 @@ export function Related({ items, from, pyqs = 0, pyqFilter, label = 'Related', m
   max?: number
   /** list under group headings (the header panel) rather than as one row */
   grouped?: boolean
+  /** the learner's Current Affairs notes that link here (the header panel only) */
+  notes?: EntryLike[]
 }) {
   const overrides = useStore((s) => s.overrides)
   const [all, setAll] = useState(false)
-  if (!items.length && !pyqs) return null
+  if (!items.length && !pyqs && !notes.length) return null
   const shown = all ? items : items.slice(0, max)
   const link = ({ place: p }: RelatedItem) => (
     <a key={p.section?.key ?? p.chapter.key} href={href.reader(p.chapter.key, p.section?.id)}>
@@ -52,6 +55,9 @@ export function Related({ items, from, pyqs = 0, pyqFilter, label = 'Related', m
       {items.length > max && (
         <button className="more" onClick={() => setAll(!all)} aria-expanded={all}>{all ? 'Show fewer' : `View all ${items.length}`}</button>
       )}
+      {notes.length > 0 && <b>Current Affairs</b>}
+      {notes.slice(0, max).map((e) => <a key={e.id} href={href.caNote(e.id)}><small>{dayShort(parseDayId(e.dayId))} · </small>{e.title || 'Untitled note'}</a>)}
+      {notes.length > max && <a className="pq" href={href.currentAffairs('notes')}>All {notes.length} notes</a>}
       {pyqs > 0 && grouped && <b>PYQs</b>}
       {pyqs > 0 && (
         <a className="pq" href={href.pyqs(pyqFilter)}>{pyqs} PYQ{pyqs === 1 ? '' : 's'}</a>

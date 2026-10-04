@@ -35,9 +35,22 @@ export interface RecentDestination {
 
 // ---- study timer -------------------------------------------------------------
 
-/** A timer always runs against a chapter, or a section inside it: ref.kind is "chapter" | "section". */
+/** What a Current Affairs span, or a revised Current Affairs note, is about. It has no exam stage. */
+export interface CurrentAffairsRef {
+  kind: 'current-affairs'
+  /** YYYY-MM-DD, the news day. */
+  dayId: string
+  /** A note of that day. */
+  entryId?: string
+}
+export type StudyRef = ContentRef | CurrentAffairsRef
+
+/**
+ * A timer runs against a chapter, or a section inside it (ref.kind "chapter" | "section") — or,
+ * while reading the news, against a Current Affairs day (docs/READER_V2_CURRENT_AFFAIRS_CONTRACT.md).
+ */
 export interface StudyContext {
-  ref: ContentRef
+  ref: StudyRef
   subjectTitle: string
   topicTitle?: string
   chapterTitle: string
@@ -59,6 +72,9 @@ export interface StudySpan {
   revisionEventId?: string
   /** R1 / R2 / R3 … */
   revisionOrdinal?: number
+  /** activity "current-affairs": the news day the reading was for, and the note it started from. */
+  currentAffairsDayId?: string
+  currentAffairsEntryId?: string
 }
 
 /** Completed sessions are immutable and are the only source of study-time figures. */
@@ -286,7 +302,7 @@ export interface SchedulerSnapshot {
 /** The current scheduling state of one learning unit (a section marked Done). */
 export interface RevisionUnit {
   id: string
-  target: ContentRef
+  target: StudyRef
   title: string
   status: RevisionStatus
   enrolledAt: string
@@ -310,7 +326,7 @@ export interface RevisionUnit {
 export interface RevisionEvent {
   id: string
   revisionUnitId: string
-  target: ContentRef
+  target: StudyRef
   /** R1 = 1, R2 = 2 … */
   ordinal: number
   scheduledDueDate: string
@@ -356,7 +372,7 @@ export interface RecallAttempt {
   id: string
   recallUnitId: string
   contentHash: string
-  target: ContentRef
+  target: StudyRef
   revisionUnitId?: string
   revisionEventId?: string
   outcome: RecallOutcome
@@ -364,7 +380,7 @@ export interface RecallAttempt {
   deviceId: string
 }
 
-export type StudyActivity = 'initial-study' | 'revision'
+export type StudyActivity = 'initial-study' | 'revision' | 'current-affairs'
 /** What a span was spent on. Absent on a span = initial study. */
 export interface SpanActivity {
   activity: StudyActivity
@@ -372,6 +388,45 @@ export interface SpanActivity {
   revisionEventId?: string
   /** R1 / R2 / R3 … */
   revisionOrdinal?: number
+  currentAffairsDayId?: string
+  currentAffairsEntryId?: string
+}
+
+// ---- current affairs (docs/READER_V2_CURRENT_AFFAIRS_CONTRACT.md) ----------------------------
+
+export type CurrentAffairsDayStatus = 'pending' | 'completed' | 'missed' | 'caught-up' | 'excused'
+
+/** One news day. Holds no duration: reading time is derived from the study sessions. */
+export interface CurrentAffairsDay {
+  /** YYYY-MM-DD in the study timezone. */
+  id: string
+  date: string
+  timeZone: string
+  status: CurrentAffairsDayStatus
+  firstStartedAt?: string
+  /** When it was marked complete — on the day, or later. */
+  completedAt?: string
+  /** = completedAt, when that fell on a later calendar day. */
+  caughtUpAt?: string
+  excusedAt?: string
+  /** "Undo": completion or excuse before this instant no longer count. */
+  reopenedAt?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CurrentAffairsEntry {
+  id: string
+  dayId: string
+  title: string
+  sourceName?: string
+  sourceUrl?: string
+  /** "ca/<id>": the note body, stored as a reader edit. */
+  noteDocumentId: string
+  tags?: string[]
+  linkedContentRefs: ContentRef[]
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ExamTarget {

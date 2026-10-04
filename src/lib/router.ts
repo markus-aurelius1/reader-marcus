@@ -4,10 +4,15 @@ import { PYQ_FILTER_KEYS, type PyqFilter } from './pyq'
 // The one place routes are defined (docs/READER_V2_CONTRACT.md → Routes). Every segment is a
 // stable content id; `href` builds links, `parse` reads them, nothing else spells a path.
 export type SubjectTab = 'overview' | 'pyq' | 'insights'
-export const INSIGHTS_TABS = ['overview', 'time', 'subjects', 'progress', 'revision'] as const
+export const INSIGHTS_TABS = ['overview', 'time', 'subjects', 'progress', 'revision', 'current-affairs'] as const
 export type InsightsTab = (typeof INSIGHTS_TABS)[number]
 export const REVISION_TABS = ['today', 'overdue', 'upcoming', 'calendar', 'manual'] as const
 export type RevisionTab = (typeof REVISION_TABS)[number]
+export const CA_TABS = ['today', 'calendar', 'notes', 'archive'] as const
+export type CaTab = (typeof CA_TABS)[number]
+/** Current Affairs: a tab, one day (id = YYYY-MM-DD) or one note (id = entry id). */
+export type CaView = CaTab | 'day' | 'note'
+const DATE = /^\d{4}-\d{2}-\d{2}$/
 export type Route =
   | { name: 'home' }
   | { name: 'study'; stage?: string }
@@ -16,8 +21,10 @@ export type Route =
   | { name: 'pyqs'; filter: PyqFilter }
   | { name: 'insights'; tab: InsightsTab }
   | { name: 'revision'; tab: RevisionTab }
-  /** Scheduled revision of one unit; unitId is the section key. */
+  /** Scheduled revision of one unit; unitId is the section key, or "ca/<entryId>" for a Current Affairs note. */
   | { name: 'revise'; unitId: string }
+  /** date: the day selected in the calendar · month: YYYY-MM shown in the archive · tag: notes filter. */
+  | { name: 'current-affairs'; view: CaView; id?: string; date?: string; month?: string; tag?: string }
   | { name: 'settings' }
   | { name: 'highlights' }
 
@@ -45,7 +52,20 @@ export function parse(hash: string): Route {
   }
   if (seg[0] === 'insights') return { name: 'insights', tab: insightsTab(seg[1]) }
   if (seg[0] === 'revision') return { name: 'revision', tab: revisionTab(seg[1]) }
-  if (seg[0] === 'revise' && seg.length === 5) return { name: 'revise', unitId: seg.slice(1).join('/') }
+  if (seg[0] === 'revise' && (seg.length === 5 || (seg.length === 3 && seg[1] === 'ca'))) return { name: 'revise', unitId: seg.slice(1).join('/') }
+  if (seg[0] === 'current-affairs') {
+    if (seg[1] === 'day' && DATE.test(seg[2] ?? '')) return { name: 'current-affairs', view: 'day', id: seg[2] }
+    if (seg[1] === 'note' && seg[2]) return { name: 'current-affairs', view: 'note', id: seg[2] }
+    const view = CA_TABS.find((t) => t === seg[1]) ?? 'today'
+    const date = params.get('d') ?? ''
+    const month = params.get('m') ?? ''
+    return {
+      name: 'current-affairs', view,
+      ...(view === 'calendar' && DATE.test(date) ? { date } : {}),
+      ...(view === 'archive' && /^\d{4}-\d{2}$/.test(month) ? { month } : {}),
+      ...(view === 'notes' && params.get('tag') ? { tag: params.get('tag')! } : {}),
+    }
+  }
   if (seg[0] === 'settings') return { name: 'settings' }
   // earlier links: #/s/<subject>[/tab], #/r/<chapter>[/section], #/progress
   if (seg[0] === 's' && seg[2]) return { name: 'subject', subjectKey: `${seg[1]}/${seg[2]}`, tab: tabOf(seg[3]) }
@@ -83,6 +103,12 @@ export const href = {
   revision: (tab?: RevisionTab) => `#/revision${tab && tab !== 'today' ? '/' + tab : ''}`,
   revise: (unitId: string) => `#/revise/${unitId}`,
   settings: () => '#/settings',
+  currentAffairs: (tab?: CaTab, q?: { date?: string; month?: string; tag?: string }) => {
+    const p = tab === 'calendar' && q?.date ? `?d=${q.date}` : tab === 'archive' && q?.month ? `?m=${q.month}` : tab === 'notes' && q?.tag ? `?tag=${encodeURIComponent(q.tag)}` : ''
+    return `#/current-affairs${tab && tab !== 'today' ? '/' + tab : ''}${p}`
+  },
+  caDay: (dayId: string) => `#/current-affairs/day/${dayId}`,
+  caNote: (entryId: string) => `#/current-affairs/note/${encodeURIComponent(entryId)}`,
 }
 
 /** The canonical link for a route. */
@@ -98,6 +124,7 @@ export function hrefOf(r: Route): string {
     case 'revision': return href.revision(r.tab)
     case 'revise': return href.revise(r.unitId)
     case 'settings': return href.settings()
+    case 'current-affairs': return r.view === 'day' ? href.caDay(r.id!) : r.view === 'note' ? href.caNote(r.id!) : href.currentAffairs(r.view, r)
   }
 }
 

@@ -544,11 +544,11 @@ A reset wipes **groups** of records. `floors[group]` is the epoch at which the g
 
 ```text
 group        record kinds
-study        sec chap ses run q pyq ru rev ra        (+ recent destinations)
+study        sec chap ses run q pyq ru rev ra cad    (+ recent destinations)
 flags        the difficult / revise fields of sec~…  (kept, and sent again under the new
              epoch, when only "study" is wiped)
 goals        goal
-notes        edit hl
+notes        edit hl cae
 favourites   the favourites field of pref~main
 exams        exam
 settings     pref rpref
@@ -632,3 +632,7 @@ Nothing is enrolled by the upgrade. Sections marked Done before this feature sta
 | Date | Change | Why |
 | --- | --- | --- |
 | 2026-10-04 | Contract created with Job 5.5 as built | — |
+| 2026-10-04 | `StudyActivity` gains `"current-affairs"` (Job 5.6) | Reading the news is a third kind of span of the one timer |
+| 2026-10-04 | `RevisionUnit.target`, `RevisionEvent.target`, `RecallAttempt.target` are `ContentRef | CurrentAffairsRef`; a unit may be `ca/<entryId>`, revised at `#/revise/ca/<entryId>` and listed under "Current Affairs" | Job 5.6: a Current Affairs note enters revision only by "Add to Revision", in this scheduler — never a second one |
+| 2026-10-04 | A unit can be set aside (`suspended`) after reviews, when its note is deleted | The note is gone; its completed revisions stay as history |
+| 2026-10-04 | Reset groups: `cad` (Current Affairs day records) in `study`; `cae` (Current Affairs notes) in `notes` | Study History reset clears the day record and keeps the learner's notes; Full reset removes both |

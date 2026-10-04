@@ -14,7 +14,7 @@ import { create } from 'zustand'
 import { db } from './db'
 import { deviceId, markDirty, registerKind, storeHooks, useStore, type KindAdapter } from './store'
 import { keyOf, type Field, type Rec } from '../sync/merge'
-import type { ExamTarget, RecallAttempt, RecallIntensity, RecallOutcome, RevisionEvent, RevisionGrade, RevisionPreferences, RevisionUnit } from './contract'
+import type { ExamTarget, RecallAttempt, RecallIntensity, RecallOutcome, RevisionEvent, RevisionGrade, RevisionPreferences, RevisionUnit, StudyRef } from './contract'
 import { DEFAULT_FINAL_WINDOW_DAYS, DEFAULT_RETENTION, SCHEDULER_VERSION, clampRetention, dateKey, dayOf, dayOfIso, examHorizon, parseDay, review } from './scheduler'
 import { horizonOf, liveExams, primaryExam, type ExamRow, type Stamps } from './revisionModel'
 import { sectionRef } from './recall'
@@ -117,8 +117,9 @@ const horizon = (today: number) => {
  * A section was marked Done: enrol it, once. R1 falls on the next calendar day; from the first
  * real review onwards the adaptive scheduler takes over.
  * `dueDay` is given only when existing completed sections are scheduled in bulk.
+ * `target` is given when the unit is not a section of the library (a Current Affairs note).
  */
-export function enrol(sectionKey: string, title: string, completedAt = clock.now(), dueDay?: number): RevisionUnit | null {
+export function enrol(sectionKey: string, title: string, completedAt = clock.now(), dueDay?: number, target?: StudyRef): RevisionUnit | null {
   const s = useRevision.getState()
   const p = prefsOf(s.prefs)
   if (!p.enabled) return null
@@ -134,7 +135,7 @@ export function enrol(sectionKey: string, title: string, completedAt = clock.now
     return back
   }
   const unit: RevisionUnit = {
-    id: sectionKey, target: sectionRef(sectionKey), title, status: 'new',
+    id: sectionKey, target: target ?? sectionRef(sectionKey), title, status: 'new',
     enrolledAt: iso(now), initialStudyCompletedAt: iso(completedAt), dueDate: bootstrap,
     revisionCount: 0, lapseCount: 0, scheduler: { schedulerVersion: SCHEDULER_VERSION },
     desiredRetention: p.desiredRetention, schedulerTimeZone: tz, createdAt: iso(now), updatedAt: iso(now),
@@ -150,6 +151,19 @@ export function enrol(sectionKey: string, title: string, completedAt = clock.now
 export function unenrol(sectionKey: string) {
   const u = useRevision.getState().units[sectionKey]
   if (!u || u.revisionCount > 0 || u.status === 'suspended') return
+  putUnits([{ ...u, status: 'suspended', updatedAt: iso(clock.now()) }])
+}
+
+/**
+ * "Add to Revision" on a Current Affairs note: the note becomes the revision unit "ca/<entryId>",
+ * scheduled like any other — R1 the next day, then by how well it was remembered. Never automatic.
+ */
+export const enrolNote = (entryId: string, dayId: string, title: string) => enrol(`ca/${entryId}`, title || 'Untitled note', clock.now(), undefined, { kind: 'current-affairs', dayId, entryId })
+
+/** The unit's subject is gone (a deleted note): it leaves the queue; what was recorded stays. */
+export function setAside(unitId: string) {
+  const u = useRevision.getState().units[unitId]
+  if (!u || u.status === 'suspended') return
   putUnits([{ ...u, status: 'suspended', updatedAt: iso(clock.now()) }])
 }
 
@@ -248,7 +262,7 @@ export function scheduleExisting(sections: { key: string; title: string; doneAt?
 export function recordAttempt(a: { recallUnitId: string; contentHash: string; unitId: string; eventId: string; outcome: RecallOutcome }): RecallAttempt {
   const s = useRevision.getState()
   const now = clock.now()
-  const row: RecallAttempt = { id: newId('a', now), recallUnitId: a.recallUnitId, contentHash: a.contentHash, target: sectionRef(a.unitId), revisionUnitId: a.unitId, revisionEventId: a.eventId, outcome: a.outcome, attemptedAt: iso(now), deviceId }
+  const row: RecallAttempt = { id: newId('a', now), recallUnitId: a.recallUnitId, contentHash: a.contentHash, target: s.units[a.unitId]?.target ?? sectionRef(a.unitId), revisionUnitId: a.unitId, revisionEventId: a.eventId, outcome: a.outcome, attemptedAt: iso(now), deviceId }
   useRevision.setState({ attempts: { ...s.attempts, [row.id]: row } })
   saved(db.put('recallAttempts', row))
   markDirty(`ra~${row.id}`)

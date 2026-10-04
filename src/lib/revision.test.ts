@@ -3,7 +3,7 @@
 // another device is a fresh copy with its own storage (testkit.ts parks and restores storage).
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { RevisionEvent, RevisionGrade, RevisionUnit, StudyContext, StudySession } from './contract'
+import type { ContentRef, RevisionEvent, RevisionGrade, RevisionUnit, StudyContext, StudySession } from './contract'
 import { Cloud, deleteDb, idle, restore, snapshot } from './testkit'
 
 const TZ = 'Asia/Kolkata'
@@ -525,7 +525,7 @@ describe('the timer during revision', () => {
     expect(t.study.activeTimer(t.study.useStudy.getState())!.currentActivity).toBeUndefined()
     now += 3 * MIN
     const s = t.study.stopTimer()!
-    expect(s.spans.map((x) => [x.context.ref.chapterId, x.activity ?? 'initial-study', x.durationMs])).toEqual([['parliament', 'initial-study', 5 * MIN], ['parliament', 'revision', 6 * MIN], ['judiciary', 'initial-study', 3 * MIN]])
+    expect(s.spans.map((x) => [(x.context.ref as ContentRef).chapterId, x.activity ?? 'initial-study', x.durationMs])).toEqual([['parliament', 'initial-study', 5 * MIN], ['parliament', 'revision', 6 * MIN], ['judiciary', 'initial-study', 3 * MIN]])
   })
 
   it('a timer owned by another device is left alone', async () => {

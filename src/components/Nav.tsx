@@ -1,7 +1,7 @@
-import { BookOpen, CalendarClock, ChartNoAxesColumn, Ellipsis, Highlighter, Home as HomeIcon, ListChecks, Search } from 'lucide-react'
+import { BookOpen, CalendarClock, ChartNoAxesColumn, Ellipsis, Highlighter, Home as HomeIcon, ListChecks, Newspaper, Search } from 'lucide-react'
 import { href, type Route } from '../lib/router'
 
-export type Area = 'home' | 'study' | 'pyqs' | 'insights' | 'revision' | 'highlights' | 'settings' | 'more'
+export type Area = 'home' | 'study' | 'pyqs' | 'insights' | 'revision' | 'current-affairs' | 'highlights' | 'settings' | 'more'
 
 /** The primary destination a route belongs to. */
 export const areaOf = (r: Route): Area =>
@@ -13,6 +13,7 @@ const DEST = [
   { id: 'pyqs', label: 'PYQ Hub', short: 'PYQs', to: href.pyqs(), Icon: ListChecks },
   { id: 'insights', label: 'Insights', short: 'Insights', to: href.insights(), Icon: ChartNoAxesColumn },
   { id: 'revision', label: 'Revision', short: 'Revision', to: href.revision(), Icon: CalendarClock },
+  { id: 'current-affairs', label: 'Current Affairs', short: 'News', to: href.currentAffairs(), Icon: Newspaper },
   { id: 'highlights', label: 'Highlights', short: 'Highlights', to: href.highlights(), Icon: Highlighter },
 ] as const
 
@@ -40,7 +41,8 @@ export function Rail({ area, onSearch }: { area: Area; onSearch: () => void }) {
 
 /** Phone primary navigation: its own bottom bar, not the rail squeezed. */
 export function TabBar({ area, more, onMore }: { area: Area; more: boolean; onMore: () => void }) {
-  const here = more ? 'more' : area === 'highlights' || area === 'revision' || area === 'settings' ? 'more' : area
+  // the five tabs stay as they are: everything else, Current Affairs included, lives in More
+  const here = more ? 'more' : area === 'highlights' || area === 'revision' || area === 'settings' || area === 'current-affairs' ? 'more' : area
   return (
     <nav className="tabbar" aria-label="Primary">
       {DEST.slice(0, 4).map(({ id, short, to, Icon }) => (

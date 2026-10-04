@@ -4,7 +4,8 @@
 > Change it only when something genuinely requires it, and record the change here first.
 >
 > Adaptive revision, Recall v2, exam targets and reset (Job 5.5) are specified in the companion
-> [`READER_V2_REVISION_CONTRACT.md`](READER_V2_REVISION_CONTRACT.md).
+> [`READER_V2_REVISION_CONTRACT.md`](READER_V2_REVISION_CONTRACT.md); Current Affairs (Job 5.6) in
+> [`READER_V2_CURRENT_AFFAIRS_CONTRACT.md`](READER_V2_CURRENT_AFFAIRS_CONTRACT.md).
 
 ## Core principles
 
@@ -85,9 +86,13 @@ chapter or section; they are context only.
 A timer always runs against a chapter, or a section inside it
 (see StudyTimerPreferences.trackingGranularity). So ref.kind is
 "chapter" | "section", ref.chapterId is set, and chapterTitle is required.
+
+Job 5.6: or against a Current Affairs day — ref is then a CurrentAffairsRef
+{ kind: "current-affairs", dayId, entryId? }, which has no stage, subject or chapter
+(READER_V2_CURRENT_AFFAIRS_CONTRACT.md).
 */
 interface StudyContext {
-  ref: ContentRef;
+  ref: ContentRef | CurrentAffairsRef;
 
   subjectTitle: string;
   topicTitle?: string;
@@ -113,10 +118,14 @@ interface StudySpan {
   durationMs: number;
 
   // Job 5.5 (see READER_V2_REVISION_CONTRACT.md). Absent = initial study.
-  activity?: "initial-study" | "revision";
+  activity?: "initial-study" | "revision" | "current-affairs";
   revisionUnitId?: string;
   revisionEventId?: string;
   revisionOrdinal?: number;
+
+  // Job 5.6 (see READER_V2_CURRENT_AFFAIRS_CONTRACT.md).
+  currentAffairsDayId?: string;
+  currentAffairsEntryId?: string;
 }
 
 interface StudySession {
@@ -159,7 +168,7 @@ interface ActiveStudySession {
   // Running span.
   currentContext: StudyContext;
   // Job 5.5: what the open span is spent on; absent = initial study.
-  currentActivity?: { activity: "initial-study" | "revision"; revisionUnitId?: string; revisionEventId?: string; revisionOrdinal?: number };
+  currentActivity?: { activity: "initial-study" | "revision" | "current-affairs"; revisionUnitId?: string; revisionEventId?: string; revisionOrdinal?: number; currentAffairsDayId?: string; currentAffairsEntryId?: string };
   currentSpanStartedAt?: string;
 
   // Time accumulated before current running span.
@@ -546,6 +555,7 @@ IndexedDB
 ├── pyqUserState            one row per flagged question, key pyqId
 ├── revisionUnits · revisionEvents · recallAttempts · examTargets ·
 │   revisionPreferences · userDataEpoch      ← Job 5.5, READER_V2_REVISION_CONTRACT.md
+├── currentAffairsDays · currentAffairsEntries ← Job 5.6, READER_V2_CURRENT_AFFAIRS_CONTRACT.md
 └── optionalAnalyticsCache   ← regenerable only
 ```
 
@@ -768,7 +778,10 @@ Active days      local calendar days with any study time.
 Filters          stage / paper / subject / topic / chapter (AnalyticsFilter). Inside a filter a
                  session counts only its time in that scope.
 Attribution      by the span's own StudyContext; time tracked by section counts towards its
-                 chapter, topic, subject and stage.
+                 chapter, topic, subject and stage. A Current Affairs span (Job 5.6) has none of
+                 these: it is in every total, bucket, heatmap day and streak, in Summary.byActivity,
+                 and in no stage / subject / topic / chapter figure. Scope.activity selects one of
+                 initial-study · revision · current-affairs.
 Last studied     the end of the latest span on that section / chapter / subject.
 ```
 
@@ -865,6 +878,7 @@ Study
 PYQ Hub
 Insights
 Revision
+Current Affairs
 Highlights
 ────────
 Search / ⌘K
@@ -912,7 +926,7 @@ Insights
 More
 ```
 
-`More` contains Revision, Highlights, Settings, account/sync and secondary actions.
+`More` contains Revision, Current Affairs, Highlights, Settings, account/sync and secondary actions.
 
 ---
 
@@ -931,10 +945,16 @@ Hash routes, built only by `href` in `src/lib/router.ts`. Every path segment is 
 #/pyqs?stage=&exam=&year=&subject=&topic=       PYQ Hub filtered; every parameter optional
        &chapter=&section=&status=&mine=&q=&id=    (subject / topic / chapter / section are content ids)
 #/insights                                      Insights → Overview
-#/insights/{time|subjects|progress|revision}    Insights tabs (revision = revision analytics)
+#/insights/{time|subjects|progress|revision     Insights tabs (revision = revision analytics)
+           |current-affairs}
 #/revision                                      Revision → Today
 #/revision/{overdue|upcoming|calendar|manual}   Revision tabs (manual = the ★ / ↻ list)
 #/revise/{stage}/{subject}/{chapter}/{section}  scheduled revision of one unit
+#/revise/ca/{entryId}                           scheduled revision of a Current Affairs note
+#/current-affairs                               Current Affairs → Today
+#/current-affairs/{calendar|notes|archive}      Current Affairs tabs (?d= date · ?tag= · ?m= YYYY-MM)
+#/current-affairs/day/{YYYY-MM-DD}              one news day
+#/current-affairs/note/{entryId}                one note
 #/settings                                      exam targets, revision preferences, reset
 #/highlights                                    Highlights
 ```
@@ -970,4 +990,9 @@ Earlier links keep working and are rewritten in place (no extra history entry):
 | 2026-10-04 | Navigation: Revision added to the desktop rail and to `More` on phones; Settings in `More` | Job 5.5: scheduled revision is a daily destination; the five phone tabs are unchanged |
 | 2026-10-04 | Storage: six IndexedDB stores and six Firestore locations for revision, exam targets and the reset epoch; every synced record may carry `ep` | Job 5.5; details in READER_V2_REVISION_CONTRACT.md |
 | 2026-10-04 | Recall: `{{answer}}` items are concealed behind a fixed mask instead of blurred; the same preference (`recall`) switches it on | Job 5.5: Recall Engine v2 |
+| 2026-10-04 | Job 5.6: `StudyActivity` gains `"current-affairs"`; `StudySpan.currentAffairsDayId / currentAffairsEntryId`; `ActiveStudySession.currentActivity` carries them | Reading the news is a span of the one timer, attributable to its news day |
+| 2026-10-04 | `StudyContext.ref` is `ContentRef | CurrentAffairsRef` | A Current Affairs span has no exam stage, subject or chapter; it must not be given one |
+| 2026-10-04 | Analytics: a Current Affairs span is in the totals and in no subject figure; `Summary.byActivity`, `Scope.activity`, `StudyIndex.caByDay` | Current Affairs time is an activity category, not a subject |
+| 2026-10-04 | Navigation: Current Affairs in the desktop rail and in `More` on phones. Routes: `#/current-affairs…`, `#/insights/current-affairs`, `#/revise/ca/{entryId}` | Job 5.6: a first-class study surface; the five phone tabs are unchanged |
+| 2026-10-04 | Storage: two IndexedDB stores and two Firestore locations for Current Affairs | Job 5.6; details in READER_V2_CURRENT_AFFAIRS_CONTRACT.md |
 | 2026-10-03 | "Timer rules as built": span ids, stopped marker in `studyRuntime/active`, record envelope for study documents, meaning of `source: "recovered"`, two-device reconciliation | Job 2 needed a deterministic, loss-free rule for timers that diverge offline; types unchanged |

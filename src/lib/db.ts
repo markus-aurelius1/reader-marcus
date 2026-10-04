@@ -9,8 +9,10 @@
 //   v6: + revisionUnits, revisionEvents (immutable), recallAttempts (immutable), examTargets,
 //       revisionPreferences (one row, id "default"), userDataEpoch (one row, key "current"),
 //       added the same way. Nothing existing is read, rewritten or enrolled.
+//   v7: + currentAffairsDays (one row per news day acted on), currentAffairsEntries (one row per
+//       note), added the same way.
 export const DB_NAME = 'upsc-notes'
-export const DB_VERSION = 6
+export const DB_VERSION = 7
 let dbp: Promise<IDBDatabase> | null = null
 
 export function upgrade(db: IDBDatabase) {
@@ -33,6 +35,8 @@ export function upgrade(db: IDBDatabase) {
   need('examTargets', { keyPath: 'id' })
   need('revisionPreferences', { keyPath: 'id' })
   need('userDataEpoch')
+  need('currentAffairsDays', { keyPath: 'id' })
+  need('currentAffairsEntries', { keyPath: 'id' })
 }
 
 function open(): Promise<IDBDatabase> {

@@ -5,7 +5,8 @@
 // buildIndex turns the sessions into day-sized slices of active study, with no wall-clock
 // moment counted twice. Every figure the Insights pages show is a sum over those slices. The
 // index is a regenerable in-memory cache (indexOf); it is never authoritative.
-import type { AnalyticsFilter, StudyAnalytics, StudyContext, StudyDistribution, StudyHeatmapDay, StudySession, StudyStreak, TimeBucket } from './contract'
+import type { AnalyticsFilter, StudyActivity, StudyAnalytics, StudyContext, StudyDistribution, StudyHeatmapDay, StudySession, StudyStreak, TimeBucket } from './contract'
+import { isCaRef } from './timer'
 
 const DAY = 86400000
 const HOUR = 3600000
@@ -49,6 +50,8 @@ export function dayOf(ms: number, tz: string) {
   const w = wall(ms, tz)
   return dayNo(w.year, w.month, w.day)
 }
+/** The local hour (0–23) of an instant. */
+export const hourOf = (ms: number, tz: string) => wall(ms, tz).hour
 
 const starts = new Map<string, Map<number, number>>()
 /** First instant of a local calendar day — correct across DST changes, including at midnight. */
@@ -73,9 +76,12 @@ export const dayText = (dn: number) => label(dn, { weekday: 'short', day: 'numer
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 // ---- index -----------------------------------------------------------------------
-export const subjectKeyOf = (c: StudyContext) => `${c.ref.stage}/${c.ref.subjectId}`
-export const chapterKeyOf = (c: StudyContext) => `${subjectKeyOf(c)}/${c.ref.chapterId}`
-const topicKeyOf = (c: StudyContext) => `${subjectKeyOf(c)}~${c.ref.topicId ?? ''}`
+// A Current Affairs context has no stage, subject or chapter. Where a key is still needed (a
+// session's list of contexts, the time of a revised note) it gets one of its own.
+export const CA_KEY = 'current-affairs'
+export const subjectKeyOf = (c: StudyContext) => (isCaRef(c.ref) ? CA_KEY : `${c.ref.stage}/${c.ref.subjectId}`)
+export const chapterKeyOf = (c: StudyContext) => (isCaRef(c.ref) ? (c.ref.entryId ? `ca/${c.ref.entryId}` : `${CA_KEY}/${c.ref.dayId}`) : `${subjectKeyOf(c)}/${c.ref.chapterId}`)
+const topicKeyOf = (c: StudyContext) => (isCaRef(c.ref) ? CA_KEY : `${subjectKeyOf(c)}~${c.ref.topicId ?? ''}`)
 
 /** One session as analytics sees it: its active study time, with nothing double-counted. */
 export interface SessionStat {
@@ -96,6 +102,8 @@ export interface Slice {
   session: SessionStat
   /** Set when the time was spent revising: which review (R1 = 1 …) of which unit. Absent = initial study. */
   rev?: { ordinal: number; unitId?: string }
+  /** Set when the time was spent reading the news: the news day it was for. */
+  ca?: string
 }
 export interface StudyIndex {
   tz: string
@@ -106,16 +114,20 @@ export interface StudyIndex {
   /** All-time study time and the last moment studied, by stage / subject / chapter / section key. */
   total: Map<string, number>
   last: Map<string, number>
+  /** Current-affairs reading time by news day (YYYY-MM-DD) — the day read about, whenever it was read. */
+  caByDay: Map<string, number>
 }
 
 export function buildIndex(sessions: Iterable<StudySession>, tz: string): StudyIndex {
-  const spans: { from: number; to: number; ctx: StudyContext; session: SessionStat; rev?: Slice['rev'] }[] = []
+  const spans: { from: number; to: number; ctx: StudyContext; session: SessionStat; rev?: Slice['rev']; ca?: string }[] = []
   for (const s of sessions) {
     const session: SessionStat = { id: s.id, from: Infinity, to: -Infinity, ms: 0, source: s.source, contexts: [] }
     for (const x of s.spans ?? []) {
       const from = Date.parse(x.startedAt)
       // a span is an unbroken stretch of active study, so it runs from startedAt for durationMs
-      if (Number.isFinite(from) && x.durationMs > 0 && x.context?.ref) spans.push({ from, to: from + x.durationMs, ctx: x.context, session, ...(x.activity === 'revision' ? { rev: { ordinal: Math.max(1, x.revisionOrdinal ?? 1), unitId: x.revisionUnitId } } : {}) })
+      if (!Number.isFinite(from) || !(x.durationMs > 0) || !x.context?.ref) continue
+      const tag = x.activity === 'revision' ? { rev: { ordinal: Math.max(1, x.revisionOrdinal ?? 1), unitId: x.revisionUnitId } } : x.activity === 'current-affairs' ? { ca: x.currentAffairsDayId ?? (isCaRef(x.context.ref) ? x.context.ref.dayId : '') } : {}
+      spans.push({ from, to: from + x.durationMs, ctx: x.context, session, ...tag })
     }
   }
   spans.sort((a, b) => a.from - b.from || b.to - a.to || (a.session.id < b.session.id ? -1 : 1))
@@ -123,6 +135,7 @@ export function buildIndex(sessions: Iterable<StudySession>, tz: string): StudyI
   const slices: Slice[] = []
   const total = new Map<string, number>()
   const last = new Map<string, number>()
+  const caByDay = new Map<string, number>()
   const seen = new Set<SessionStat>()
   let cursor = -Infinity // everything before this instant is already counted
   let dn = 0
@@ -142,7 +155,9 @@ export function buildIndex(sessions: Iterable<StudySession>, tz: string): StudyI
     const ck = chapterKeyOf(sp.ctx)
     if (!s.contexts.some((c) => chapterKeyOf(c) === ck)) s.contexts.push(sp.ctx)
     seen.add(s)
-    const keys = [sp.ctx.ref.stage, subjectKeyOf(sp.ctx), ck, ...(sp.ctx.ref.sectionId ? [`${ck}/${sp.ctx.ref.sectionId}`] : [])]
+    if (sp.ca !== undefined) caByDay.set(sp.ca, (caByDay.get(sp.ca) ?? 0) + ms)
+    // current affairs is an activity, not a subject: it is in no stage, subject or chapter total
+    const keys = isCaRef(sp.ctx.ref) ? [] : [sp.ctx.ref.stage, subjectKeyOf(sp.ctx), ck, ...(sp.ctx.ref.sectionId ? [`${ck}/${sp.ctx.ref.sectionId}`] : [])]
     for (const k of keys) {
       total.set(k, (total.get(k) ?? 0) + ms)
       last.set(k, Math.max(last.get(k) ?? 0, sp.to))
@@ -155,11 +170,11 @@ export function buildIndex(sessions: Iterable<StudySession>, tz: string): StudyI
         dayTo = dayStart(dn + 1, tz)
       }
       const b = Math.min(sp.to, Math.max(dayTo, a + 1))
-      slices.push({ from: a, to: b, day: dn, ctx: sp.ctx, session: s, ...(sp.rev ? { rev: sp.rev } : {}) })
+      slices.push({ from: a, to: b, day: dn, ctx: sp.ctx, session: s, ...(sp.rev ? { rev: sp.rev } : {}), ...(sp.ca !== undefined ? { ca: sp.ca } : {}) })
       a = b
     }
   }
-  return { tz, slices, sessions: [...seen].sort((a, b) => a.to - b.to), total, last }
+  return { tz, slices, sessions: [...seen].sort((a, b) => a.to - b.to), total, last, caByDay }
 }
 
 let memo: { src: object; tz: string; ix: StudyIndex } | null = null
@@ -170,10 +185,19 @@ export function indexOf(sessions: Record<string, StudySession>, tz: string): Stu
 }
 
 // ---- queries ---------------------------------------------------------------------
-export type Scope = Pick<AnalyticsFilter, 'stage' | 'paperId' | 'subjectId' | 'topicId' | 'chapterId'>
-const scoped = (f?: Scope) => !!f && !!(f.stage || f.paperId || f.subjectId || f.topicId || f.chapterId)
-const matches = (c: StudyContext, f: Scope) =>
-  (!f.stage || c.ref.stage === f.stage) && (!f.paperId || c.ref.paperId === f.paperId) && (!f.subjectId || c.ref.subjectId === f.subjectId) && (!f.topicId || c.ref.topicId === f.topicId) && (!f.chapterId || c.ref.chapterId === f.chapterId)
+/** A part of the library (stage … chapter), and / or one activity. */
+export type Scope = Pick<AnalyticsFilter, 'stage' | 'paperId' | 'subjectId' | 'topicId' | 'chapterId'> & { activity?: StudyActivity }
+/** What a slice of study time was spent on: exactly one of the three. */
+export const activityOf = (s: Slice): StudyActivity => (s.ca !== undefined ? 'current-affairs' : s.rev ? 'revision' : 'initial-study')
+const inLibrary = (f: Scope) => !!(f.stage || f.paperId || f.subjectId || f.topicId || f.chapterId)
+const scoped = (f?: Scope) => !!f && (inLibrary(f) || !!f.activity)
+function matches(s: Slice, f: Scope) {
+  if (f.activity && activityOf(s) !== f.activity) return false
+  const r = s.ctx.ref
+  // a Current Affairs span belongs to no stage or subject, whatever its notes link to
+  if (isCaRef(r)) return !inLibrary(f)
+  return (!f.stage || r.stage === f.stage) && (!f.paperId || r.paperId === f.paperId) && (!f.subjectId || r.subjectId === f.subjectId) && (!f.topicId || r.topicId === f.topicId) && (!f.chapterId || r.chapterId === f.chapterId)
+}
 
 /** First slice that ends after `t`. */
 function firstAfter(slices: Slice[], t: number) {
@@ -193,7 +217,7 @@ function each(ix: StudyIndex, from: number, to: number, scope: Scope | undefined
   for (let i = firstAfter(ix.slices, from); i < ix.slices.length; i++) {
     const s = ix.slices[i]
     if (s.from >= to) break
-    if (f && !matches(s.ctx, f)) continue
+    if (f && !matches(s, f)) continue
     const ms = Math.min(s.to, to) - Math.max(s.from, from)
     if (ms > 0) fn(s, ms)
   }
@@ -215,6 +239,8 @@ export interface TopicTime {
 export interface ActivityTime {
   initialMs: number
   revisionMs: number
+  /** Reading the news: neither initial study nor revision of anything in the library. */
+  currentAffairsMs: number
   time: OrdinalTime
   bySubject: { key: string; label: string; initialMs: number; revisionMs: number }[]
   /** Chapters, most time first. */
@@ -231,7 +257,12 @@ export function activityTime(ix: StudyIndex, from = -Infinity, to = Infinity, sc
   const time = zero()
   const subjects = new Map<string, ActivityTime['bySubject'][number]>()
   const chapters = new Map<string, TopicTime & { secs: Map<string, TopicTime> }>()
+  let currentAffairsMs = 0
   each(ix, from, to, scope, (s, ms) => {
+    if (s.ca !== undefined) {
+      currentAffairsMs += ms
+      return
+    }
     const slot = s.rev ? Math.min(5, s.rev.ordinal) : 0
     time[slot] += ms
     const sk = subjectKeyOf(s.ctx)
@@ -242,7 +273,7 @@ export function activityTime(ix: StudyIndex, from = -Infinity, to = Infinity, sc
     const ch = chapters.get(ck) ?? chapters.set(ck, { key: ck, ctx: s.ctx, time: zero(), totalMs: 0, secs: new Map() }).get(ck)!
     ch.time[slot] += ms
     ch.totalMs += ms
-    if (s.ctx.ref.sectionId) {
+    if (!isCaRef(s.ctx.ref) && s.ctx.ref.sectionId) {
       const key = `${ck}/${s.ctx.ref.sectionId}`
       const sec = ch.secs.get(key) ?? ch.secs.set(key, { key, ctx: s.ctx, time: zero(), totalMs: 0 }).get(key)!
       sec.time[slot] += ms
@@ -253,6 +284,7 @@ export function activityTime(ix: StudyIndex, from = -Infinity, to = Infinity, sc
   return {
     initialMs: time[0],
     revisionMs,
+    currentAffairsMs,
     time,
     bySubject: [...subjects.values()].sort((a, b) => b.initialMs + b.revisionMs - (a.initialMs + a.revisionMs)),
     byTopic: [...chapters.values()].sort((a, b) => b.totalMs - a.totalMs).map(({ secs, ...c }) => ({ ...c, sections: [...secs.values()].sort((a, b) => b.totalMs - a.totalMs) })),
@@ -280,6 +312,8 @@ export interface Summary {
   bySubject: StudyDistribution[]
   byTopic: StudyDistribution[]
   byChapter: StudyDistribution[]
+  /** The same total by what it was spent on: initial study, revision, current affairs. */
+  byActivity: Record<StudyActivity, number>
 }
 
 export function summarize(ix: StudyIndex, from: number, to: number, scope?: Scope): Summary {
@@ -291,9 +325,12 @@ export function summarize(ix: StudyIndex, from: number, to: number, scope?: Scop
     if (g) g.ms += ms
     else m.set(id, { label, ms })
   }
+  const byActivity: Record<StudyActivity, number> = { 'initial-study': 0, revision: 0, 'current-affairs': 0 }
   each(ix, from, to, scope, (s, ms) => {
     totalMs += ms
     days.add(s.day)
+    byActivity[activityOf(s)] += ms
+    if (isCaRef(s.ctx.ref)) return // not a subject: in the total and the activity split only
     add(groups[0], s.ctx.ref.stage, s.ctx.ref.stage, ms)
     add(groups[1], subjectKeyOf(s.ctx), s.ctx.subjectTitle, ms)
     add(groups[2], topicKeyOf(s.ctx), s.ctx.topicTitle ?? s.ctx.subjectTitle, ms)
@@ -306,7 +343,7 @@ export function summarize(ix: StudyIndex, from: number, to: number, scope?: Scop
   let own: Map<SessionStat, number> | null = null
   if (scoped(scope)) {
     own = new Map()
-    for (const s of ix.slices) if (matches(s.ctx, scope!)) own.set(s.session, (own.get(s.session) ?? 0) + s.to - s.from)
+    for (const s of ix.slices) if (matches(s, scope!)) own.set(s.session, (own.get(s.session) ?? 0) + s.to - s.from)
   }
   const sessions: SessionStat[] = []
   for (const s of ix.sessions) {
@@ -323,6 +360,7 @@ export function summarize(ix: StudyIndex, from: number, to: number, scope?: Scop
     averageSessionMs: sessions.length ? sum / sessions.length : 0,
     longestSessionMs: sessions.reduce((n, s) => Math.max(n, s.ms), 0),
     byStage: dist(groups[0]), bySubject: dist(groups[1]), byTopic: dist(groups[2]), byChapter: dist(groups[3]),
+    byActivity,
   }
 }
 

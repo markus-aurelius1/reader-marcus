@@ -2,7 +2,7 @@
 // (local-only mode). A "reload" is a fresh copy of the modules over the same database.
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { ActiveStudySession, StudyContext, StudySession } from './contract'
+import type { ActiveStudySession, ContentRef, StudyContext, StudySession } from './contract'
 import type { Runtime } from './timer'
 
 const MIN = 60000
@@ -92,7 +92,7 @@ describe('study timer store (local-only)', () => {
     t.followContext(ctx('inflation')) // re-render on the same chapter
     now += 10 * MIN
     const session = t.stopTimer()!
-    expect(session.spans.map((s) => [s.context.ref.subjectId, s.context.ref.chapterId, s.durationMs])).toEqual([['polity', 'parliament', 20 * MIN], ['economy', 'inflation', 10 * MIN]])
+    expect(session.spans.map((s) => [(s.context.ref as ContentRef).subjectId, (s.context.ref as ContentRef).chapterId, s.durationMs])).toEqual([['polity', 'parliament', 20 * MIN], ['economy', 'inflation', 10 * MIN]])
     expect(session.durationMs).toBe(30 * MIN)
   })
 

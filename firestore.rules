@@ -96,6 +96,24 @@ service cloud.firestore {
         && request.resource.data.kind == 'rpref'
         && request.resource.data.st == request.time;
     }
+    // Current Affairs: one record per news day (its completion state — never a duration), and
+    // the learner's notes. A note's text is an 'edit' record in state/, like any edited section.
+    match /users/{uid}/currentAffairsDays/{dayId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.kind == 'cad'
+        && request.resource.data.id == 'cad~' + dayId
+        && request.resource.data.st == request.time;
+    }
+    match /users/{uid}/currentAffairsEntries/{entryId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.kind == 'cae'
+        && request.resource.data.id == 'cae~' + entryId
+        && request.resource.data.st == request.time;
+    }
     // The reset epoch. It only ever goes up: a reset can be made, never unmade.
     match /users/{uid}/meta/{docId} {
       allow read: if request.auth != null && request.auth.uid == uid;

@@ -105,7 +105,7 @@ export async function resetPersonalData(scope: ResetScope, options: ResetOptions
 
 /** Everything personal on this device, as one JSON file. A copy to keep before a reset. */
 export async function exportBackup() {
-  const stores = ['overrides', 'highlights', 'kv', 'studySessions', 'activeStudySession', 'studyGoals', 'studyQueue', 'pyqUserState', 'revisionUnits', 'revisionEvents', 'recallAttempts', 'examTargets', 'revisionPreferences']
+  const stores = ['overrides', 'highlights', 'kv', 'studySessions', 'activeStudySession', 'studyGoals', 'studyQueue', 'pyqUserState', 'revisionUnits', 'revisionEvents', 'recallAttempts', 'examTargets', 'revisionPreferences', 'currentAffairsDays', 'currentAffairsEntries']
   const data: Record<string, unknown> = {}
   for (const s of stores) data[s] = s === 'kv' ? { progress: await db.get('kv', 'progress') } : await db.getAll(s).catch(() => [])
   const body = { app: 'upsc-notes-reader', exportedAt: new Date(clock.now()).toISOString(), deviceId, epoch: state.doc.epoch, preferences: useStore.getState().prefs, data }

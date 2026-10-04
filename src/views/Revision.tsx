@@ -10,7 +10,7 @@ import { secHtml, secTitle, useStore } from '../lib/store'
 import { REVISION_TABS, go, href, type RevisionTab } from '../lib/router'
 import { navNode, studyContext } from '../lib/nav'
 import { civil, dateKey, dayNo, dayOf, dayText } from '../lib/analytics'
-import type { RecallOutcome, RevisionEvent, RevisionGrade, SpanActivity } from '../lib/contract'
+import type { RecallOutcome, RevisionEvent, RevisionGrade, SpanActivity, StudyContext } from '../lib/contract'
 import { GRADES, parseDay } from '../lib/scheduler'
 import { byChapter, calendarMonth, daySummary, examDateText, horizonOf, liveExams, monthOf, primaryExam, workloadMs, buildQueue, type CalendarDay, type Queue, type QueueItem } from '../lib/revisionModel'
 import { clock, completeRevision, deferUnit, newRevisionEventId, prefsOf, recordAttempt, useRevision } from '../lib/revision'
@@ -20,6 +20,8 @@ import { durationText } from '../lib/timer'
 import { linked } from '../sync'
 import { ManualRevision, plural, useData } from './Insights'
 import { locate } from './Pages'
+import { noteBody, useCA } from '../lib/currentAffairs'
+import { caNoteContext, dayFull, isDayId, parseDayId } from '../lib/currentAffairsModel'
 
 export const REVISION_TAB_LABEL: Record<RevisionTab, string> = { today: 'Today', overdue: 'Overdue', upcoming: 'Upcoming', calendar: 'Calendar', manual: 'Manual' }
 const GRADE_LABEL: Record<RevisionGrade, string> = { again: 'Again', hard: 'Hard', good: 'Good', easy: 'Easy' }
@@ -33,7 +35,24 @@ const MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July', '
 export const shortDay = (dn: number) => `${civil(dn).d} ${MON[civil(dn).m - 1]}`
 /** Tomorrow · in 5 days · 12 Oct */
 export const whenText = (dn: number, today: number) => (dn === today ? 'Today' : dn === today + 1 ? 'Tomorrow' : dn > today && dn <= today + 14 ? `in ${dn - today} days` : shortDay(dn))
-const titleOf = (id: string, fallback: string) => navNode(id)?.title ?? fallback
+/**
+ * The current title of a subject, chapter or section. A Current Affairs note in revision
+ * ("ca/<entryId>") is not in the library: it is listed under Current Affairs, by its news day.
+ */
+const titleOf = (id: string, fallback: string) => {
+  const node = navNode(id)
+  if (node) return node.title
+  if (id === 'current-affairs') return 'Current Affairs'
+  if (id.startsWith('current-affairs/') && isDayId(id.slice(16))) return dayFull(parseDayId(id.slice(16)))
+  if (id.startsWith('ca/')) return useCA.getState().entries[id.slice(3)]?.title || fallback
+  return fallback
+}
+/** Where a unit's notes are read. */
+const notesHref = (unitId: string) => {
+  if (unitId.startsWith('ca/')) return href.caNote(unitId.slice(3))
+  const [stage, subject, chapter, section] = unitId.split('/')
+  return href.reader(`${stage}/${subject}/${chapter}`, section)
+}
 
 // ---- the queue, as the pages see it --------------------------------------------------------
 const pyqCache = new Map<string, boolean>()
@@ -232,11 +251,12 @@ function TodayTab({ queue }: { queue: Queue }) {
 
 function DoneRow({ e, today }: { e: RevisionEvent; today: number }) {
   const [stage, subject, chapter, section] = e.revisionUnitId.split('/')
+  const note = e.target.kind === 'current-affairs' ? e.target : null
   return (
-    <a className="row rdone" href={href.reader(`${stage}/${subject}/${chapter}`, section)}>
+    <a className="row rdone" href={notesHref(e.revisionUnitId)}>
       <span className="t">
-        <b>{titleOf(e.revisionUnitId, section)}</b>
-        <small>{titleOf(`${stage}/${subject}/${chapter}`, chapter)} · {GRADE_LABEL[e.grade]} · {durationText(e.durationMs)} · next {whenText(parseDay(e.nextDueDate), today)}</small>
+        <b>{titleOf(e.revisionUnitId, note ? 'Current Affairs note' : section)}</b>
+        <small>{note ? `Current Affairs · ${dayFull(parseDayId(note.dayId))}` : titleOf(`${stage}/${subject}/${chapter}`, chapter)} · {GRADE_LABEL[e.grade]} · {durationText(e.durationMs)} · next {whenText(parseDay(e.nextDueDate), today)}</small>
       </span>
       <span className="chip ord">R{e.ordinal}</span>
       <Check className="okmark" />
@@ -347,32 +367,53 @@ function DayDetail({ day, queue }: { day: CalendarDay; queue: Queue }) {
 }
 
 // ---- Guided Revision ---------------------------------------------------------------------------------
+/** What is revised: a section of the library, or a Current Affairs note the learner added to revision. */
+interface Src {
+  title: string
+  html: string
+  /** What the timer tracks during the revision. */
+  context: StudyContext
+  /** Where it sits: Prelims › Polity › Parliament. */
+  where: string
+  notesHref: string
+}
+
 export function ReviseView({ subjects, unitId, say }: { subjects: Subject[]; unitId: string; say: (m: string, ms?: number) => void }) {
   const ready = useRevision((s) => s.ready)
   const studyReady = useStudy((s) => s.ready)
+  const caReady = useCA((s) => s.ready)
   const has = useRevision((s) => !!s.units[unitId])
+  const overrides = useStore((s) => s.overrides)
+  const note = useCA((s) => (unitId.startsWith('ca/') ? s.entries[unitId.slice(3)] : undefined))
   const loc = useMemo(() => locate(subjects, unitId), [subjects, unitId])
-  if (!ready || !studyReady) return <div className="page"><p className="empty">Loading…</p></div>
-  if (!has || !loc) {
+  const title = loc ? secTitle(overrides, loc.section) : note && !note.removed ? note.title || 'Untitled note' : ''
+  const html = loc ? secHtml(overrides, loc.section) : note && !note.removed ? noteBody(overrides, note.id) : ''
+  const src: Src | null = useMemo(
+    () =>
+      loc
+        ? { title, html, context: studyContext(loc.subject, loc.chapter, { id: loc.section.id, title }), where: `${stageTitle(loc.subject.stage)} › ${loc.subject.title} › ${loc.chapter.title}`, notesHref: notesHref(unitId) }
+        : note && !note.removed
+          ? { title, html, context: caNoteContext(note.dayId, note.id, title), where: `Current Affairs › ${dayFull(parseDayId(note.dayId))}`, notesHref: notesHref(unitId) }
+          : null,
+    [loc, note, title, html, unitId],
+  )
+  if (!ready || !studyReady || !caReady) return <div className="page"><p className="empty">Loading…</p></div>
+  if (!has || !src) {
     return (
       <div className="page">
-        <p className="empty">This section is not scheduled for revision{loc ? ' — mark it done (✓) in the notes to schedule it' : ''}. <a href={href.revision()} style={{ color: 'var(--accent)' }}>Back to Revision →</a></p>
+        <p className="empty">{unitId.startsWith('ca/') ? 'This note is not scheduled for revision — use “Add to Revision” on the note to schedule it' : `This section is not scheduled for revision${loc ? ' — mark it done (✓) in the notes to schedule it' : ''}`}. <a href={href.revision()} style={{ color: 'var(--accent)' }}>Back to Revision →</a></p>
       </div>
     )
   }
-  return <Revise key={unitId} unitId={unitId} loc={loc} say={say} />
+  return <Revise key={unitId} unitId={unitId} src={src} say={say} />
 }
 
-type Loc = NonNullable<ReturnType<typeof locate>>
-
-function Revise({ unitId, loc, say }: { unitId: string; loc: Loc; say: (m: string, ms?: number) => void }) {
+function Revise({ unitId, src, say }: { unitId: string; src: Src; say: (m: string, ms?: number) => void }) {
   const unit = useRevision((s) => s.units[unitId])
   const row = useRevision((s) => s.prefs)
   const attempts = useRevision((s) => s.attempts)
-  const overrides = useStore((s) => s.overrides)
   const prefs = useMemo(() => prefsOf(row), [row])
-  const title = secTitle(overrides, loc.section)
-  const html = secHtml(overrides, loc.section)
+  const { title, html, context } = src
 
   // the revision in progress: the same one after a reload
   const [cur] = useState(() => {
@@ -385,7 +426,6 @@ function Revise({ unitId, loc, say }: { unitId: string; loc: Loc; say: (m: strin
   const [ordinal] = useState(() => unit.revisionCount + 1)
   const event = useRevision((s) => s.events[cur.eventId])
   const activity: SpanActivity = useMemo(() => ({ activity: 'revision', revisionUnitId: unitId, revisionEventId: cur.eventId, revisionOrdinal: ordinal }), [unitId, cur.eventId, ordinal])
-  const context = useMemo(() => studyContext(loc.subject, loc.chapter, { id: loc.section.id, title }), [loc, title])
 
   // The one timer moves into a revision span. Another device's timer is left alone.
   const timer = useStudy(activeTimer)
@@ -482,7 +522,7 @@ function Revise({ unitId, loc, say }: { unitId: string; loc: Loc; say: (m: strin
 
   return (
     <div className="page revise" data-unit={unitId} data-phase={event ? 'done' : prompt ? 'prompt' : grading ? 'grade' : 'read'}>
-      <div className="eyebrow">Revision · {stageTitle(loc.subject.stage)} › {loc.subject.title} › {loc.chapter.title}</div>
+      <div className="eyebrow">Revision · {src.where}</div>
       <h1 className="title">{title} <span className="chip u ord">R{event ? event.ordinal : ordinal}</span></h1>
       {remote && !event && (
         <div className="shell-note" role="status">
@@ -497,7 +537,7 @@ function Revise({ unitId, loc, say }: { unitId: string; loc: Loc; say: (m: strin
           <p>Next revision: <b>{dayText(parseDay(event.nextDueDate))}</b>{event.examTargetId ? ' — placed before the exam' : ''}. That date is set by how well you remembered this time; the one after it will be set then.</p>
           <div className="acts">
             <a className="btn primary" href={href.revision()}>Back to Revision<ArrowRight /></a>
-            <a className="btn" href={href.reader(loc.chapter.key, loc.section.id)}>Open the notes</a>
+            <a className="btn" href={src.notesHref}>Open the notes</a>
           </div>
         </section>
       ) : prompt && p ? (

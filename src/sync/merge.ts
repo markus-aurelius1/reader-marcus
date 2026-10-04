@@ -16,11 +16,14 @@
 //   ra~<attemptId>      one recall answer                         → written once, never changed
 //   exam~<id>           one exam target                           → merged field by field
 //   rpref~default       revision preferences                      → merged field by field
+//   cad~<YYYY-MM-DD>    completion state of one Current Affairs day → merged by rule (mergeDay)
+//   cae~<entryId>       one Current Affairs note (title, source…) → merged field by field
 //   meta~dataEpoch      the reset epoch (lib/epoch.ts)            → raised by a reset, never merged
 import { isActive, salvage, salvageSession, sesRec, type Env, type Runtime } from '../lib/timer'
-import type { StudySession } from '../lib/contract'
+import type { CurrentAffairsDay, StudySession } from '../lib/contract'
+import { mergeDay } from '../lib/currentAffairsModel'
 
-export type Kind = 'edit' | 'hl' | 'sec' | 'chap' | 'pref' | 'ses' | 'run' | 'goal' | 'q' | 'pyq' | 'ru' | 'rev' | 'ra' | 'exam' | 'rpref' | 'meta'
+export type Kind = 'edit' | 'hl' | 'sec' | 'chap' | 'pref' | 'ses' | 'run' | 'goal' | 'q' | 'pyq' | 'ru' | 'rev' | 'ra' | 'exam' | 'rpref' | 'cad' | 'cae' | 'meta'
 
 export interface Field {
   v: unknown
@@ -35,8 +38,8 @@ export interface Rec {
   dev: string
   rev?: string // edit: identity of this content version · run: session + revision
   del?: boolean // edit / hl: tombstone · run: the timer has stopped
-  data?: Record<string, unknown> // edit: { title, html } · hl: anchor + colour · ses: StudySession · run: timer state
-  f?: Record<string, Field> // sec / chap / pref / goal / q / pyq / exam / rpref
+  data?: Record<string, unknown> // edit: { title, html } · hl: anchor + colour · ses: StudySession · run: timer state · cad: CurrentAffairsDay
+  f?: Record<string, Field> // sec / chap / pref / goal / q / pyq / exam / rpref / cae
   ep?: number // the reset epoch of the device that wrote it (absent = 0)
 }
 
@@ -49,7 +52,7 @@ export type Decision =
 
 export const kindOf = (id: string) => id.slice(0, id.indexOf('~')) as Kind
 export const keyOf = (id: string) => id.slice(id.indexOf('~') + 1)
-export const isFieldKind = (k: Kind) => k === 'sec' || k === 'chap' || k === 'pref' || k === 'goal' || k === 'q' || k === 'pyq' || k === 'exam' || k === 'rpref'
+export const isFieldKind = (k: Kind) => k === 'sec' || k === 'chap' || k === 'pref' || k === 'goal' || k === 'q' || k === 'pyq' || k === 'exam' || k === 'rpref' || k === 'cae'
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 const newer = (at: number, ad: string, bt: number, bd: string) => at > bt || (at === bt && ad > bd)
@@ -117,6 +120,20 @@ export function reconcile(local: Rec | null, remote: Rec | null, ctx: { dirty: b
     if (!isActive(mine)) return { type: 'pull', rec: remote } // nothing running here
     if (!isActive(theirs) && theirs.sessionId !== mine.sessionId) return { type: 'push', rec: local } // theirs already ended
     return { type: 'pull', rec: remote, also: split(salvage(mine, theirs, env)) }
+  }
+
+  if (kind === 'cad') {
+    // One record per news day. Two devices that each acted on it are merged by rule, so that a
+    // day completed on one of them is never undone by the other's older view of it.
+    const mine = local.data as unknown as CurrentAffairsDay
+    const theirs = remote.data as unknown as CurrentAffairsDay
+    const merged = mergeDay(mine, theirs)
+    const isMine = same(merged, mergeDay(mine, mine))
+    const isTheirs = same(merged, mergeDay(theirs, theirs))
+    if (isMine && isTheirs) return { type: 'noop' }
+    if (isMine) return { type: 'push', rec: local }
+    if (isTheirs) return { type: 'pull', rec: remote }
+    return { type: 'both', rec: { ...local, t: Date.parse(merged.updatedAt), data: merged as unknown as Record<string, unknown> } }
   }
 
   // Immutable history: whichever copy reached the cloud first stands.

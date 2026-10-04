@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronLeft, ChevronRight, Cloud, Download, Eye, EyeOff, FileText, Highlighter, Keyboard, ListTree, Maximize2,
-  Minimize2, MonitorDown, Moon, MoreHorizontal, PencilLine, Printer, RotateCcw, RotateCw, Search, Settings as SettingsIcon, Sun, Waypoints,
+  Minimize2, MonitorDown, Moon, MoreHorizontal, Newspaper, PencilLine, Printer, RotateCcw, RotateCw, Search, Settings as SettingsIcon, Sun, Waypoints,
 } from 'lucide-react'
 import { allSubjects, linkIndex, sectionByKey } from './lib/content'
 import { flushOverrides, secTitle, useStore } from './lib/store'
@@ -31,6 +31,9 @@ import { initReset } from './lib/reset'
 import { INTENSITIES, INTENSITY_LABEL } from './lib/recall'
 import { REVISION_TAB_LABEL, RevisionPage, ReviseView } from './views/Revision'
 import { SettingsPage } from './views/Settings'
+import { CA_TAB_LABEL, CurrentAffairsPage } from './views/CurrentAffairs'
+import { initCurrentAffairs, useCA } from './lib/currentAffairs'
+import { dayFull, notesLinking, parseDayId } from './lib/currentAffairsModel'
 
 // a new revision unit is named by its section's current heading
 titles.of = (key) => {
@@ -43,7 +46,7 @@ const isTyping = (e: KeyboardEvent) => {
   return t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)
 }
 
-const PAGE: Record<string, string> = { home: 'Home', study: 'Study', pyqs: 'PYQ Hub', insights: 'Insights', highlights: 'Highlights', revision: 'Revision', revise: 'Revision', settings: 'Settings' }
+const PAGE: Record<string, string> = { home: 'Home', study: 'Study', pyqs: 'PYQ Hub', insights: 'Insights', highlights: 'Highlights', revision: 'Revision', revise: 'Revision', settings: 'Settings', 'current-affairs': 'Current Affairs' }
 
 export function App() {
   const { route, n } = useRoute()
@@ -65,6 +68,7 @@ export function App() {
   const [installHelp, setInstallHelp] = useState(false)
   const sync = useSync()
   const conflictCount = useStore((s) => Object.keys(s.conflicts).length)
+  const caEntries = useCA((s) => s.entries)
   const intensity = useRevision((s) => prefsOf(s.prefs).recallIntensity)
   const [toast, setToast] = useState('')
   // The study explorer is a persistent column on wide screens, a drawer on tablets and a
@@ -83,7 +87,7 @@ export function App() {
   const toggleSide = () => (matchMedia('(min-width: 1024px)').matches ? setPref({ sidebar: !useStore.getState().prefs.sidebar }) : setDrawer((d) => !d))
 
   useEffect(() => {
-    useStore.getState().init().then(initStudy).then(initPlan).then(initPyqState).then(initRevision).then(initReset).then(initSync)
+    useStore.getState().init().then(initStudy).then(initPlan).then(initPyqState).then(initRevision).then(initCurrentAffairs).then(initReset).then(initSync)
   }, [])
 
   // Theme
@@ -215,6 +219,8 @@ export function App() {
               ? [{ label: PAGE.revision, to: href.revision() }, { label: REVISION_TAB_LABEL[route.tab] }]
               : route.name === 'revise'
                 ? [{ label: PAGE.revision, to: href.revision() }, { label: 'Scheduled revision' }]
+                : route.name === 'current-affairs' && route.view !== 'today'
+                  ? [{ label: PAGE['current-affairs'], to: href.currentAffairs() }, { label: route.view === 'day' ? (/^\d{4}-\d{2}-\d{2}$/.test(route.id ?? '') ? dayFull(parseDayId(route.id!)) : 'Day') : route.view === 'note' ? 'Note' : CA_TAB_LABEL[route.view] }]
             : [{ label: PAGE[route.name] }]
 
   const resetEdits = async (prefix: string, what: string) => {
@@ -243,6 +249,8 @@ export function App() {
   const relKeys = chapter ? [...(section ? [section.key] : []), chapter.key, ...chapter.sections.map((x) => x.key)] : []
   const related = chapter ? relatedTo(linkIndex(), relKeys) : []
   const relatedPyqCount = chapter ? relatedPyqs(linkIndex(), relKeys).length : 0
+  // Current Affairs notes the learner linked to this chapter or its sections (derived backlinks)
+  const caNotes = chapter ? notesLinking(caEntries, relKeys) : []
   const cls = ['app', sideOpen && !focus ? 'side-open' : '', focus ? 'focus' : '', prefs.recall ? 'recall' : '', `ri-${intensity}`, editMode ? 'editing' : ''].join(' ')
 
   return (
@@ -267,8 +275,8 @@ export function App() {
             <button className="ib" disabled={!nextCh} onClick={() => stepChapter(1)} title={nextCh ? `Next: ${nextCh.title} (])` : 'Last chapter'} aria-label="Next chapter"><ChevronRight /></button>
           </span>
         )}
-        {related.length + relatedPyqCount > 0 && (
-          <button className={'ib hide-sm' + (rel ? ' on' : '')} onClick={() => { setMenu(false); setRel(!rel) }} title="Related" aria-label={`Related (${related.length})`} aria-expanded={rel}>
+        {related.length + relatedPyqCount + caNotes.length > 0 && (
+          <button className={'ib hide-sm' + (rel ? ' on' : '')} onClick={() => { setMenu(false); setRel(!rel) }} title="Related" aria-label={`Related (${related.length + caNotes.length})`} aria-expanded={rel}>
             <Waypoints /><span className="hide-md">Related</span>
           </button>
         )}
@@ -300,8 +308,9 @@ export function App() {
           <div className="menu more" role="menu">
             <a className="only-sm" href={href.highlights()}><Highlighter />Highlights</a>
             <a href={href.revision()}><RotateCw />Revision</a>
+            <a href={href.currentAffairs()}><Newspaper />Current Affairs</a>
             <a href={href.settings()}><SettingsIcon />Settings</a>
-            {chapter && related.length + relatedPyqCount > 0 && <button className="only-sm" onClick={() => { setMenu(false); setRel(true) }}><Waypoints />Related notes &amp; PYQs</button>}
+            {chapter && related.length + relatedPyqCount + caNotes.length > 0 && <button className="only-sm" onClick={() => { setMenu(false); setRel(true) }}><Waypoints />Related notes &amp; PYQs</button>}
             <hr />
             {subject && (
               <>
@@ -338,7 +347,7 @@ export function App() {
         <>
           <div className="backdrop" onClick={() => setRel(false)} />
           <div className="menu relmenu" role="dialog" aria-label="Related">
-            <Related items={related} from={subject.key} label="Related" max={8} grouped pyqs={relatedPyqCount} pyqFilter={{ stage: subject.stage === 'prelims' ? undefined : subject.stage, subject: subject.id, chapter: chapter?.id }} />
+            <Related items={related} from={subject.key} label="Related" max={8} grouped pyqs={relatedPyqCount} pyqFilter={{ stage: subject.stage === 'prelims' ? undefined : subject.stage, subject: subject.id, chapter: chapter?.id }} notes={caNotes} />
           </div>
         </>
       )}
@@ -367,6 +376,8 @@ export function App() {
           <RevisionPage subjects={subjects} tab={route.tab} />
         ) : route.name === 'revise' ? (
           <ReviseView subjects={subjects} unitId={route.unitId} say={say} />
+        ) : route.name === 'current-affairs' ? (
+          <CurrentAffairsPage route={route} say={say} />
         ) : route.name === 'settings' ? (
           <SettingsPage subjects={subjects} say={say} />
         ) : route.name === 'home' ? (

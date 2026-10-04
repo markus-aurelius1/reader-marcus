@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { StudyContext } from './contract'
+import type { ContentRef, StudyContext } from './contract'
 import { MIN_SESSION_MS, clockText, elapsed, finish, isActive, pause, resume, salvage, shortClock, start, switchContext, takeOver, type Env } from './timer'
 
 const MIN = 60000
@@ -65,7 +65,7 @@ describe('study timer', () => {
   it('tracking by section: a different section of the same chapter is a different unit', () => {
     const a = switchContext(start(ctx('inflation', 'economy', 'causes'), T0, 'A'), ctx('inflation', 'economy', 'control'), T0 + MIN)
     expect(a.completedSpans[0].context.ref).toMatchObject({ kind: 'section', sectionId: 'causes' })
-    expect(a.currentContext.ref.sectionId).toBe('control')
+    expect((a.currentContext.ref as ContentRef).sectionId).toBe('control')
   })
 
   it('navigation while paused moves the context without recording time', () => {
@@ -83,7 +83,7 @@ describe('study timer', () => {
     a = switchContext(a, ctx('taxation'), T0 + 50 * MIN)
     const { session, stopped } = finish(a, env(T0 + 60 * MIN))
     expect(session).toMatchObject({ id: a.sessionId, durationMs: 60 * MIN, source: 'timer', createdDeviceId: 'A' })
-    expect(session!.spans.map((s) => [s.context.ref.subjectId, s.context.ref.chapterId, s.durationMs])).toEqual([['polity', 'parliament', 20 * MIN], ['economy', 'inflation', 30 * MIN], ['economy', 'taxation', 10 * MIN]])
+    expect(session!.spans.map((s) => [(s.context.ref as ContentRef).subjectId, (s.context.ref as ContentRef).chapterId, s.durationMs])).toEqual([['polity', 'parliament', 20 * MIN], ['economy', 'inflation', 30 * MIN], ['economy', 'taxation', 10 * MIN]])
     expect(session!.spans[1].context.ref).toMatchObject({ stage: 'prelims', topicId: 'macro', taxonomyId: 'ECO-01', kind: 'chapter' })
     expect(session!.spans.reduce((n, s) => n + s.durationMs, 0)).toBe(session!.durationMs)
     expect(new Set(session!.spans.map((s) => s.id)).size).toBe(3)

@@ -112,6 +112,10 @@ export const RECOVERY_MAX_MS = 90 * 60000
 /** What Recovery Mode recommends for one day. */
 export const RECOVERY_BUDGET_MS = 60 * 60000
 
+/** The subject a unit is listed under. A Current Affairs note ("ca/<entryId>") has none: it is listed under Current Affairs. */
+export const unitSubjectKey = (unitId: string) => (unitId.startsWith('ca/') ? 'current-affairs' : unitId.split('/', 2).join('/'))
+const unitChapterKey = (u: RevisionUnit) => (u.target.kind === 'current-affairs' ? `current-affairs/${u.target.dayId}` : u.id.split('/', 3).join('/'))
+
 const sum = (xs: QueueItem[]) => xs.reduce((n, x) => n + x.estimateMs, 0)
 export const workloadMs = sum
 const byDue = (a: QueueItem, b: QueueItem) => a.dueDay - b.dueDay || (a.unit.id < b.unit.id ? -1 : 1)
@@ -128,7 +132,7 @@ export function buildQueue({ units, events, today, tz, exam, flags }: QueueInput
     const state: DueState = dueDay > today ? 'upcoming' : put > today ? 'deferred' : overdueDays ? 'overdue' : 'due'
     const f = flags?.(unit.id) ?? {}
     const studied = dayOf(Date.parse(unit.initialStudyCompletedAt), tz)
-    const [subject, chapter] = [unit.id.split('/', 2).join('/'), unit.id.split('/', 3).join('/')]
+    const [subject, chapter] = [unitSubjectKey(unit.id), unitChapterKey(unit)]
     items.push({
       unit, ordinal: unit.revisionCount + 1, dueDay, state, overdueDays,
       estimateMs: estimateMs(unit.id, medians),
@@ -304,7 +308,7 @@ export function revisionStats(q: Queue, events: Iterable<RevisionEvent>, attempt
     if (i.dueDay <= q.today) r.waiting++
     else if (i.dueDay <= q.today + 30) r.upcoming30++
   }
-  for (const e of done) row(e.revisionUnitId.split('/', 2).join('/')).completed++
+  for (const e of done) row(unitSubjectKey(e.revisionUnitId)).completed++
   return {
     scheduled,
     completed: done.length,

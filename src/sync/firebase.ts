@@ -10,6 +10,8 @@
 //   users/{uid}/recallAttempts/{id}         recall answers (create-only)
 //   users/{uid}/examTargets/{id}            exam targets
 //   users/{uid}/revisionPreferences/default revision preferences
+//   users/{uid}/currentAffairsDays/{dayId}  completion state of one Current Affairs day
+//   users/{uid}/currentAffairsEntries/{id}  Current Affairs notes (their text is an edit in state/)
 //   users/{uid}/meta/dataEpoch              the reset epoch (lib/epoch.ts)
 // Loaded lazily — only after the user chooses to sign in.
 import { initializeApp } from 'firebase/app'
@@ -26,7 +28,7 @@ const env = import.meta.env
 const enc = (id: string) => id.replace(/\//g, '|')
 // Firestore rejects `undefined`; a JSON round-trip drops it.
 const plain = <T>(v: T): T => JSON.parse(JSON.stringify(v))
-const STUDY: Record<string, string> = { ses: 'studySessions', run: 'studyRuntime', goal: 'studyGoals', q: 'studyQueue', pyq: 'pyqState', ru: 'revisionUnits', rev: 'revisionEvents', ra: 'recallAttempts', exam: 'examTargets', rpref: 'revisionPreferences' }
+const STUDY: Record<string, string> = { ses: 'studySessions', run: 'studyRuntime', goal: 'studyGoals', q: 'studyQueue', pyq: 'pyqState', ru: 'revisionUnits', rev: 'revisionEvents', ra: 'recallAttempts', exam: 'examTargets', rpref: 'revisionPreferences', cad: 'currentAffairsDays', cae: 'currentAffairsEntries' }
 /** Firestore allows 500 writes in one batch. */
 const BATCH = 400
 /** Commit times of concurrent writers can land slightly out of order; re-read a short window. */

@@ -37,11 +37,14 @@ export interface ResetOptions {
  * are handled field by field (store.wipeStore): the ★ Difficult / ↻ Revise flags of `sec~…`
  * (group "flags": kept by a study-history reset, removed by a full one), and the favourites and
  * recent destinations of `pref~main`.
+ *
+ * Current Affairs: the day records (`cad`) are study history; the notes (`cae`, and their text
+ * in `edit~ca/…`) are the learner's own writing, kept by a study-history reset like any edit.
  */
 const GROUP_OF: Record<Exclude<Kind, 'meta'>, Group> = {
-  sec: 'study', chap: 'study', ses: 'study', run: 'study', q: 'study', pyq: 'study', ru: 'study', rev: 'study', ra: 'study',
+  sec: 'study', chap: 'study', ses: 'study', run: 'study', q: 'study', pyq: 'study', ru: 'study', rev: 'study', ra: 'study', cad: 'study',
   goal: 'goals',
-  edit: 'notes', hl: 'notes',
+  edit: 'notes', hl: 'notes', cae: 'notes',
   exam: 'exams',
   pref: 'settings', rpref: 'settings',
 }

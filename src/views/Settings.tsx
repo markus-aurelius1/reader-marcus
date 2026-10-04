@@ -40,11 +40,11 @@ export function SettingsPage({ subjects, say }: { subjects: Subject[]; say: (m: 
           <button className="btn" onClick={() => exportBackup().then(() => say('Backup exported'))}><Download />Export backup</button>
         </div>
         <div className="set-row">
-          <span><b>Reset study history</b><small>Removes progress, study sessions and the timer, revision schedules and history, recall answers, the study queue and PYQ flags. Keeps highlights, your edits, ★ / ↻ marks, favourites, appearance, goals and exam targets.</small></span>
+          <span><b>Reset study history</b><small>Removes progress, study sessions and the timer, revision schedules and history, recall answers, the study queue, PYQ flags and the Current Affairs day record (completed, missed, caught-up). Keeps highlights, your edits, your Current Affairs notes, ★ / ↻ marks, favourites, appearance, goals and exam targets.</small></span>
           <button className="btn danger" onClick={() => setReset('study-history')}>Reset study history…</button>
         </div>
         <div className="set-row">
-          <span><b>Full personal reset</b><small>Removes all of the above and also highlights, your edits to the notes, ★ / ↻ marks, favourites and goals — a clean start.</small></span>
+          <span><b>Full personal reset</b><small>Removes all of the above and also highlights, your edits to the notes, your Current Affairs notes, ★ / ↻ marks, favourites and goals — a clean start.</small></span>
           <button className="btn danger" onClick={() => setReset('full-personal')}>Full personal reset…</button>
         </div>
       </section>
@@ -223,8 +223,8 @@ function ResetDialog({ scope, onClose, say }: { scope: ResetScope; onClose: () =
     <div className="overlay" onMouseDown={(e) => e.target === e.currentTarget && !busy && onClose()}>
       <div className="palette reset" role="dialog" aria-label={full ? 'Full personal reset' : 'Reset study history'}>
         <b className="reset-h"><TriangleAlert />{full ? 'Full personal reset' : 'Reset study history'}</b>
-        <p><b>Removed:</b> progress, study sessions and timer, revision schedules and history, recall answers, the study queue, PYQ flags and recent activity{full ? ', highlights, your edits to the notes, ★ / ↻ marks, goals and favourites' : ''}.</p>
-        <p><b>Kept:</b> {full ? 'the notes, PYQs, taxonomy and cross-links' : 'highlights, your edits, ★ / ↻ marks, favourites, appearance, goals and exam targets — and the notes, PYQs and cross-links'}.</p>
+        <p><b>Removed:</b> progress, study sessions and timer, revision schedules and history, recall answers, the study queue, PYQ flags, the Current Affairs day record and recent activity{full ? ', highlights, your edits to the notes, your Current Affairs notes, ★ / ↻ marks, goals and favourites' : ''}.</p>
+        <p><b>Kept:</b> {full ? 'the notes, PYQs, taxonomy and cross-links' : 'highlights, your edits, your Current Affairs notes, ★ / ↻ marks, favourites, appearance, goals and exam targets — and the notes, PYQs and cross-links'}.</p>
         {full && (
           <div className="reset-keep">
             <label className="tp-opt"><input type="checkbox" checked={keepExams} onChange={(e) => setKeepExams(e.target.checked)} />Keep exam targets{upcoming ? ` (${upcoming.exam.name})` : ''}</label>

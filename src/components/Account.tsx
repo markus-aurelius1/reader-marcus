@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Cloud, CloudOff, LogOut, RefreshCw, TriangleAlert } from 'lucide-react'
 import { sectionByKey } from '../lib/content'
 import { secHtml, secTitle, useStore } from '../lib/store'
+import { useCA } from '../lib/currentAffairs'
 import { keyOf } from '../sync/merge'
 import { configured, resolve, signIn, signOutUser, statusLabel, syncNow, useSync } from '../sync'
 
@@ -72,6 +73,7 @@ export function AccountPanel({ onClose }: { onClose: () => void }) {
 function Conflicts({ onClose }: { onClose: () => void }) {
   const conflicts = useStore((s) => s.conflicts)
   const overrides = useStore((s) => s.overrides)
+  const notes = useCA((s) => s.entries)
   const [both, setBoth] = useState<string | null>(null)
   return (
     <div className="overlay" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
@@ -82,7 +84,10 @@ function Conflicts({ onClose }: { onClose: () => void }) {
         </div>
         <div className="conf-list">
           {Object.entries(conflicts).map(([id, remote]) => {
-            const sec = sectionByKey(keyOf(id))
+            const key = keyOf(id)
+            // the text of a Current Affairs note is an edit too: it has no original in the library
+            const note = key.startsWith('ca/') ? notes[key.slice(3)] : undefined
+            const sec = sectionByKey(key) ?? (note ? { id: note.id, key, title: note.title || 'Untitled note', html: '' } : undefined)
             if (!sec) return null
             const cloud = (remote.data ?? {}) as { title?: string | null; html?: string | null }
             const mine = overrides[sec.key]
@@ -90,7 +95,7 @@ function Conflicts({ onClose }: { onClose: () => void }) {
               <div className="conf" key={id}>
                 <div className="conf-title">
                   <b>{secTitle(overrides, sec)}</b>
-                  <small>{sec.key.split('/').slice(1, 3).join(' › ')}</small>
+                  <small>{note ? `Current Affairs note · ${note.dayId}` : sec.key.split('/').slice(1, 3).join(' › ')}</small>
                 </div>
                 <div className="conf-ops">
                   <button className="chip u" onClick={() => resolve(id, 'local')}>Keep this device</button>

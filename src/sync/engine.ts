@@ -123,6 +123,15 @@ export async function syncOnce(remote: Remote, local: Local, retries = 2): Promi
       const d = reconcile(mine, r, { dirty: false, env })
       if (d.type === 'pull') applyPull(d)
       else if (r.kind === 'run') local.markSynced(r.id, r.rev)
+    } else if (r.kind === 'cad') {
+      // a news day is merged by rule even when nothing is queued here
+      const d = reconcile(mine, r, { dirty: false, env })
+      if (d.type === 'pull') applyPull(d)
+      else if (d.type === 'both') {
+        local.apply(d.rec)
+        res.pulled++
+        local.markDirty(r.id)
+      } else if (d.type === 'push') local.markDirty(r.id)
     } else if (r.kind === 'rev' || r.kind === 'ra') {
       // immutable history: a copy already here is never replaced
       if (!mine) {

@@ -1,4 +1,4 @@
-// Insights: Overview · Time · Subjects · Progress · Revision.
+// Insights: Overview · Time · Subjects · Progress · Revision · Current Affairs.
 // Every study-time figure comes from lib/analytics.ts, which derives it from completed
 // StudySession rows; progress and revision come from the reader's existing state. Nothing on
 // these pages is stored. The pages describe what was recorded — they do not judge it.
@@ -9,8 +9,8 @@ import { STATUS_LABEL, chapterProgress, highlightsBySection, progressSummary, se
 import { INSIGHTS_TABS, href, type InsightsTab } from '../lib/router'
 import { navNode, refHref } from '../lib/nav'
 import { activeTimer, clock, useStudy } from '../lib/study'
-import { durationText, timeZone } from '../lib/timer'
-import type { StudyContext, StudyDistribution, StudyHeatmapDay } from '../lib/contract'
+import { durationText, isCaRef, timeZone } from '../lib/timer'
+import type { StudyActivity, StudyContext, StudyDistribution, StudyHeatmapDay } from '../lib/contract'
 import {
   ORDINAL_LABEL, activityTime, chapterKeyOf, civil, compare, dayNo, dayOf, dayText, durationBins, heatmap, indexOf, period, series, summarize, totalBetween, weekStart,
   type Comparison, type PeriodKind, type Scope, type SessionStat, type StudyIndex,
@@ -18,9 +18,12 @@ import {
 import { BarChart, Heatmap, LineChart, type Datum } from '../components/Charts'
 import { prefsOf, useRevision } from '../lib/revision'
 import { buildQueue, horizonOf, primaryExam, revisionStats } from '../lib/revisionModel'
+import { settleDays, useCA } from '../lib/currentAffairs'
+import { STATUS_GLYPH, STATUS_LABEL as CA_STATUS, buildModel, caStats, caStreak, caTime, dayFull, dayIdOf, firstDay, type CaModel, type CaStats } from '../lib/currentAffairsModel'
 import { Meter } from './Pages'
 
-export const TAB_LABEL: Record<InsightsTab, string> = { overview: 'Overview', time: 'Time', subjects: 'Subjects', progress: 'Progress', revision: 'Revision' }
+export const TAB_LABEL: Record<InsightsTab, string> = { overview: 'Overview', time: 'Time', subjects: 'Subjects', progress: 'Progress', revision: 'Revision', 'current-affairs': 'Current Affairs' }
+const ACTIVITY_LABEL: Record<StudyActivity, string> = { 'initial-study': 'Initial study', revision: 'Revision', 'current-affairs': 'Current Affairs' }
 
 interface Data {
   ix: StudyIndex
@@ -36,7 +39,7 @@ const linkOf = (id: string) => {
   const n = navNode(id)
   return n ? refHref(n.target) : undefined
 }
-const nameOf = (id: string, fallback: string) => navNode(id)?.title ?? fallback
+const nameOf = (id: string, fallback: string) => navNode(id)?.title ?? (id === 'current-affairs' ? 'Current Affairs' : fallback)
 export function agoText(at: number, now: number, tz: string) {
   const d = dayOf(now, tz) - dayOf(at, tz)
   return d <= 0 ? 'today' : d === 1 ? 'yesterday' : `${d} days ago`
@@ -66,6 +69,32 @@ export function useData(): Data {
   return { ix, now, tz }
 }
 
+/** The study timezone (one calendar for revision dates and news days) and today's day number in it. */
+export function useStudyDay() {
+  const row = useRevision((s) => s.prefs)
+  const tz = useMemo(() => prefsOf(row).schedulerTimeZone, [row])
+  const { now, ix } = useData()
+  return { tz, today: dayOf(now, tz), now, ix }
+}
+export const useCaToday = () => useStudyDay().today
+
+/**
+ * Current Affairs as it stands now: every day's state, the notes of each day and its reading
+ * time — rebuilt from the day records, the notes and the study index. Nothing is stored.
+ */
+export function useCaModel(): { m: CaModel; tz: string; today: number; now: number; ix: StudyIndex } {
+  const days = useCA((s) => s.days)
+  const entries = useCA((s) => s.entries)
+  const ready = useCA((s) => s.ready)
+  const { tz, today, now, ix } = useStudyDay()
+  // the first evaluation after a day has passed: a day left pending becomes missed
+  useEffect(() => {
+    if (ready) settleDays()
+  }, [ready, today])
+  const m = useMemo(() => buildModel({ days, entries, today, readMs: ix.caByDay }), [days, entries, today, ix])
+  return { m, tz, today, now, ix }
+}
+
 export function InsightsPage({ subjects, tab }: { subjects: Subject[]; tab: InsightsTab }) {
   const data = useData()
   return (
@@ -75,7 +104,7 @@ export function InsightsPage({ subjects, tab }: { subjects: Subject[]; tab: Insi
       <nav className="tabs" aria-label="Insights">
         {INSIGHTS_TABS.map((t) => <a key={t} className={tab === t ? 'on' : ''} aria-current={tab === t ? 'page' : undefined} href={href.insights(t)}>{TAB_LABEL[t]}</a>)}
       </nav>
-      {tab === 'time' ? <Time {...data} /> : tab === 'subjects' ? <Subjects {...data} subjects={subjects} /> : tab === 'progress' ? <ProgressTab {...data} subjects={subjects} /> : tab === 'revision' ? <RevisionInsights {...data} /> : <Overview {...data} />}
+      {tab === 'time' ? <Time {...data} /> : tab === 'subjects' ? <Subjects {...data} subjects={subjects} /> : tab === 'progress' ? <ProgressTab {...data} subjects={subjects} /> : tab === 'revision' ? <RevisionInsights {...data} /> : tab === 'current-affairs' ? <CurrentAffairsInsights /> : <Overview {...data} />}
     </div>
   )
 }
@@ -131,6 +160,7 @@ function Dist({ rows }: { rows: DistRow[] }) {
 const share = (d: StudyDistribution): DistRow => ({ id: d.id, label: d.label, ms: d.durationMs, extra: `${Math.round(d.percent)}%` })
 
 // ---- Overview -----------------------------------------------------------------------
+const ACTIVITIES: StudyActivity[] = ['initial-study', 'revision', 'current-affairs']
 const VS: Record<PeriodKind, string> = { day: 'yesterday', week: 'last week by now', month: 'last month by now', year: 'last year by now' }
 
 /** What changed against the comparison period, in words; a percentage only when there is a base for one. */
@@ -179,8 +209,11 @@ function Overview(data: Data) {
         <span><b>{sum.sessionCount ? timeText(sum.longestSessionMs) : '—'}</b>longest session</span>
         <span><b>{sum.activeDays}</b>active study {sum.activeDays === 1 ? 'day' : 'days'} of {days}</span>
       </div>
+      <h3 className="gh">Study time by activity</h3>
+      <div className="act-split"><Dist rows={ACTIVITIES.map((a) => ({ id: a, label: ACTIVITY_LABEL[a], ms: sum.byActivity[a], extra: `${sum.totalMs ? Math.round((sum.byActivity[a] / sum.totalMs) * 100) : 0}%` }))} /></div>
       <h3 className="gh">Study time by subject</h3>
-      {sum.bySubject.length ? <Dist rows={sum.bySubject.map(share)} /> : <p className="empty" style={{ padding: '4px 0' }}>No tracked study in this period.</p>}
+      {sum.bySubject.length ? <Dist rows={sum.bySubject.map(share)} /> : <p className="empty" style={{ padding: '4px 0' }}>No tracked study of the notes in this period.</p>}
+      {sum.byActivity['current-affairs'] > 0 && <p className="fine">Current Affairs reading ({timeText(sum.byActivity['current-affairs'])}) is an activity of its own and is not part of any subject.</p>}
       <p className="fine"><a className="ilink" href={href.insights('time')}>Daily chart and calendar →</a> · <a className="ilink" href={href.insights('subjects')}>Topics and chapters →</a></p>
     </>
   )
@@ -202,7 +235,7 @@ function SessionRows({ sessions, tz }: { sessions: SessionStat[]; tz: string }) 
           <>
             <span className="t">
               <b>{nameOf(chapterKeyOf(c), c.chapterTitle)}{s.contexts.length > 1 ? ` + ${plural(s.contexts.length - 1, 'more chapter')}` : ''}</b>
-              <small>{stageTitle(c.ref.stage)} · {c.subjectTitle} · {when.format(s.from)}{s.source === 'recovered' ? ' · recovered' : ''}</small>
+              <small>{isCaRef(c.ref) ? '' : `${stageTitle(c.ref.stage)} · `}{c.subjectTitle} · {when.format(s.from)}{s.source === 'recovered' ? ' · recovered' : ''}</small>
             </span>
             <span className="num wide">{timeText(s.ms)}</span>
           </>
@@ -221,6 +254,7 @@ function Time(data: Data) {
   const all = useMemo(() => summarize(ix, -Infinity, Infinity), [ix])
   const scope: Scope | undefined = useMemo(() => {
     if (!scopeKey) return undefined
+    if (scopeKey.startsWith('activity:')) return { activity: scopeKey.slice(9) as StudyActivity }
     const [stage, subjectId] = scopeKey.split('/')
     return { stage: stage as Scope['stage'], subjectId }
   }, [scopeKey])
@@ -247,7 +281,7 @@ function Time(data: Data) {
   const active = cells.filter((d) => d.durationMs > 0)
   const longest = [...sum.sessions].sort((a, b) => b.ms - a.ms).slice(0, 5)
   const recent = [...sum.sessions].reverse().slice(0, 5)
-  const scopeName = scopeKey ? nameOf(scopeKey, scopeKey) : ''
+  const scopeName = scopeKey.startsWith('activity:') ? ACTIVITY_LABEL[scopeKey.slice(9) as StudyActivity] : scopeKey ? nameOf(scopeKey, scopeKey) : ''
   return (
     <>
       <div className="filters">
@@ -261,6 +295,7 @@ function Time(data: Data) {
           <option value="">All study</option>
           {all.byStage.length > 1 && all.byStage.map((d) => <option key={d.id} value={d.id}>{stageTitle(d.id)} — all subjects</option>)}
           {all.bySubject.map((d) => <option key={d.id} value={d.id}>{stageTitle(d.id.split('/')[0])} · {nameOf(d.id, d.label)}</option>)}
+          {ACTIVITIES.filter((a) => all.byActivity[a] > 0 && all.byActivity[a] < all.totalMs).map((a) => <option key={a} value={`activity:${a}`}>Activity · {ACTIVITY_LABEL[a]}</option>)}
         </select>
       </div>
       <div className="stat">
@@ -539,6 +574,89 @@ function RevisionInsights(data: Data) {
         </>
       )}
       <p className="fine">Revision time is the timer's revision spans; a timer that is still running is counted once it is stopped. <a className="ilink" href={href.revision()}>Revision queue →</a> · <a className="ilink" href={href.revision('calendar')}>Calendar →</a></p>
+    </>
+  )
+}
+
+// ---- Current Affairs analytics --------------------------------------------------------------------
+// Day states come from the day records and the calendar (lib/currentAffairsModel.ts); every time
+// figure from the study sessions, where reading the news is its own activity. Nothing is kept:
+// no counter, no streak, no consistency score.
+const percent = (v?: number) => (v === undefined ? '—' : `${Math.round(v * 100)}%`)
+type Trend = 'week' | 'month' | 'year'
+const TRENDS: [Trend, string][] = [['week', 'Weekly'], ['month', 'Monthly'], ['year', 'Yearly']]
+
+/** One mark per day, oldest first: ✓ completed · ↺ caught up · × missed · ○ excused · ● today. */
+function DayStrip({ s, label }: { s: CaStats; label: string }) {
+  const covered = s.completed + s.caughtUp
+  return (
+    <div className="ca-strip" data-k={label}>
+      <div className="th"><b>{label}</b><span>{s.eligible ? `${covered} of ${s.eligible} covered · ${percent(s.consistency)}` : 'nothing to count yet'}{s.excused ? ` · ${s.excused} excused` : ''}</span></div>
+      <div className="ca-days" role="img" aria-label={`${label}: ${s.completed} completed, ${s.caughtUp} caught up, ${s.missed} missed, ${s.excused} excused`}>
+        {s.days.map((d) => <a key={d.day} href={href.caDay(dayIdOf(d.day))} data-s={d.state} title={`${dayFull(d.day)} · ${CA_STATUS[d.state]}`}>{STATUS_GLYPH[d.state] || '·'}</a>)}
+      </div>
+    </div>
+  )
+}
+
+function CurrentAffairsInsights() {
+  const { m, tz, today, now, ix } = useCaModel()
+  const [span, setSpan] = useState<Span>('month')
+  const [trend, setTrend] = useState<Trend>('week')
+  const view = useMemo(() => {
+    // the period as days of the study calendar (day states) and as a window of time (study time)
+    const start = span === 'all' ? -Infinity : period(span, now, tz).from
+    const from = span === 'all' ? (firstDay(m) ?? today) : dayOf(start, tz)
+    const sum = summarize(ix, start, now)
+    const n = TREND[trend][0]
+    const bars: Datum[] = Array.from({ length: n }, (_, i) => {
+      const q = period(trend, now, tz, -(n - 1 - i))
+      const c = civil(dayOf(q.from, tz))
+      return { key: String(q.from), label: trend === 'week' ? `${c.d}/${c.m}` : trend === 'month' ? MON[c.m - 1] : String(c.y), title: trend === 'week' ? `Week of ${q.label}` : q.label, value: totalBetween(ix, q.from, q.to, { activity: 'current-affairs' }) }
+    })
+    return { stats: caStats(m, from, today), time: caTime(ix, start, now), streak: caStreak(m), last7: caStats(m, today - 6, today), last30: caStats(m, today - 29, today), sum, bars }
+  }, [m, ix, span, trend, now, tz, today])
+  const { stats, time, streak, last7, last30, sum, bars } = view
+  const all = useMemo(() => caTime(ix, -Infinity, Infinity), [ix])
+  if (m.start === null && all.ms < 1000 && m.notes.size === 0) {
+    return (
+      <div className="shell-note nodata">
+        <b>No Current Affairs recorded yet.</b> Figures appear here once a day's news has been read with the timer or marked complete. Nothing is estimated in advance. <a href={href.currentAffairs()}>Open Current Affairs →</a>
+      </div>
+    )
+  }
+  const covered = stats.completed + stats.caughtUp
+  return (
+    <>
+      <div className="filters"><Chips value={span} options={SPANS} onChange={setSpan} label="Period" /></div>
+      <div className="kpis ca-kpis">
+        <div className="kpi" data-k="consistency"><small>Consistency</small><b>{percent(stats.consistency)}</b><span>{stats.eligible ? `${covered} of ${stats.eligible} days covered · ${percent(stats.onTime)} on the day` : 'no day to count yet'}</span></div>
+        <div className="kpi" data-k="time"><small>Current Affairs time</small><b>{timeText(time.ms)}</b><span>{time.readDays ? `${timeText(time.averageMs)} a day over ${plural(time.readDays, 'day')} of reading` : 'no timed reading in this period'}</span></div>
+        <div className="kpi" data-k="streak"><small>Current streak</small><b>{plural(streak.currentDays, 'day')}</b><span>longest {plural(streak.longestDays, 'day')}</span></div>
+        <div className="kpi" data-k="notes"><small>Notes</small><b>{stats.notes}</b><span>written for days in this period</span></div>
+      </div>
+      <div className="stat ca-counts">
+        <span><b>{stats.elapsed}</b>{stats.elapsed === 1 ? 'day' : 'days'} elapsed</span>
+        <span data-k="completed"><b>{stats.completed}</b>completed</span>
+        <span data-k="caught-up"><b>{stats.caughtUp}</b>caught up</span>
+        <span data-k="missed"><b>{stats.missed}</b>missed</span>
+        <span data-k="excused"><b>{stats.excused}</b>excused</span>
+      </div>
+
+      <div className="two">
+        <DayStrip s={last7} label="Last 7 days" />
+        <DayStrip s={last30} label="Last 30 days" />
+      </div>
+
+      <h3 className="gh">Current Affairs time</h3>
+      <div className="filters"><Chips value={trend} options={TRENDS} onChange={setTrend} label="Trend" /></div>
+      {bars.some((d) => d.value > 0)
+        ? <BarChart data={bars} format={timeText} caption={`Current Affairs study time in each of the last ${TREND[trend][0]} ${TREND[trend][1]}`} unit={trend[0].toUpperCase() + trend.slice(1)} />
+        : <p className="empty" style={{ padding: '4px 0' }}>No timed Current Affairs reading in these {TREND[trend][1]}.</p>}
+
+      <h3 className="gh">Among all study time · {SPANS.find(([k]) => k === span)![1].toLowerCase()}</h3>
+      <div className="act-split"><Dist rows={ACTIVITIES.map((a) => ({ id: a, label: ACTIVITY_LABEL[a], ms: sum.byActivity[a], extra: `${sum.totalMs ? Math.round((sum.byActivity[a] / sum.totalMs) * 100) : 0}%` }))} /></div>
+      <p className="fine">Consistency = (completed + caught up) ÷ (completed + caught up + missed). Excused days, today while it is open and days before tracking began are left out. A caught-up day counts as covered but not as on the day. Days follow the study timezone ({tz}); a timer that is still running is counted once it is stopped. <a className="ilink" href={href.currentAffairs('calendar')}>Calendar →</a> · <a className="ilink" href={href.currentAffairs('archive')}>Archive →</a></p>
     </>
   )
 }

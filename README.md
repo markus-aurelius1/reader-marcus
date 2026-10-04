@@ -99,7 +99,7 @@ Rules, in short: days and weeks follow the device's timezone (weeks run Monday�
 
 With no tracked sessions the time tabs say so and draw nothing. The old link `#/progress` opens its tab. The ★ / ↻ list is now Revision → Manual.
 
-Code: `src/lib/analytics.ts` (pure calculations, `analytics.test.ts`), `src/views/Insights.tsx` (the five tabs), `src/components/Charts.tsx` (bar, line and heatmap in plain HTML/SVG — no chart dependency).
+Code: `src/lib/analytics.ts` (pure calculations, `analytics.test.ts`), `src/views/Insights.tsx` (the six tabs), `src/components/Charts.tsx` (bar, line and heatmap in plain HTML/SVG — no chart dependency).
 
 ## Revision (Reader v2 · Job 5.5)
 
@@ -115,6 +115,22 @@ The full rules are in [`docs/READER_V2_REVISION_CONTRACT.md`](docs/READER_V2_REV
 - **Existing progress** is not enrolled by the upgrade: *Schedule existing completed topics* (Settings) does it on request.
 
 Code: `src/lib/scheduler.ts`, `recall.ts`, `revisionModel.ts`, `epoch.ts` (pure; `*.test.ts`), `src/lib/revision.ts`, `reset.ts` (state, IndexedDB, sync), `src/views/Revision.tsx`, `Settings.tsx`.
+
+## Current Affairs (Reader v2 · Job 5.6)
+
+The full rules are in [`docs/READER_V2_CURRENT_AFFAIRS_CONTRACT.md`](docs/READER_V2_CURRENT_AFFAIRS_CONTRACT.md). It tracks the daily news habit and keeps your own notes on it — it is not a news feed: nothing is fetched, scraped or summarised.
+
+- **Current Affairs** (`#/current-affairs`): Today · Calendar · Notes · Archive. In the desktop rail; in **More** on phones (the five bottom tabs are unchanged).
+- **Today**: the date, whether the day is complete, the reading clock, Start Reading / Pause / Resume / Stop, Add Note, Today's Notes, **Mark Today Complete**. Completing a day is always your own act: the timer never does it, and it needs neither a note nor any reading time.
+- **One timer.** Start Reading moves the one study timer into a `current-affairs` span for that news day — started if there is none, switched if it is running (Study → Current Affairs, Revision → Current Affairs), left alone if another device owns it (*Continue here* takes it over). A day's reading time is always derived from those spans; a day record holds no duration.
+- **Missed / caught up / excused.** A day left open becomes *missed* the first time the app looks after midnight; its date never changes. Completing it later records it as *caught up*, with the real completion time. *Excuse this day* leaves a day out; excused days are never counted as completed. Days are calendar days in the study timezone (the scheduler timezone in Settings).
+- **Home**: from 07:00 local time, while today is not complete, one compact card — *Today's news is waiting · 0 min read · Start Reading*; *Reading now · Continue* while the timer is on it; a small *Current Affairs complete* line afterwards; and *n missed days · Catch Up* for the last week. No push notification, no modal.
+- **Notes**: title, optional source name and link, tags, text in the reader's own editor, and links to chapters, sections or PYQs chosen from search (never guessed). A linked chapter lists the note under Related. Ctrl/Cmd+K finds notes by title, text, tag, source and linked destination, and days by date (`4 oct`, `yesterday`).
+- **Add to Revision** on a note puts that one note into the spaced-revision scheduler (`#/revise/ca/<id>`). Nothing is added automatically.
+- **Insights → Current Affairs**: completed / caught-up / missed / excused days, consistency = (completed + caught up) ÷ (completed + caught up + missed), on-the-day share, study time and average per day read, notes, streak, the last 7 and 30 days, and weekly / monthly / yearly time. Overview and Time split all study time into Initial study · Revision · Current Affairs. Reading the news is an activity, not a subject: it is in the totals, heatmaps and streaks, and in no subject figure.
+- **Reset.** *Reset study history* removes the day record and the reading sessions and keeps your notes; *Full personal reset* removes the notes too. Both go through the reset epoch, so an offline device cannot bring either back.
+
+Code: `src/lib/currentAffairsModel.ts` (pure rules and view models; `currentAffairsModel.test.ts`), `src/lib/currentAffairs.ts` (state, IndexedDB, sync; `currentAffairs.test.ts`), `src/views/CurrentAffairs.tsx`; the Home card is in `views/Home.tsx`, the analytics tab in `views/Insights.tsx`.
 
 ## PYQ Hub (Reader v2)
 
@@ -251,14 +267,14 @@ Troubleshooting
 | `auth/unauthorized-domain` | hostname missing from Firebase Authorized domains |
 | Google `redirect_uri_mismatch` | `https://<host>/__/auth/handler` missing from the OAuth client's redirect URIs |
 | Popup opens the reader itself | an old service worker is intercepting `/__/auth/*` — reload once |
-| `Sync paused — will retry` with `permission-denied` | rules not deployed (the study timer, queue, goals, PYQ flags, revision and reset need the `studySessions` / `studyRuntime` / `studyQueue` / `studyGoals` / `pyqState` / `revisionUnits` / `revisionEvents` / `recallAttempts` / `examTargets` / `revisionPreferences` / `meta` rules — deploy `firestore.rules` before the app), or signed in to a different Firebase project than the build's |
+| `Sync paused — will retry` with `permission-denied` | rules not deployed (the study timer, queue, goals, PYQ flags, revision, reset and Current Affairs need the `studySessions` / `studyRuntime` / `studyQueue` / `studyGoals` / `pyqState` / `revisionUnits` / `revisionEvents` / `recallAttempts` / `examTargets` / `revisionPreferences` / `meta` / `currentAffairsDays` / `currentAffairsEntries` rules — deploy `firestore.rules` before the app), or signed in to a different Firebase project than the build's |
 | Stays on `Offline — changes queued` while online | Firestore unreachable (network filter / ad-blocker); the queue is kept and retried |
 
 ### Sync behaviour
 
 | | |
 |---|---|
-| **What syncs** | Section edits (heading + body), highlights and colours, section done / ★ / ↻, chapter status, reading position and last-opened chapter, theme, Recall Mode, collapsed sections, completed study sessions, the active study timer and timer preferences, the study queue and study goals, revision units, completed revisions, recall answers, exam targets and revision preferences. Never the notes themselves, the Source Pack, build assets, recall units or anything derived (calendars, forecasts, analytics). |
+| **What syncs** | Section edits (heading + body), highlights and colours, section done / ★ / ↻, chapter status, reading position and last-opened chapter, theme, Recall Mode, collapsed sections, completed study sessions, the active study timer and timer preferences, the study queue and study goals, revision units, completed revisions, recall answers, exam targets and revision preferences, Current Affairs day records and your Current Affairs notes. Never the notes themselves, the Source Pack, build assets, recall units or anything derived (calendars, forecasts, analytics). |
 | **Granularity** | One small cloud document per section edit, per highlight, per section's flags, per chapter's status/position, and one for preferences — scrolling or ticking a box never rewrites an edit. |
 | **Local-first** | Every change updates the screen, is written to IndexedDB and is added to a persistent queue. The queue is sent when you are signed in and online; nothing waits on the network. |
 | **Offline** | Status shows `Offline — changes queued`. The queue survives reloads and restarts and drains automatically on reconnect. |
@@ -268,6 +284,7 @@ Troubleshooting
 | **PYQ flags** | Seen / Revised / Difficult on a question is one small record per question, merged field by field. The questions themselves are static content and are never uploaded. |
 | **Queue and goals** | Each queue item and the goal are small records merged field by field: completing an item on one device and reordering it on another both survive; removals propagate. Dashboard figures are never uploaded — every device derives them. |
 | **Study timer** | Completed sessions are written once and never changed. The active timer is one record with one owning device; it is the only record with a live listener, so a timer started on one device appears on the others within a moment. Two timers that diverged offline are reconciled without dropping time (see *Study timer* above). |
+| **Current Affairs** | One record per news day, merged by rule: a day completed on one device is never undone by another device's older view of it, and the earliest completion stands. Notes are merged field by field; a note's text is conflict-checked like any edited section. No reading time, consistency or streak is uploaded — every device derives them. |
 | **Sign out** | Stops syncing; everything stays on the device. Signing in to a different account merges this device's data into that account. |
 | **Local-only mode** | Leave the `VITE_FIREBASE_*` values empty, or simply don't sign in ("Continue locally"). |
 
@@ -278,10 +295,11 @@ Troubleshooting
 ```bash
 npm run test     # merge, queue, conflict, anchoring, migration, cross-link index, PYQ index, PYQ flags,
                  # study-timer, timer-sync, analytics, dashboard, study-queue / goals, scheduler, recall,
-                 # revision (enrolment, reviews, queue, calendar, exam targets, timer spans, sync) and reset-epoch unit tests
+                 # revision (enrolment, reviews, queue, calendar, exam targets, timer spans, sync), reset-epoch and
+                 # Current Affairs (day state, merge, consistency, streaks, Home card, timer, notes, sync, reset) unit tests
 npm run check    # content contract (taxonomy coverage, cross-links across subjects, PYQ files, markers)
 npm run e2e      # headless-Chrome regression of the production build: reader, migration, print-to-PDF,
-                 # cross-links, offline, responsive, revision, recall, exam targets, reset, and two-device sync
+                 # cross-links, offline, responsive, revision, recall, exam targets, reset, Current Affairs, and two-device sync
                  # (including a stale device after a reset) against the mock cloud  → e2e-out/
 npm run verify   # typecheck + all of the above
 ```
@@ -302,6 +320,8 @@ There is no linter: typescript-eslint does not yet support the TypeScript 7 comp
 | PYQ flags (seen / revised / difficult) | IndexedDB → `pyqUserState` (one row per flagged question) · cloud `users/{uid}/pyqState/{pyqId}` |
 | Revision units (current schedule) · completed revisions · recall answers | IndexedDB → `revisionUnits` · `revisionEvents` · `recallAttempts` · cloud `users/{uid}/revisionUnits` · `revisionEvents` · `recallAttempts` |
 | Exam targets · revision preferences | IndexedDB → `examTargets` · `revisionPreferences` · cloud `users/{uid}/examTargets` · `revisionPreferences/default` |
+| Current Affairs day records (state only — never a duration) · notes | IndexedDB → `currentAffairsDays` · `currentAffairsEntries` · cloud `users/{uid}/currentAffairsDays/{YYYY-MM-DD}` · `currentAffairsEntries/{id}` |
+| The text of a Current Affairs note | IndexedDB → `overrides` (row `ca/<id>`) · cloud `users/{uid}/state/edit~ca|<id>` — the same store and pipeline as an edited section |
 | Reset epoch | IndexedDB → `userDataEpoch` · cloud `users/{uid}/meta/dataEpoch` |
 | A revision in progress (so a reload returns to it) | localStorage `upsc-revision-run` — not study data |
 | Study goals (only once set) | IndexedDB → `studyGoals` (one row) · cloud `users/{uid}/studyGoals/default` |

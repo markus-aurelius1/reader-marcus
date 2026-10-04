@@ -18,11 +18,14 @@ import { activeGoal, addToQueue, clearCompleted, completeQueueItem, moveQueueIte
 import { linked } from '../sync'
 import { BarChart, Heatmap, type Datum } from '../components/Charts'
 import { pathOf, useElapsed, useTimerActions } from '../components/Timer'
-import { agoText, changeText, describeDay, plural, timeText, useData } from './Insights'
+import { agoText, changeText, describeDay, plural, timeText, useCaModel, useData } from './Insights'
 import { DestRows, Meter, locate } from './Pages'
 import { useRevision } from '../lib/revision'
 import { countdown, daySummary, examDateText } from '../lib/revisionModel'
 import { estText, startRun, useRevisionQueue, whenText } from './Revision'
+import { readingNow, startReading } from '../lib/currentAffairs'
+import { dayShort, homeCard, parseDayId } from '../lib/currentAffairsModel'
+import { currentAffairsLiveMs } from '../lib/study'
 
 const HOUR = 3600000
 const STATUSES = Object.keys(STATUS_LABEL) as Status[]
@@ -94,6 +97,7 @@ export function Home({ subjects, say }: { subjects: Subject[]; say: (m: string) 
         <TimerCard m={m} subjects={subjects} say={say} />
         <TodayCard m={m} />
       </div>
+      <CurrentAffairsCard say={say} />
       <div className="dash">
         <div className="col">
           <ProgressCard m={m} />
@@ -171,7 +175,7 @@ function TimerCard({ m, subjects, say }: { m: DashboardModel; subjects: Subject[
             ) : (
               <button className="btn primary" onClick={act.takeOver}>Continue here</button>
             )}
-            <a className="btn" href={refHref(a.currentContext.ref)}>Open topic</a>
+            <a className="btn" href={refHref(a.currentContext.ref)}>{a.currentContext.ref.kind === 'current-affairs' ? 'Open Current Affairs' : 'Open topic'}</a>
           </div>
         </>
       ) : (
@@ -242,6 +246,52 @@ function TodayCard({ m }: { m: DashboardModel }) {
       {editing
         ? <GoalEditor onClose={() => setEditing(false)} />
         : <button className="linkbtn goal-set" onClick={() => setEditing(true)}>{daily || weekly ? 'Edit goals' : 'Set a daily or weekly goal'}</button>}
+    </section>
+  )
+}
+
+// ---- current affairs ----------------------------------------------------------------
+/**
+ * Today's news in one line. Built by lib/currentAffairsModel.ts → homeCard from the day records,
+ * the notes and the study sessions; the reminder appears from 07:00 in the study timezone, and
+ * only while Home is open — nothing is scheduled, pushed or stored.
+ */
+function CurrentAffairsCard({ say }: { say: (m: string) => void }) {
+  const { m, tz, now } = useCaModel()
+  const a = useStudy(activeTimer)
+  useElapsed(a)
+  const reading = readingNow(a)
+  const dayId = reading?.currentAffairsDayId
+  const c = homeCard({ m, now, tz, reading: a && reading && dayId ? { dayId, ms: (m.readMs.get(dayId) ?? 0) + currentAffairsLiveMs(a, dayId), paused: a.state === 'paused', remote: !ownsTimer(a) } : null })
+  if (c.state === 'hidden') return null
+  const read = c.readMs + currentAffairsLiveMs(a, c.todayId)
+  const notes = c.notes > 0 ? plural(c.notes, 'note') : ''
+  const missed = c.missed > 0 && c.missedId ? <span className="ca-missed">{plural(c.missed, 'missed day')}</span> : null
+  const catchUp = c.missed > 0 && c.missedId ? <a className="btn" href={href.caDay(c.missedId)}>Catch Up</a> : null
+  const start = () => {
+    // a timer started offline on a linked device cannot know whether another device has one
+    if (startReading(c.todayId, undefined, linked() && !navigator.onLine) === 'remote') say('A timer is running on another device. Use “Continue here” to read with it.')
+    go(href.currentAffairs())
+  }
+  const other = c.state === 'active' && c.activeId !== c.todayId
+  return (
+    <section className="card cabar" data-state={c.state} style={{ '--i': 3 } as React.CSSProperties} aria-label="Current Affairs">
+      <h3 className="gh"><a href={href.currentAffairs()}>{c.state === 'complete' ? <><Check />Current Affairs complete</> : 'Current Affairs'}<ArrowRight /></a></h3>
+      {c.state === 'complete' ? (
+        <span className="ca-line">Today · {timeText(read)}{notes ? ` · ${notes}` : ''}</span>
+      ) : c.state === 'active' ? (
+        <span className="ca-line"><b>{other ? dayShort(parseDayId(c.activeId!)) : 'Today'} · {timeText(c.activeMs ?? 0)}</b> {c.remote ? 'Reading on another device' : c.paused ? 'Paused' : 'Reading now'}</span>
+      ) : c.state === 'excused' ? (
+        <span className="ca-line">Excused today</span>
+      ) : (
+        <span className="ca-line"><b>{c.missed > 0 ? 'Today due' : "Today's news is waiting"}</b> {timeText(read)} read{notes ? ` · ${notes}` : ''}</span>
+      )}
+      {missed}
+      <span className="acts">
+        {c.state === 'active' && <a className="btn primary" href={other ? href.caDay(c.activeId!) : href.currentAffairs()}>Continue</a>}
+        {c.state === 'due' && <button className="btn primary" onClick={start}><Play />{c.missed > 0 ? 'Start Today' : 'Start Reading'}</button>}
+        {catchUp}
+      </span>
     </section>
   )
 }

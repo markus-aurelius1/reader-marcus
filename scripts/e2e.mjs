@@ -159,7 +159,7 @@ try {
   const empty = [await L.ev(() => ({ note: document.querySelector('.nodata')?.textContent ?? '', drawn: document.querySelectorAll('.chart, .kpi, .heat i, .vb').length }))]
   for (const t of ['time', 'subjects']) { await L.hash('#/insights/' + t); empty.push(await L.ev(() => ({ note: document.querySelector('.nodata')?.textContent ?? '', drawn: document.querySelectorAll('.chart, .kpi, .heat i, .vb').length }))) }
   check('Insights before any tracked session: says analytics appear after timed study; no charts, no sample data', empty.every((e) => e.note.includes('No tracked study time yet') && e.note.includes('timer') && e.drawn === 0), empty)
-  check('Insights tabs: Overview, Time, Subjects, Progress, Revision', (await L.ev(() => [...document.querySelectorAll('.tabs a')].map((a) => a.textContent + ' ' + a.getAttribute('href')).join(' | '))) === 'Overview #/insights | Time #/insights/time | Subjects #/insights/subjects | Progress #/insights/progress | Revision #/insights/revision')
+  check('Insights tabs: Overview, Time, Subjects, Progress, Revision, Current Affairs', (await L.ev(() => [...document.querySelectorAll('.tabs a')].map((a) => a.textContent + ' ' + a.getAttribute('href')).join(' | '))) === 'Overview #/insights | Time #/insights/time | Subjects #/insights/subjects | Progress #/insights/progress | Revision #/insights/revision | Current Affairs #/insights/current-affairs')
   await L.hash('#/insights/progress')
   check('Polity: 19 chapters', (await L.count('section:first-of-type .rows .row')) === 19)
   check('Polity: 117 sections', /\/117\)/.test(await L.text('.stat')), await L.text('.stat'))
@@ -532,7 +532,7 @@ try {
   // desktop rail
   await L.go('#/')
   const rail = await L.ev(() => ({ items: [...document.querySelectorAll('.rail a, .rail button')].map((e) => e.querySelector('span').textContent).join('|'), tab: getComputedStyle(document.querySelector('.tabbar')).display, w: document.querySelector('.rail').getBoundingClientRect().width }))
-  check('desktop: primary rail — Home, Study, PYQ Hub, Insights, Revision, Highlights, Search; no tab bar', rail.items === 'Home|Study|PYQ Hub|Insights|Revision|Highlights|Search' && rail.tab === 'none' && rail.w > 60, rail)
+  check('desktop: primary rail — Home, Study, PYQ Hub, Insights, Revision, Current Affairs, Highlights, Search; no tab bar', rail.items === 'Home|Study|PYQ Hub|Insights|Revision|Current Affairs|Highlights|Search' && rail.tab === 'none' && rail.w > 60, rail)
   const visited = []
   for (const label of ['Study', 'PYQ Hub', 'Insights', 'Highlights', 'Home']) {
     await L.ev((l) => [...document.querySelectorAll('.rail a')].find((a) => a.textContent === l).click(), label); await sleep(350)
@@ -601,7 +601,7 @@ try {
   // Ctrl/Cmd+K
   await L.ev(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))); await sleep(250)
   const groups = await L.ev(() => [...document.querySelectorAll('.palette li.grp')].map((e) => e.textContent).join('|'))
-  check('Ctrl+K with no query offers Recent, Favourites and every subject', groups === 'Recent|Favourites|Subjects' && (await L.ev(() => [...document.querySelectorAll('.palette li:not(.grp) b')].slice(-6).map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture|Geography|Environment & Ecology|Science & Technology', groups)
+  check('Ctrl+K with no query offers Recent, Favourites, Current Affairs and every subject', groups === 'Recent|Favourites|Current Affairs|Subjects' && (await L.ev(() => [...document.querySelectorAll('.palette li:not(.grp) b')].slice(-6).map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture|Geography|Environment & Ecology|Science & Technology', groups)
   await L.page.keyboard.press('Escape'); await sleep(150)
   const sSub = await search('history')
   check('Ctrl+K jumps to a subject by name', sSub[0] === 'History & Culture', sSub.slice(0, 3))
@@ -628,7 +628,7 @@ try {
   check('phone: tabs open their routes and show the active one', tabs.join(' | ') === '#/study Study | #/pyqs PYQs | #/insights Insights', tabs)
   await L.click('.tabbar button')
   const more = await L.ev(() => { const m = document.querySelector('.menu.more'); const r = m.getBoundingClientRect(); const vis = [...m.querySelectorAll('a, button')].filter((e) => getComputedStyle(e).display !== 'none').map((e) => e.childNodes[1]?.textContent ?? e.textContent); return { vis, fits: r.left >= 0 && r.right <= innerWidth && r.bottom <= document.querySelector('.tabbar').getBoundingClientRect().top && r.top >= 0 } })
-  check('phone: More holds Highlights, Revision, Settings, theme and account/sync, above the bar', more.fits && ['Highlights', 'Revision', 'Settings', 'Account & sync'].every((x) => more.vis.includes(x)) && more.vis.some((x) => / theme$/.test(x)), more)
+  check('phone: More holds Highlights, Revision, Current Affairs, Settings, theme and account/sync, above the bar', more.fits && ['Highlights', 'Revision', 'Current Affairs', 'Settings', 'Account & sync'].every((x) => more.vis.includes(x)) && more.vis.some((x) => / theme$/.test(x)), more)
   await L.ev(() => [...document.querySelectorAll('.menu.more a')].find((a) => a.textContent === 'Highlights').click()); await sleep(350)
   check('phone: Highlights opens from More and More is marked active', (await hashNow()) === '#/highlights' && (await L.count('.menu.more')) === 0 && (await L.text('.tabbar .on')) === 'More')
   await L.hash(PARL)
@@ -846,7 +846,7 @@ try {
   await chip(L, 'All time')
   const allStat = await L.ev(() => [...document.querySelectorAll('.stat b')].map((b) => b.textContent))
   check('All time: study time is exactly the sum of the stored sessions; sessions, average, longest, active days', allStat[0] === durText(totalMs) && allStat[1] === String(sesAll.length) && allStat[2] === durText(totalMs / sesAll.length) && allStat[3] === '2 h 00 min' && Number(allStat[4]) >= 5, [allStat, durText(totalMs), sesAll.length])
-  const dist = await L.ev(() => [...document.querySelectorAll('.dist .dr')].map((r) => r.querySelector('.dn').textContent + ' ' + r.getAttribute('href')))
+  const dist = await L.ev(() => [...document.querySelectorAll('.dist .dr')].filter((r) => !r.closest('.act-split')).map((r) => r.querySelector('.dn').textContent + ' ' + r.getAttribute('href')))
   check('Overview: subject distribution, each row opening its subject', dist.length === 2 && dist[0] === 'Polity #/study/prelims/polity' && dist[1] === 'Economy & Social Development #/study/prelims/economy', dist)
   await L.page.screenshot({ path: join(OUT, 'desktop-insights-overview.png') })
 
@@ -929,15 +929,15 @@ try {
   check('Revision: Clear takes a section off the queue', (await L.count('.row.rv')) === rvBefore - 1 && (await L.idb('kv')).some((v) => v?.sections?.['prelims/polity/parliament/bills-types-and-procedure']?.revise === false))
 
   const disk = await L.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { const out = { stores: [...db.objectStoreNames].sort().join(), kv: g.result.join(), ls: Object.keys(localStorage).join() }; db.close(); res(out) } } }))
-  check('analytics stored nothing: no new IndexedDB store, no counters or caches on disk', disk.stores === 'activeStudySession,conflicts,examTargets,highlights,kv,outbox,overrides,pyqUserState,recallAttempts,revisionEvents,revisionPreferences,revisionUnits,studyGoals,studyQueue,studySessions,userDataEpoch' && !/analytic|insight|total|heat|streak|cache|index/i.test(disk.kv + disk.ls), disk)
+  check('analytics stored nothing: no new IndexedDB store, no counters or caches on disk', disk.stores === 'activeStudySession,conflicts,currentAffairsDays,currentAffairsEntries,examTargets,highlights,kv,outbox,overrides,pyqUserState,recallAttempts,revisionEvents,revisionPreferences,revisionUnits,studyGoals,studyQueue,studySessions,userDataEpoch' && !/analytic|insight|total|heat|streak|cache|index/i.test(disk.kv + disk.ls), disk)
   check('the sessions themselves were not touched', JSON.stringify(await L.idb('studySessions')) === JSON.stringify(sesAll))
   for (const [w, h, name] of [[375, 812, 'phone'], [768, 1024, 'tablet']]) {
     await L.page.setViewport({ width: w, height: h })
     const fit = []
-    for (const t of ['', '/time', '/subjects', '/progress', '/revision']) { await L.go('#/insights' + t); if (await L.ev(() => document.documentElement.scrollWidth > innerWidth + 1)) fit.push(t) }
+    for (const t of ['', '/time', '/subjects', '/progress', '/revision', '/current-affairs']) { await L.go('#/insights' + t); if (await L.ev(() => document.documentElement.scrollWidth > innerWidth + 1)) fit.push(t) }
     await L.go('#/insights/time')
     const hs = await L.ev(() => { const b = document.querySelector('.heat-scroll'); return { scrolls: b.scrollWidth > b.clientWidth, atEnd: Math.abs(b.scrollLeft + b.clientWidth - b.scrollWidth) < 2, bars: document.querySelector('.vbars').getBoundingClientRect().width } })
-    check(`${name}: all five Insights tabs fit; the calendar ${w < 700 ? 'scrolls inside its own frame, opened at today' : 'fits'}`, fit.length === 0 && hs.bars > 250 && (w < 700 ? hs.scrolls && hs.atEnd : true), [fit, hs])
+    check(`${name}: all six Insights tabs fit; the calendar ${w < 700 ? 'scrolls inside its own frame, opened at today' : 'fits'}`, fit.length === 0 && hs.bars > 250 && (w < 700 ? hs.scrolls && hs.atEnd : true), [fit, hs])
     await L.page.screenshot({ path: join(OUT, `${name}-insights-time.png`), fullPage: true })
     if (w === 375) { await L.go('#/insights'); await L.page.screenshot({ path: join(OUT, 'phone-insights-overview.png'), fullPage: true }) }
   }
@@ -1035,7 +1035,7 @@ try {
 
   // nothing derived is stored
   const disk2 = await L.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { const out = { stores: [...db.objectStoreNames].sort().join(), kv: g.result.join(), ls: Object.keys(localStorage).join() }; db.close(); res(out) } } }))
-  check('the dashboard stored nothing: no totals, streaks or view model on disk', disk2.stores === 'activeStudySession,conflicts,examTargets,highlights,kv,outbox,overrides,pyqUserState,recallAttempts,revisionEvents,revisionPreferences,revisionUnits,studyGoals,studyQueue,studySessions,userDataEpoch' && !/dash|total|heat|streak|week|today|cache/i.test(disk2.kv + disk2.ls) && !/"(\w*Ms|\w*[Ss]treak\w*|\w*[Pp]ercent\w*)":/.test(JSON.stringify([await L.idb('studyQueue'), await L.idb('studyGoals')]).replace(/"(daily|weekly)TargetMs"/g, '"target"')), disk2)
+  check('the dashboard stored nothing: no totals, streaks or view model on disk', disk2.stores === 'activeStudySession,conflicts,currentAffairsDays,currentAffairsEntries,examTargets,highlights,kv,outbox,overrides,pyqUserState,recallAttempts,revisionEvents,revisionPreferences,revisionUnits,studyGoals,studyQueue,studySessions,userDataEpoch' && !/dash|total|heat|streak|week|today|cache/i.test(disk2.kv + disk2.ls) && !/"(\w*Ms|\w*[Ss]treak\w*|\w*[Pp]ercent\w*)":/.test(JSON.stringify([await L.idb('studyQueue'), await L.idb('studyGoals')]).replace(/"(daily|weekly)TargetMs"/g, '"target"')), disk2)
 
   // deep links
   await L.click('.week h3 a'); await sleep(350)
@@ -1217,7 +1217,7 @@ try {
     for (const [w, h, name] of [[375, 812, 'phone'], [768, 1024, 'tablet']]) {
       await RV.page.setViewport({ width: w, height: h })
       const wide = []
-      for (const t of ['#/revision', '#/revision/upcoming', '#/revision/calendar', '#/revision/manual', '#/insights/revision', '#/settings', '#/revise/' + RU('presiding-officers')]) { await RV.go(t); if (await RV.ev(() => document.documentElement.scrollWidth > innerWidth + 1)) wide.push(t) }
+      for (const t of ['#/revision', '#/revision/upcoming', '#/revision/calendar', '#/revision/manual', '#/insights/revision', '#/current-affairs', '#/current-affairs/calendar', '#/current-affairs/notes', '#/current-affairs/archive', '#/insights/current-affairs', '#/settings', '#/revise/' + RU('presiding-officers')]) { await RV.go(t); if (await RV.ev(() => document.documentElement.scrollWidth > innerWidth + 1)) wide.push(t) }
       check(`${name}: Revision, its calendar, Settings and the guided view fit the screen`, wide.length === 0, wide)
       if (w === 375) { await RV.go('#/revision/calendar'); await RV.page.screenshot({ path: join(OUT, 'phone-revision-calendar.png') }) }
     }
@@ -1345,6 +1345,245 @@ try {
     check('after a full reset the library is exactly as imported: notes, PYQs, cross-links and recall units', pq7 === pq5 && lib7.secs === lib5.secs && lib7.xref === lib5.xref && lib7.rq === lib5.rq && !lib7.text && lib7.marks === 0, [pq7, lib7])
     await RV.go('#/')
     check('Home after a full reset: nothing of the old study record is shown', /Nothing scheduled yet/.test(await flat(RV, '.card.sched')) && /^00:00:00/.test((await flat(RV, '.tcard .tc-time'))) && (await RV.ev(() => document.querySelector('.today .big').dataset.final)) === '0 min')
+  }
+
+  section('Current Affairs (local-only)')
+  {
+    // The reminder depends on the local hour, so the browser's timezone is chosen to make it
+    // 05:xx first and 13:xx afterwards, whatever the time of this run.
+    const zoneAt = (hour) => { const off = ((hour - new Date().getUTCHours() + 36) % 24) - 12; return off >= 0 ? `Etc/GMT-${off}` : `Etc/GMT+${-off}` }
+    const C = await device(P.local, 'current-affairs')
+    const cDay = (off = 0) => C.ev((off) => new Intl.DateTimeFormat('en-CA').format(new Date(Date.now() + off * 86400000)), off)
+    const caDays = async () => Object.fromEntries((await C.idb('currentAffairsDays')).map((d) => [d.id, d]))
+    const caPanel = () => C.ev(() => { const p = document.querySelector('.ca-day'); return p ? { state: p.dataset.state, day: p.dataset.day, status: p.querySelector('.ca-status').innerText.replace(/\s+/g, ' '), clock: p.querySelector('.ca-clock time').textContent, note: p.querySelector('.ca-clock small').textContent, acts: [...p.querySelectorAll('.ca-acts button')].map((b) => b.textContent).join('|'), finish: [...p.querySelectorAll('.ca-finish button')].map((b) => b.textContent).join('|'), notes: p.querySelectorAll('.ca-notes .row').length } : null })
+    const caBar = () => C.ev(() => { const b = document.querySelector('.cabar'); return b ? { state: b.dataset.state, text: b.innerText.replace(/\s+/g, ' '), btns: [...b.querySelectorAll('.btn')].map((x) => x.textContent).join('|') } : null })
+    const caFind = async (q) => { await C.ev(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))); await sleep(200); const r = await C.ev(async (q) => { const i = document.querySelector('.palette input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, q); i.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 250)); return [...document.querySelectorAll('.palette li:not(.grp)')].map((li) => (li.querySelector('.kind')?.textContent ?? '?') + '|' + li.querySelector('b').textContent) }, q); await C.page.keyboard.press('Escape'); await sleep(150); return r }
+    const typeIn = async (sel, text) => { await C.ev((sel, text) => { const i = document.querySelector(sel); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, text); i.dispatchEvent(new Event('input', { bubbles: true })) }, sel, text); await sleep(120) }
+
+    await C.page.emulateTimezone(zoneAt(5))
+    await C.go('#/'); await sleep(500)
+    check('before 07:00 local: Home shows no Current Affairs reminder', (await C.count('.cabar')) === 0 && /^0?5:/.test(await C.ev(() => new Date().toLocaleTimeString('en-GB'))), await caBar())
+    await C.page.emulateTimezone(zoneAt(13)); await C.reload(); await sleep(500)
+    const today = await cDay()
+    const bar0 = await caBar()
+    check('from 07:00, while today is not complete: a compact card — "Today\'s news is waiting · 0 min read" and Start Reading', bar0?.state === 'due' && /Today's news is waiting 0 min read/.test(bar0.text) && bar0.btns === 'Start Reading' && !/missed/.test(bar0.text), bar0)
+    check('nothing is created by showing the reminder: no day record, no session', (await C.idb('currentAffairsDays')).length === 0 && (await C.idb('studySessions')).length === 0)
+
+    // navigation
+    await C.ev(() => [...document.querySelectorAll('.rail a')].find((a) => a.textContent === 'Current Affairs').click()); await sleep(350)
+    const caTabs = await C.ev(() => [...document.querySelectorAll('.tabs a')].map((a) => a.textContent + ' ' + a.getAttribute('href')).join(' | '))
+    check('desktop: Current Affairs is in the rail and opens Today · Calendar · Notes · Archive', (await C.ev(() => location.hash)) === '#/current-affairs' && (await C.text('h1.title')) === 'Current Affairs' && (await C.text('.rail a.on')) === 'Current Affairs' && caTabs === 'Today #/current-affairs | Calendar #/current-affairs/calendar | Notes #/current-affairs/notes | Archive #/current-affairs/archive | Analytics → #/insights/current-affairs', caTabs)
+    const p0 = await caPanel()
+    check('Today: the date, "Not completed", 00:00:00, Start Reading, Add Note, Today\'s Notes and Mark Today Complete', p0?.state === 'pending' && p0.day === today && /Not completed/.test(p0.status) && p0.clock === '00:00:00' && p0.acts === 'Start Reading|Add Note' && /^Mark Today Complete/.test(p0.finish) && /today's notes/i.test(await flat(C, '.ca-day')), p0)
+
+    // the one global timer
+    await tapBtn(C, 'Start Reading', '.ca-acts'); await sleep(2300)
+    const run = await activeRow(C)
+    const p1 = await caPanel()
+    check('Start Reading starts the global timer in a current-affairs span for today', run?.state === 'running' && run.currentActivity?.activity === 'current-affairs' && run.currentActivity.currentAffairsDayId === today && run.currentContext.ref.kind === 'current-affairs' && run.currentContext.subjectTitle === 'Current Affairs' && (await secs(C)) >= 2 && p1.note === 'Reading now' && p1.clock !== '00:00:00' && p1.acts === 'Pause|Stop|Add Note', [run?.currentActivity, p1])
+    const d1 = (await caDays())[today]
+    check('the day record is made lazily, with the first start — and the timer alone does not complete it', d1?.status === 'pending' && d1.date === today && !!d1.firstStartedAt && !d1.completedAt && p1.state === 'pending', d1)
+    await tapBtn(C, 'Pause', '.ca-acts'); await sleep(300)
+    const frozen = (await caPanel()).clock
+    await sleep(1300)
+    check('Pause and Resume are the global timer\'s: paused time is not counted', (await caPanel()).clock === frozen && (await caPanel()).note === 'Paused' && (await activeRow(C)).state === 'paused' && (await caPanel()).acts === 'Resume|Stop|Add Note', frozen)
+    await tapBtn(C, 'Resume', '.ca-acts'); await sleep(400)
+    await C.hash('#/'); await sleep(500)
+    const bar1 = await caBar()
+    check('Home while reading: "Today · … · Reading now" and Continue', bar1?.state === 'active' && /^CURRENT AFFAIRS Today · .* Reading now/i.test(bar1.text) && bar1.btns === 'Continue', bar1)
+    // Current Affairs → Study → Current Affairs: spans of one session
+    await C.hash(PARL); await sleep(1300)
+    const inStudy = await activeRow(C)
+    check('opening a chapter moves the same timer to study: the reading span is closed, nothing is on a second timer', inStudy.sessionId === run.sessionId && !inStudy.currentActivity && inStudy.currentContext.ref.chapterId === 'parliament' && inStudy.completedSpans.filter((s) => s.activity === 'current-affairs').length >= 1, inStudy?.currentContext)
+    await C.hash('#/current-affairs'); await sleep(400)
+    const p2 = await caPanel()
+    check('back on Today the timer is shown where it is, and Start Reading switches it back', /The study timer is on Prelims → Polity → Parliament/.test(p2.note) && p2.acts === 'Start Reading|Add Note', p2)
+    await tapBtn(C, 'Start Reading', '.ca-acts'); await sleep(1200)
+    check('Study → Current Affairs: still the same session', (await activeRow(C)).sessionId === run.sessionId && (await activeRow(C)).currentActivity?.activity === 'current-affairs')
+    await tapBtn(C, 'Stop', '.ca-acts'); await sleep(500)
+    const ses = (await C.idb('studySessions'))[0]
+    const acts = ses.spans.map((s) => s.activity ?? 'initial-study')
+    check('Stop saves one session whose spans are current-affairs · initial-study · current-affairs, each reading span carrying its news day', (await C.idb('studySessions')).length === 1 && acts[0] === 'current-affairs' && acts.includes('initial-study') && acts[acts.length - 1] === 'current-affairs' && ses.spans.filter((s) => s.activity === 'current-affairs').every((s) => s.currentAffairsDayId === today) && /Session saved/.test(await C.text('.toast')), acts)
+    const p3 = await caPanel()
+    const readSecs = ses.spans.filter((s) => s.activity === 'current-affairs').reduce((n, s) => n + s.durationMs, 0)
+    check('the day\'s reading time is derived from those spans; the day is still not completed', p3.state === 'pending' && p3.clock === new Date(readSecs).toISOString().slice(11, 19) && p3.note === 'read' && !Object.keys((await caDays())[today]).some((k) => /ms$|duration|minutes/i.test(k)), [p3, readSecs])
+
+    // a note
+    await tapBtn(C, 'Add Note', '.ca-acts'); await sleep(250)
+    await typeIn('.ca-form input[aria-label="Note title"]', 'RBI keeps the repo rate E2E')
+    await typeIn('.ca-form input[aria-label="Source name"]', 'The Hindu')
+    await typeIn('.ca-form input[aria-label="Source link"]', 'thehindu.com/business/rbi-e2e')
+    await typeIn('.ca-form input[aria-label="Tags"]', 'Economy, #RBI')
+    await tapBtn(C, 'Save and write', '.ca-form'); await sleep(700)
+    const noteHash = await C.ev(() => location.hash)
+    const noteId = noteHash.split('/').pop()
+    check('Add Note: title, optional source, link and tags; the note opens ready to write, in the reader\'s own editor', /^#\/current-affairs\/note\/n/.test(noteHash) && (await C.count('.toolbar')) === 1 && (await C.count('.ca-body .ProseMirror')) === 1 && (await C.ev(() => document.querySelector('input.ca-title').value)) === 'RBI keeps the repo rate E2E')
+    await C.ev(() => { const ed = document.querySelector('.ca-body .ProseMirror').editor; ed.commands.focus('end'); ed.commands.insertContent('<p>Repo rate held; <strong>CA-E2E-BODY</strong> stance neutral.</p><ul><li>MPC vote 6–0</li></ul>') })
+    await C.tool('Bold'); await sleep(200)
+    await typeIn('.ca-pick input', 'presiding officers'); await sleep(450)
+    const picks = await C.ev(() => [...document.querySelectorAll('.ca-pick .row b')].map((b) => b.textContent))
+    await C.ev(() => document.querySelector('.ca-pick .row').click()); await sleep(300)
+    await C.saved()
+    await tapBtn(C, 'Done', '.ca-ops'); await sleep(900)
+    const nv = await C.ev(() => ({ title: document.querySelector('h1.title')?.textContent, body: document.querySelector('.ca-body')?.innerHTML ?? '', src: document.querySelector('a.ca-src')?.getAttribute('href'), srcText: document.querySelector('a.ca-src')?.textContent, rel: document.querySelector('a.ca-src')?.getAttribute('rel'), target: document.querySelector('a.ca-src')?.getAttribute('target'), tags: [...document.querySelectorAll('.ca-meta-row > a.chip')].map((a) => a.textContent).join('|'), links: [...document.querySelectorAll('.ca-links .row')].map((r) => r.innerText.replace(/\s+/g, ' ')), linkTo: document.querySelector('.ca-links .row a')?.getAttribute('href'), edit: !!document.querySelector('.toolbar') }))
+    check('the note keeps its formatted text, source ("thehindu.com/…" became an https link opened safely) and tags', nv.title === 'RBI keeps the repo rate E2E' && /<strong>CA-E2E-BODY<\/strong>/.test(nv.body) && /<li>/.test(nv.body) && nv.src === 'https://thehindu.com/business/rbi-e2e' && nv.srcText === 'The Hindu' && /noopener/.test(nv.rel) && nv.target === '_blank' && nv.tags === '#Economy|#RBI' && !nv.edit, nv)
+    check('linked study notes are chosen from search and stored as stable refs', picks.length > 0 && nv.links.length === 1 && nv.linkTo.startsWith('#/study/prelims/') && /Presiding/i.test(nv.links[0]), [picks, nv.links, nv.linkTo])
+    const ent = (await C.idb('currentAffairsEntries'))[0]
+    const bodyRow = (await C.idb('overrides')).find((o) => o.key === 'ca/' + noteId)
+    check('stored local-first: the entry, its text as an edit under "ca/<id>", both queued; adding a note did not complete the day', ent.id === noteId && ent.dayId === today && ent.noteDocumentId === 'ca/' + noteId && ent.sourceUrl === 'https://thehindu.com/business/rbi-e2e' && ent.tags.join() === 'Economy,RBI' && ent.linkedContentRefs.length === 1 && ent.linkedContentRefs[0].kind === 'section' && !!ent.linkedContentRefs[0].sectionId && /CA-E2E-BODY/.test(bodyRow?.html ?? '') && (await C.idb('outbox')).some((o) => o.id === 'cae~' + noteId) && (await C.idb('outbox')).some((o) => o.id === 'edit~ca/' + noteId) && (await caDays())[today].status === 'pending', [ent, !!bodyRow])
+    // editing the source link
+    await tapBtn(C, 'Edit', '.ca-ops'); await sleep(400)
+    // the link is saved when its field is left, so half an address is never kept
+    await C.ev(() => document.querySelector('.ca-form input[aria-label="Source link"]').focus())
+    await typeIn('.ca-form input[aria-label="Source link"]', 'https://pib.gov.in/e2e')
+    const midEdit = (await C.idb('currentAffairsEntries'))[0].sourceUrl
+    await C.ev(() => document.activeElement.blur()); await sleep(300)
+    await tapBtn(C, 'Done', '.ca-ops'); await sleep(700)
+    const srcNow = [await C.ev(() => document.querySelector('a.ca-src')?.getAttribute('href')), (await C.idb('currentAffairsEntries'))[0].sourceUrl, midEdit]
+    check('a source link can be edited', srcNow[0] === 'https://pib.gov.in/e2e' && srcNow[1] === 'https://pib.gov.in/e2e' && srcNow[2] === 'https://thehindu.com/business/rbi-e2e', srcNow)
+
+    // cross-links and search
+    const target = ent.linkedContentRefs[0]
+    await C.hash(`#/study/${target.stage}/${target.subjectId}/${target.chapterId}`); await sleep(500)
+    await C.ev(() => document.querySelector('button[title="Related"]').click()); await sleep(300)
+    const back = await C.ev(() => ({ heads: [...document.querySelectorAll('.relmenu b')].map((b) => b.textContent), note: [...document.querySelectorAll('.relmenu a')].find((a) => a.textContent.includes('RBI keeps the repo rate E2E'))?.getAttribute('href') }))
+    check('backlink: the chapter\'s Related panel lists the Current Affairs note that links to it', back.heads.includes('Current Affairs') && back.note === '#/current-affairs/note/' + noteId, back)
+    await C.page.keyboard.press('Escape'); await sleep(200)
+    const f1 = await caFind('repo rate e2e')
+    const f2 = await caFind('ca-e2e-body')
+    const f3 = await caFind('current affairs')
+    const f4 = await caFind('today')
+    const f5 = await caFind('money bill')
+    check('search finds the note by title and by its text, tagged as a Current Affairs note', f1[0] === 'CA note|RBI keeps the repo rate E2E' && f2.includes('CA note|RBI keeps the repo rate E2E'), [f1.slice(0, 3), f2.slice(0, 3)])
+    check('search offers Current Affairs destinations and dates, each result naming its type', f3.slice(0, 4).join() === 'Current Affairs|Current Affairs — Today,Current Affairs|Current Affairs — Calendar,Current Affairs|Current Affairs — Notes,Current Affairs|Current Affairs — Archive' && f4[0].startsWith('CA date|') && f5.length > 0 && f5.every((x) => !x.startsWith('CA') && !x.startsWith('Current Affairs')) && f5.some((x) => /^(Section|In text|Chapter)\|/.test(x)), [f3.slice(0, 5), f4.slice(0, 2), f5.slice(0, 3)])
+
+    // completion is explicit
+    await C.hash('#/current-affairs'); await sleep(400)
+    check('Today lists the note', (await caPanel()).notes === 1 && (await flat(C, '.ca-notes')).includes('RBI keeps the repo rate E2E'))
+    await tapBtn(C, 'Mark Today Complete', '.ca-finish'); await sleep(400)
+    const p4 = await caPanel()
+    const d4 = (await caDays())[today]
+    check('Mark Today Complete: the day is completed, with the moment it was done', p4.state === 'completed' && /✓ ?Completed/.test(p4.status) && p4.finish === 'Undo' && d4.status === 'completed' && !!d4.completedAt && !d4.caughtUpAt && d4.date === today, [p4, d4])
+    await C.hash('#/'); await sleep(500)
+    const bar2 = await caBar()
+    check('Home collapses to a small success state: "Current Affairs complete · Today · … · 1 note"', bar2?.state === 'complete' && /CURRENT AFFAIRS COMPLETE Today · .* · 1 note/i.test(bar2.text) && bar2.btns === '', bar2)
+    await C.hash('#/current-affairs'); await sleep(300)
+    await tapBtn(C, 'Undo', '.ca-finish'); await sleep(300)
+    check('Undo reopens the day', (await caPanel()).state === 'pending' && (await caDays())[today].status === 'pending' && !(await caDays())[today].completedAt)
+
+    // missed, caught up, excused — an earlier day that was started and never completed
+    const [d1ago, d2ago, d3ago] = [await cDay(-1), await cDay(-2), await cDay(-3)]
+    await C.ev((day, tz) => new Promise((res) => {
+      const t0 = Date.now() - 3 * 86400000
+      const iso = (ms) => new Date(ms).toISOString()
+      const q = indexedDB.open('upsc-notes')
+      q.onsuccess = () => {
+        const db = q.result
+        const tx = db.transaction(['currentAffairsDays', 'studySessions'], 'readwrite')
+        tx.objectStore('currentAffairsDays').put({ id: day, date: day, timeZone: tz, status: 'pending', firstStartedAt: iso(t0), createdAt: iso(t0), updatedAt: iso(t0) })
+        const span = { id: 'seed-ca-0', context: { ref: { kind: 'current-affairs', dayId: day }, subjectTitle: 'Current Affairs', chapterTitle: day }, startedAt: iso(t0), endedAt: iso(t0 + 20 * 60000), durationMs: 20 * 60000, activity: 'current-affairs', currentAffairsDayId: day }
+        tx.objectStore('studySessions').put({ id: 'seed-ca', startedAt: span.startedAt, endedAt: span.endedAt, durationMs: span.durationMs, spans: [span], source: 'timer', createdDeviceId: 'seed', timeZone: tz, createdAt: span.endedAt, syncedAt: span.endedAt })
+        tx.oncomplete = () => { db.close(); res(true) }
+      }
+    }), d3ago, await C.ev(() => Intl.DateTimeFormat().resolvedOptions().timeZone))
+    await C.hash('#/'); await C.reload(); await sleep(700)
+    const days5 = await caDays()
+    check('a day left pending is marked missed at the first evaluation after it has passed; its date is not changed', days5[d3ago]?.status === 'missed' && days5[d3ago].date === d3ago && Object.keys(days5).sort().join() === [d3ago, today].sort().join(), days5)
+    const bar3 = await caBar()
+    check('Home with a missed previous day: "Today due · 3 missed days", Start Today and Catch Up — quiet, not red', bar3?.state === 'due' && /Today due/.test(bar3.text) && /3 missed days/.test(bar3.text) && bar3.btns === 'Start Today|Catch Up' && (await C.ev(() => document.querySelector('.cabar a.btn').getAttribute('href'))) === '#/current-affairs/day/' + d1ago && (await C.ev(() => !/rgb\((1[5-9]\d|2\d\d), (\d|[1-9]\d), /.test(getComputedStyle(document.querySelector('.cabar .ca-missed')).color))), bar3)
+    await C.hash('#/current-affairs/calendar?d=' + d3ago); await sleep(500)
+    const cal = await C.ev((t) => ({ key: document.querySelector('.ca-key').innerText.replace(/\s+/g, ' '), cells: document.querySelectorAll('.ca-cal .cal-d').length, today: document.querySelector(`.ca-cal .cal-d[data-date="${t}"]`)?.dataset.state, future: [...document.querySelectorAll('.ca-cal .cal-d[data-state="future"]')].every((b) => b.disabled) }), today)
+    const p5 = await caPanel()
+    check('Calendar: a month grid with the five states keyed (✓ × ● ↺ ○); the selected day shows its state, derived reading time and actions', cal.cells >= 28 && cal.today === 'pending' && cal.future && /✓ ?Completed/.test(cal.key) && /↺ ?Caught up/.test(cal.key) && /× ?Missed/.test(cal.key) && /○ ?Excused/.test(cal.key) && /● ?Today/.test(cal.key) && p5.day === d3ago && p5.state === 'missed' && /Missed/.test(p5.status) && p5.clock === '00:20:00' && p5.acts === 'Start Catch-Up|Add Note' && /^Mark Complete · caught up/.test(p5.finish), [cal, p5])
+    await tapBtn(C, 'Mark Complete', '.ca-finish'); await sleep(400)
+    const d6 = (await caDays())[d3ago]
+    const p6 = await caPanel()
+    check('completing a missed day: caught up — the news date is kept, the real completion time recorded', d6.status === 'caught-up' && d6.date === d3ago && d6.id === d3ago && !!d6.caughtUpAt && d6.caughtUpAt === d6.completedAt && Date.parse(d6.caughtUpAt) > Date.now() - 60000 && p6.state === 'caught-up' && /Caught up · completed/.test(p6.status), [d6, p6.status])
+    await C.hash('#/current-affairs/day/' + d2ago); await sleep(400)
+    const p7 = await caPanel()
+    await tapBtn(C, 'Excuse this day', '.ca-finish'); await sleep(300)
+    check('a day with no record is missed by the calendar alone; it can be excused, which is its own state', p7.state === 'missed' && p7.clock === '00:00:00' && (await caDays())[d2ago]?.status === 'excused' && (await caPanel()).state === 'excused' && !(await caDays())[d2ago].completedAt, p7)
+    await C.hash('#/current-affairs'); await sleep(300)
+    await tapBtn(C, 'Mark Today Complete', '.ca-finish'); await sleep(300)
+
+    // archive
+    const months = [...new Set([today, d3ago].map((d) => d.slice(0, 7)))]
+    const arch = []
+    for (const mk of months) { await C.hash('#/current-affairs/archive?m=' + mk); await sleep(350); arch.push(...(await C.ev(() => [...document.querySelectorAll('.ca-arch .row')].map((r) => r.dataset.day + ' ' + r.dataset.state + ' ' + r.innerText.replace(/\s+/g, ' '))))) }
+    const row = (d) => arch.find((r) => r.startsWith(d)) ?? ''
+    check('Archive: newest first, each day with its state, derived time and notes', arch.length === 4 && /completed .*✓.*1 note/.test(row(today)) && / missed .*×/.test(row(d1ago)) && / excused .*○/.test(row(d2ago)) && / caught-up .*↺.*20 min/.test(row(d3ago)) && arch[0].startsWith(today), arch)
+    await C.hash('#/current-affairs/archive?m=' + today.slice(0, 7)); await sleep(300)
+    await C.ev(() => document.querySelector('.ca-arch .ca-titles a').click()); await sleep(400)
+    check('Archive: a note opens that exact note; a day opens that exact day', (await C.ev(() => location.hash)) === '#/current-affairs/note/' + noteId && (await C.ev(async (d) => { location.hash = '#/current-affairs/archive'; await new Promise((r) => setTimeout(r, 300)); return document.querySelector(`.ca-arch .row[data-day="${d}"] a.t`)?.getAttribute('href') }, today)) === '#/current-affairs/day/' + today)
+    await C.hash('#/current-affairs/notes'); await sleep(300)
+    const notesTab = await C.ev(() => ({ rows: [...document.querySelectorAll('.ca-notes .row')].map((r) => r.innerText.replace(/\s+/g, ' ')), tags: [...document.querySelectorAll('.ca-tags a')].map((a) => a.textContent).join('|') }))
+    check('Notes: every note, with source and tags; a tag filters', notesTab.rows.length === 1 && /The Hindu/.test(notesTab.rows[0]) && /#Economy/.test(notesTab.rows[0]) && /#Economy 1/.test(notesTab.tags) && (await C.ev(async () => { location.hash = '#/current-affairs/notes?tag=Nothing'; await new Promise((r) => setTimeout(r, 300)); return document.querySelectorAll('.ca-notes .row').length })) === 0, notesTab)
+
+    // Insights
+    await C.hash('#/insights/current-affairs'); await sleep(400)
+    await C.ev(() => [...document.querySelectorAll('.filters .chip')].find((b) => b.textContent === 'All time').click()); await sleep(300)
+    const ci = await C.ev(() => ({ kpi: Object.fromEntries([...document.querySelectorAll('.ca-kpis .kpi')].map((k) => [k.dataset.k, k.querySelector('b').textContent + ' · ' + k.querySelector('span').textContent])), counts: [...document.querySelectorAll('.ca-counts span')].map((s) => s.innerText.replace(/\s+/g, ' ')).join(' | '), strips: [...document.querySelectorAll('.ca-strip')].map((s) => s.dataset.k + ': ' + [...s.querySelectorAll('.ca-days a')].map((a) => a.dataset.s).join(',')), split: [...document.querySelectorAll('.act-split .dn')].map((d) => d.textContent).join('|'), fine: document.querySelector('.page .fine:last-of-type')?.textContent ?? '' }))
+    check('Insights → Current Affairs: completed, caught-up, missed and excused days; consistency leaves excused days out', /4 days elapsed \| 1 completed \| 1 caught up \| 1 missed \| 1 excused/.test(ci.counts) && /^67% · 2 of 3 days covered · 33% on the day/.test(ci.kpi.consistency) && /Consistency = \(completed \+ caught up\) ÷ \(completed \+ caught up \+ missed\)/.test(ci.fine), ci)
+    check('…study time from the sessions, the streak, notes, and the last 7 / 30 days', /^2\d min · /.test(ci.kpi.time) && /^1 day · longest 1 day/.test(ci.kpi.streak) && /^1 · /.test(ci.kpi.notes) && ci.strips.length === 2 && ci.strips[0].endsWith('caught-up,excused,missed,completed') && ci.split === 'Initial study|Revision|Current Affairs' && (await C.count('.vbars')) === 1, [ci.kpi, ci.strips])
+    await C.hash('#/insights'); await sleep(400)
+    const ov = await C.ev(() => ({ split: [...document.querySelectorAll('.act-split .dr')].map((d) => d.innerText.replace(/\s+/g, ' ')), subjects: [...document.querySelectorAll('.act-split ~ .dist .dn')].map((d) => d.textContent), fine: [...document.querySelectorAll('.fine')].map((f) => f.textContent).join(' ') }))
+    check('Insights → Overview: Initial study · Revision · Current Affairs; reading time is in the totals but in no subject', ov.split.length === 3 && /^Current Affairs 2\d min/.test(ov.split[2]) && /^Initial study/.test(ov.split[0]) && ov.subjects.join() === 'Polity' && /is an activity of its own and is not part of any subject/.test(ov.fine), ov)
+    await C.hash('#/insights/time'); await sleep(400)
+    const opts = await C.ev(() => [...document.querySelectorAll('select[aria-label="Stage or subject"] option')].map((o) => o.textContent))
+    await C.ev(() => { const s = document.querySelector('select[aria-label="Stage or subject"]'); Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, 'activity:current-affairs'); s.dispatchEvent(new Event('change', { bubbles: true })) }); await sleep(300)
+    check('Insights → Time: the week, heatmap and trend can be read for Current Affairs alone', opts.includes('Activity · Current Affairs') && opts.includes('Activity · Initial study') && /study time · Current Affairs/.test(await flat(C, '.stat')) && (await C.count('.heat')) === 1, opts)
+
+    // explicit revision
+    check('a note is never put into revision by itself', (await C.idb('revisionUnits')).length === 0)
+    await C.hash('#/current-affairs/note/' + noteId); await sleep(400)
+    await tapBtn(C, 'Add to Revision', '.ca-ops'); await sleep(400)
+    const ru = (await C.idb('revisionUnits'))[0]
+    check('"Add to Revision" makes one unit in the existing scheduler: R1 the next day', ru?.id === 'ca/' + noteId && ru.status === 'new' && ru.dueDate === (await cDay(1)) && ru.target.kind === 'current-affairs' && ru.target.entryId === noteId && /In revision · R1 due/.test(await flat(C, '.ca-ops')), ru)
+    await C.hash('#/revision/upcoming'); await sleep(400)
+    const up2 = await C.ev(() => ({ group: document.querySelector('.rgroup h3 span')?.textContent, unit: document.querySelector('.runit')?.innerText.replace(/\s+/g, ' '), to: document.querySelector('.runit a.t')?.getAttribute('href') }))
+    await C.hash('#/revise/ca/' + noteId); await sleep(900)
+    const rv2 = await C.ev(() => ({ phase: document.querySelector('.revise')?.dataset.phase, title: document.querySelector('.revise h1')?.innerText.replace(/\s+/g, ' '), eyebrow: document.querySelector('.revise .eyebrow')?.textContent }))
+    const rvRun = await activeRow(C)
+    check('it is listed under Current Affairs in Revision and revised in a revision span of the same timer', up2.group === 'Current Affairs' && /RBI keeps the repo rate E2E/.test(up2.unit) && up2.to === '#/revise/ca/' + noteId && !!rv2.phase && /RBI keeps the repo rate E2E R1/.test(rv2.title) && /^Revision · Current Affairs › /.test(rv2.eyebrow) && rvRun?.currentActivity?.activity === 'revision' && rvRun.currentActivity.revisionUnitId === 'ca/' + noteId && rvRun.currentContext.ref.kind === 'current-affairs', [up2, rv2, rvRun?.currentActivity])
+    await C.ev(() => document.querySelector('.ttime').click()); await sleep(200); await tapBtn(C, 'Stop', '.timer-pop'); await sleep(400)
+
+    // persistence, stored state, phone
+    await C.go('#/current-affairs'); await sleep(400)
+    const disk3 = await C.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const stores = [...db.objectStoreNames].sort().join(); const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { db.close(); res({ stores, kv: g.result.join(), ls: Object.keys(localStorage).join() }) } } }))
+    const daysJson = JSON.stringify(await C.idb('currentAffairsDays'))
+    check('reload: the day state, notes and times are all still there; nothing derived was stored (no duration, streak or consistency on disk)', (await caPanel()).state === 'completed' && (await caPanel()).notes === 1 && disk3.stores === 'activeStudySession,conflicts,currentAffairsDays,currentAffairsEntries,examTargets,highlights,kv,outbox,overrides,pyqUserState,recallAttempts,revisionEvents,revisionPreferences,revisionUnits,studyGoals,studyQueue,studySessions,userDataEpoch' && !/current|affair|streak|consist|missed/i.test(disk3.kv + disk3.ls) && !/"\w*(Ms|[Dd]uration|[Mm]inutes|[Ss]treak|[Cc]onsistency|[Cc]ount)":/.test(daysJson), disk3)
+    await C.page.setViewport({ width: 375, height: 812 }); await C.go('#/current-affairs'); await sleep(400)
+    const ph = await C.ev(() => ({ bar: [...document.querySelectorAll('.tabbar a, .tabbar button')].map((e) => e.textContent).join('|'), on: document.querySelector('.tabbar .on')?.textContent, overflow: document.documentElement.scrollWidth > innerWidth + 1 }))
+    await C.click('.tabbar button')
+    const inMore = await C.ev(() => [...document.querySelectorAll('.menu.more a')].filter((e) => getComputedStyle(e).display !== 'none').map((e) => e.textContent))
+    await C.ev(() => [...document.querySelectorAll('.menu.more a')].find((a) => a.textContent === 'Current Affairs').click()); await sleep(300)
+    const overflow = []
+    for (const r of ['#/current-affairs', '#/current-affairs/calendar', '#/current-affairs/notes', '#/current-affairs/archive', '#/current-affairs/note/' + noteId, '#/current-affairs/day/' + d3ago, '#/insights/current-affairs', '#/']) { await C.hash(r); if (await C.ev(() => document.documentElement.scrollWidth > innerWidth + 1)) overflow.push(r) }
+    check('phone: the five bottom tabs are unchanged, Current Affairs opens from More and every view fits', ph.bar === 'Home|Study|PYQs|Insights|More' && ph.on === 'More' && !ph.overflow && inMore.includes('Current Affairs') && overflow.length === 0 && (await C.ev(() => location.hash)) === '#/', [ph, inMore, overflow])
+    await C.hash('#/current-affairs/calendar'); await sleep(300)
+    await C.page.screenshot({ path: join(OUT, 'phone-current-affairs-calendar.png'), fullPage: true })
+    await C.page.setViewport({ width: 1280, height: 860 })
+    await C.hash('#/current-affairs'); await sleep(300); await C.page.screenshot({ path: join(OUT, 'desktop-current-affairs.png'), fullPage: true })
+    await C.hash('#/current-affairs/calendar'); await sleep(300); await C.page.screenshot({ path: join(OUT, 'desktop-current-affairs-calendar.png'), fullPage: true })
+    await C.hash('#/current-affairs/archive'); await sleep(300); await C.page.screenshot({ path: join(OUT, 'desktop-current-affairs-archive.png'), fullPage: true })
+    await C.hash('#/current-affairs/note/' + noteId); await sleep(300); await C.page.screenshot({ path: join(OUT, 'desktop-current-affairs-note.png'), fullPage: true })
+    await C.hash('#/insights/current-affairs'); await sleep(300); await C.page.screenshot({ path: join(OUT, 'desktop-insights-current-affairs.png'), fullPage: true })
+    await C.key('t'); await C.hash('#/'); await sleep(600); await C.page.screenshot({ path: join(OUT, 'desktop-home-current-affairs-alt-theme.png'), fullPage: true }); await C.key('t')
+
+    // reset
+    const resetC = async (open, confirm) => { await C.hash('#/settings'); await tapBtn(C, open); await sleep(300); await C.page.type('.reset-word input', 'RESET'); await sleep(150); await tapBtn(C, confirm, '.reset .acts'); await sleep(1500) }
+    await resetC('Reset study history', 'Reset study history')
+    const r1 = { days: (await C.idb('currentAffairsDays')).length, ses: (await C.idb('studySessions')).length, units: (await C.idb('revisionUnits')).length, entries: (await C.idb('currentAffairsEntries')).filter((e) => !e.removed).length, body: /CA-E2E-BODY/.test((await C.idb('overrides')).find((o) => o.key === 'ca/' + noteId)?.html ?? ''), queued: (await C.idb('outbox')).filter((o) => /^(cad|ses)~/.test(o.id)).length }
+    await C.go('#/current-affairs'); await sleep(400)
+    const p8 = await caPanel()
+    await C.hash('#/insights/current-affairs'); await sleep(300)
+    const noStats = await C.ev(() => ({ kpis: document.querySelectorAll('.ca-kpis .kpi').length, c: document.querySelector('.ca-kpis [data-k="consistency"] b')?.textContent, t: document.querySelector('.ca-kpis [data-k="time"] b')?.textContent, s: document.querySelector('.ca-kpis [data-k="streak"] b')?.textContent }))
+    check('Reset Study History clears the day record, the reading sessions and every figure derived from them', r1.days === 0 && r1.ses === 0 && r1.units === 0 && r1.queued === 0 && p8.state === 'pending' && p8.clock === '00:00:00' && noStats.c === '—' && noStats.t === '0 min' && noStats.s === '0 days', [r1, p8, noStats])
+    check('…and keeps the Current Affairs notes, with their text, source, tags and links', r1.entries === 1 && r1.body && p8.notes === 1 && (await C.ev(async (id) => { location.hash = '#/current-affairs/note/' + id; await new Promise((r) => setTimeout(r, 400)); return document.querySelector('.ca-body')?.textContent.includes('CA-E2E-BODY') && document.querySelectorAll('.ca-links .row').length === 1 && !!document.querySelector('a.ca-src') }, noteId)))
+    await resetC('Full personal reset', 'Reset everything personal')
+    await C.go('#/current-affairs/notes'); await sleep(400)
+    check('Full Personal Reset removes the notes as well; the library is untouched', (await C.idb('currentAffairsEntries')).length === 0 && (await C.idb('overrides')).length === 0 && (await C.idb('currentAffairsDays')).length === 0 && /No Current Affairs notes yet/.test(await C.text('.shell-note')) && (await C.ev(async (h) => { location.hash = h; await new Promise((r) => setTimeout(r, 400)); return document.querySelectorAll('.sec').length }, PARL)) > 5)
+    await C.ctx.close()
   }
 
   section('Print / PDF')
@@ -1779,7 +2018,7 @@ try {
     const evB = (await B.idb('revisionEvents'))[0]
     const dumpE = await cloudDump()
     check('a completed revision, its recall answers and the unit\'s new date reach the other device', !!evA && JSON.stringify(evB) === JSON.stringify(evA) && (await ids(B, 'recallAttempts')) === (await ids(A, 'recallAttempts')) && (await rvUnits(B))['parliamentary-committees'].dueDate === evA.nextDueDate && (await rvUnits(B))['parliamentary-committees'].revisionCount === 1, [evA, evB])
-    check('revision events are write-once in the cloud; static recall units, calendars and forecasts are never uploaded', dumpE.filter((d) => d.rec.kind === 'rev').length === 1 && dumpE.filter((d) => d.rec.kind === 'rev').every((d) => d.ver === 1) && dumpE.every((d) => ['edit', 'hl', 'sec', 'chap', 'pref', 'ses', 'run', 'goal', 'q', 'pyq', 'ru', 'rev', 'ra', 'exam', 'rpref'].includes(d.rec.kind)) && !JSON.stringify(dumpE).includes('cueHtml') && !JSON.stringify(dumpE).includes('answerHtml'), dumpE.map((d) => d.rec.kind))
+    check('revision events are write-once in the cloud; static recall units, calendars and forecasts are never uploaded', dumpE.filter((d) => d.rec.kind === 'rev').length === 1 && dumpE.filter((d) => d.rec.kind === 'rev').every((d) => d.ver === 1) && dumpE.every((d) => ['edit', 'hl', 'sec', 'chap', 'pref', 'ses', 'run', 'goal', 'q', 'pyq', 'ru', 'rev', 'ra', 'exam', 'rpref', 'cad', 'cae'].includes(d.rec.kind)) && !JSON.stringify(dumpE).includes('cueHtml') && !JSON.stringify(dumpE).includes('answerHtml'), dumpE.map((d) => d.rec.kind))
     // an exam target and a revision preference
     await A.hash('#/settings'); await tapBtn(A, 'Add an exam'); await sleep(200)
     await A.page.type('input[aria-label="Exam name"]', 'UPSC CSE Prelims')
@@ -1820,6 +2059,68 @@ try {
     await A.syncNow(); await A.panel(false); await B.go(PARL); await B.syncNow(); await B.panel(false)
     const ruNew = (await cloudDump()).filter((d) => d.rec.kind === 'ru')
     check('study after the reset syncs as usual, under the new epoch', ruNew.length === 1 && ruNew[0].rec.ep === 1 && (await B.idb('revisionUnits')).length === 1 && (await B.ev(() => document.querySelector('#s-presiding-officers .tg.done').classList.contains('on'))), ruNew.map((d) => [d.rec.id, d.rec.ep]))
+  }
+
+  section('Sync — Current Affairs')
+  {
+    const caRows = async (d, store) => (await d.idb(store))
+    const tday = await A.ev(() => new Intl.DateTimeFormat('en-CA').format(new Date()))
+    await A.page.setViewport({ width: 1280, height: 860 })
+    await A.go('#/current-affairs'); await B.go('#/current-affairs'); await sleep(400)
+    await tapBtn(A, 'Start Reading', '.ca-acts'); await sleep(1800)
+    await A.syncNow(); await A.panel(false)
+    await B.page.waitForFunction(() => /another device/.test(document.querySelector('.ca-clock small')?.textContent ?? ''), { timeout: 12000 }).catch(() => {})
+    const seenB = await B.ev(() => ({ note: document.querySelector('.ca-clock small')?.textContent ?? '', acts: [...document.querySelectorAll('.ca-acts button')].map((b) => b.textContent).join('|') }))
+    const devs = [await A.ev(() => localStorage.getItem('upsc-device')), await B.ev(() => localStorage.getItem('upsc-device'))]
+    check('a reading timer on one device is shown on the other, which may only continue it — never start a second', /Timer running on another device · Current Affairs/.test(seenB.note) && seenB.acts === 'Continue here|Add Note' && (await activeRow(B))?.ownerDeviceId === devs[0], seenB)
+    const sidA = (await activeRow(A)).sessionId
+    await tapBtn(B, 'Continue here', '.ca-acts'); await sleep(1500)
+    const rowB = await activeRow(B)
+    check('"Continue here" takes the same session over into a reading span on this device', rowB.sessionId === sidA && rowB.ownerDeviceId === devs[1] && rowB.currentActivity?.activity === 'current-affairs' && rowB.currentActivity.currentAffairsDayId === tday && rowB.state === 'running', rowB?.currentActivity)
+    await tapBtn(B, 'Stop', '.ca-acts'); await sleep(400)
+    await B.syncNow(); await B.panel(false); await A.syncNow(); await A.panel(false)
+    const sesCa = (await cloudDump()).filter((d) => d.rec.kind === 'ses' && d.rec.data.spans.some((s) => s.activity === 'current-affairs'))
+    check('one session in the cloud, with reading spans from both devices; the timer is free again', sesCa.length === 1 && new Set(sesCa[0].rec.data.spans.map((s) => s.id.split('-')[0])).size === 2 && !(await activeRow(A))?.state && (await A.idb('studySessions')).some((s) => s.id === sidA), sesCa.map((d) => d.rec.data.spans.map((s) => s.id)))
+
+    // a note and a completion made offline on A
+    await A.page.setOfflineMode(true)
+    await tapBtn(A, 'Add Note', '.ca-acts'); await sleep(250)
+    await A.ev(() => { const i = document.querySelector('.ca-form input[aria-label="Note title"]'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'Offline note SYNC-E2E'); i.dispatchEvent(new Event('input', { bubbles: true })) }); await sleep(150)
+    await tapBtn(A, 'Save and write', '.ca-form'); await sleep(700)
+    const nid = (await A.ev(() => location.hash)).split('/').pop()
+    await A.ev(() => { const ed = document.querySelector('.ca-body .ProseMirror').editor; ed.commands.focus('end'); ed.commands.insertContent('<p>written offline CA-SYNC-BODY</p>') })
+    await A.saved(); await tapBtn(A, 'Done', '.ca-ops'); await sleep(700)
+    await A.hash('#/current-affairs'); await sleep(300)
+    await tapBtn(A, 'Mark Today Complete', '.ca-finish'); await sleep(400)
+    const offA = { state: await A.ev(() => document.querySelector('.ca-day').dataset.state), queued: (await A.idb('outbox')).map((o) => o.id), cloud: (await cloudDump()).filter((d) => ['cad', 'cae'].includes(d.rec.kind)).map((d) => [d.rec.id, d.rec.data?.status]) }
+    check('offline: the note and the completion are saved here at once and queued; nothing waits on the network', offA.state === 'completed' && offA.queued.includes('cad~' + tday) && offA.queued.includes('cae~' + nid) && offA.queued.includes('edit~ca/' + nid) && !offA.cloud.some(([id, s]) => id === 'cae~' + nid || s === 'completed'), offA)
+    await A.page.setOfflineMode(false); await A.ev(() => window.dispatchEvent(new Event('online'))); await sleep(1500)
+    await A.syncNow(); await A.panel(false); await B.syncNow(); await B.panel(false); await sleep(300)
+    const dump = await cloudDump()
+    const cadDoc = dump.find((d) => d.rec.id === 'cad~' + tday)?.rec
+    check('back online: one cloud record per day and per note, under the current epoch — and no duration on the day', cadDoc?.kind === 'cad' && cadDoc.data.status === 'completed' && cadDoc.ep === 1 && dump.filter((d) => d.rec.kind === 'cad').length === 1 && dump.filter((d) => d.rec.kind === 'cae').length === 1 && dump.find((d) => d.rec.id === 'cae~' + nid)?.rec.ep === 1 && !!dump.find((d) => d.rec.id === 'edit~ca/' + nid) && !/[Dd]uration|Ms"/.test(JSON.stringify(cadDoc)), [cadDoc, dump.filter((d) => /^ca/.test(d.rec.kind)).map((d) => d.rec.id)])
+    await B.go('#/current-affairs'); await sleep(500)
+    const onB = await B.ev(() => ({ state: document.querySelector('.ca-day').dataset.state, clock: document.querySelector('.ca-clock time').textContent, notes: [...document.querySelectorAll('.ca-notes .row b')].map((b) => b.textContent) }))
+    await B.hash('#/current-affairs/note/' + nid); await sleep(400)
+    check('the other device shows the day completed, the same derived reading time, and the note with its text', onB.state === 'completed' && onB.clock !== '00:00:00' && onB.clock === (await A.ev(() => document.querySelector('.ca-clock time').textContent)) && onB.notes.join() === 'Offline note SYNC-E2E' && (await B.text('.ca-body')).includes('CA-SYNC-BODY'), onB)
+
+    // a reset on A while B is offline with Current Affairs state
+    await B.page.setOfflineMode(true)
+    await B.hash('#/current-affairs'); await sleep(300)
+    await tapBtn(B, 'Undo', '.ca-finish'); await sleep(300)
+    await A.hash('#/settings'); await tapBtn(A, 'Reset study history'); await sleep(300)
+    await A.page.type('.reset-word input', 'RESET'); await sleep(150)
+    await tapBtn(A, 'Reset study history', '.reset .acts'); await sleep(1500)
+    await A.syncNow(); await A.panel(false)
+    const afterReset = await cloudDump()
+    check('Reset Study History on one device removes the day record and the reading sessions from the cloud, and keeps the notes', !afterReset.some((d) => d.rec.kind === 'cad' || d.rec.kind === 'ses') && afterReset.filter((d) => d.rec.kind === 'cae').length === 1 && afterReset.find((d) => d.rec.id === 'meta~dataEpoch').rec.data.epoch === 2 && (await caRows(A, 'currentAffairsDays')).length === 0 && (await caRows(A, 'currentAffairsEntries')).length === 1, afterReset.map((d) => d.rec.kind))
+    const staleB = { days: (await caRows(B, 'currentAffairsDays')).length, ses: (await caRows(B, 'studySessions')).length, queued: (await B.idb('outbox')).map((o) => o.id) }
+    await B.page.setOfflineMode(false); await B.ev(() => window.dispatchEvent(new Event('online'))); await sleep(1500)
+    await B.syncNow(); await B.panel(false); await sleep(300)
+    const finalDump = await cloudDump()
+    check('the device that was offline held the old day and sessions with a change queued; on reconnecting it drops them and restores nothing', staleB.days === 1 && staleB.ses >= 1 && staleB.queued.includes('cad~' + tday) && (await caRows(B, 'currentAffairsDays')).length === 0 && (await caRows(B, 'studySessions')).length === 0 && !finalDump.some((d) => d.rec.kind === 'cad' || d.rec.kind === 'ses') && (await B.idb('userDataEpoch'))[0].doc.epoch === 2, [staleB, finalDump.map((d) => d.rec.kind)])
+    await B.go('#/current-affairs'); await sleep(400)
+    check('…while its notes, which the reset did not cover, are still there on both devices', (await B.ev(() => [...document.querySelectorAll('.ca-notes .row b')].map((b) => b.textContent).join())) === 'Offline note SYNC-E2E' && (await B.ev(() => document.querySelector('.ca-day').dataset.state)) === 'pending' && (await B.text('.ca-clock time')) === '00:00:00' && (await caRows(A, 'currentAffairsEntries')).length === 1)
   }
 
   section('Console')

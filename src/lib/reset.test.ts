@@ -2,7 +2,7 @@
 // rows, the sync queue, and the real sync engine against a fake cloud with two devices.
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { StudyContext } from './contract'
+import type { ContentRef, StudyContext } from './contract'
 import { bumped, emptyEpoch, groupOf, isStale, kindsOf, resetGroups, staleGroups, type EpochDoc } from './epoch'
 import { Cloud, deleteDb, idle, restore, snapshot } from './testkit'
 
@@ -50,7 +50,7 @@ async function boot(device?: string) {
     now += 20 * MIN
     study.stopTimer()
     study.startTimer(ctx) // and one left running
-    plan.addToQueue(ctx.ref, 'Parliament')
+    plan.addToQueue(ctx.ref as ContentRef, 'Parliament')
     plan.setGoal({ dailyTargetMs: 3600000 })
     pyq.setPyqFlags('UPSC-2019-Q066', { seen: true })
     now += DAY
@@ -75,8 +75,8 @@ describe('epoch rules', () => {
     expect(resetGroups('full-personal')).toEqual(['study', 'flags', 'goals', 'notes', 'favourites'])
     expect(resetGroups('full-personal', { keepExamTargets: true, keepSettings: true })).toEqual(['study', 'flags', 'goals', 'notes', 'favourites'])
     expect(resetGroups('full-personal', { keepExamTargets: false, keepSettings: false })).toEqual(['study', 'flags', 'goals', 'notes', 'favourites', 'exams', 'settings'])
-    expect(kindsOf(['study']).sort()).toEqual(['chap', 'pyq', 'q', 'ra', 'rev', 'ru', 'run', 'sec', 'ses'])
-    expect(kindsOf(['notes']).sort()).toEqual(['edit', 'hl'])
+    expect(kindsOf(['study']).sort()).toEqual(['cad', 'chap', 'pyq', 'q', 'ra', 'rev', 'ru', 'run', 'sec', 'ses'])
+    expect(kindsOf(['notes']).sort()).toEqual(['cae', 'edit', 'hl'])
     expect(groupOf('exam')).toBe('exams')
     expect(groupOf('meta')).toBeNull()
   })

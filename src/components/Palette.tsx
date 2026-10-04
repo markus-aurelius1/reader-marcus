@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { allLoaded, stageTitle } from '../lib/content'
-import { destinations, navContext } from '../lib/nav'
+import { destinations, navContext, navNode, refKey } from '../lib/nav'
 import { HIT_LABEL, searchAll, type Hit, type HitKind } from '../lib/search'
 import { EXAM_LABEL, STATUS_TEXT } from '../lib/pyq'
 import { go, href } from '../lib/router'
 import { useStore } from '../lib/store'
+import { noteBody, useCA } from '../lib/currentAffairs'
+import { buildModel, liveEntries, stateOf } from '../lib/currentAffairsModel'
+import { useCaToday } from '../views/Insights'
+import type { ContentRef } from '../lib/contract'
 
 interface Item {
   group?: string // heading shown above the first item of a group (empty query only)
@@ -29,6 +33,10 @@ function toItem(h: Hit, q: string): Item {
     }
     case 'tag':
       return { kind: h.kind, title: h.title, sub: `${where} › ${h.chapter!.title} · ${h.tag!.ids.length} PYQ${h.tag!.ids.length === 1 ? '' : 's'}`, to: href.pyqs({ stage: h.subject!.stage === 'prelims' ? undefined : h.subject!.stage, subject: h.subject!.id, chapter: h.chapter!.id, q: h.title }) }
+    case 'ca':
+    case 'ca-day':
+    case 'ca-note':
+      return { kind: h.kind, title: h.title, sub: h.sub ?? '', snippet: h.snippet, to: h.to! }
     default:
       return {
         kind: h.kind,
@@ -41,13 +49,16 @@ function toItem(h: Hit, q: string): Item {
   }
 }
 
-/** Ctrl/Cmd+K: jump to any subject, chapter or section, search the notes, and find PYQs by ID or theme. */
+/** Ctrl/Cmd+K: jump to any subject, chapter or section, search the notes, find PYQs by ID or theme, and reach Current Affairs days and notes. */
 export function Palette({ onClose }: { onClose: () => void }) {
   const [q, setQ] = useState('')
   const [sel, setSel] = useState(0)
   const list = useRef<HTMLUListElement>(null)
   const overrides = useStore((s) => s.overrides)
   const prefs = useStore((s) => s.prefs)
+  const caDays = useCA((s) => s.days)
+  const caEntries = useCA((s) => s.entries)
+  const today = useCaToday()
 
   const items: Item[] = useMemo(() => {
     const subjects = allLoaded()
@@ -55,10 +66,17 @@ export function Palette({ onClose }: { onClose: () => void }) {
     if (!q.trim()) {
       // Empty query: where you were, what you starred, then every subject.
       const dest = (group: string, refs: Parameters<typeof destinations>[0]) => destinations(refs).map((d) => ({ group, title: d.title, sub: d.context, to: d.to }))
-      return [...dest('Recent', prefs.recents.slice(0, 5).map((r) => r.target)), ...dest('Favourites', prefs.favourites), ...subjects.map((s) => subjectItem(s, 'Subjects'))]
+      return [...dest('Recent', prefs.recents.slice(0, 5).map((r) => r.target)), ...dest('Favourites', prefs.favourites), { group: 'Current Affairs', title: 'Current Affairs — Today', sub: 'Daily news study', to: href.currentAffairs() }, ...subjects.map((s) => subjectItem(s, 'Subjects'))]
     }
-    return searchAll(q, overrides).map((h) => toItem(h, q))
-  }, [q, overrides, prefs.recents, prefs.favourites])
+    const model = buildModel({ days: caDays, entries: caEntries, today })
+    const ca = {
+      entries: liveEntries(caEntries), today,
+      body: (id: string) => noteBody(overrides, id),
+      state: (dn: number) => stateOf(model, dn),
+      linkTitle: (r: ContentRef) => (r.kind === 'pyq' ? r.pyqId : navNode(refKey(r))?.title),
+    }
+    return searchAll(q, overrides, ca).map((h) => toItem(h, q))
+  }, [q, overrides, prefs.recents, prefs.favourites, caDays, caEntries, today])
 
   useEffect(() => setSel(0), [q])
   useEffect(() => {
@@ -84,7 +102,7 @@ export function Palette({ onClose }: { onClose: () => void }) {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={onKey}
-          placeholder="Jump or search — Article 368, money bill, 2019 Q45…"
+          placeholder="Jump or search — Article 368, money bill, 2019 Q45, 4 Oct…"
           aria-label="Search"
         />
         {items.length ? (

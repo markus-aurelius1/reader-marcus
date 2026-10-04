@@ -2,7 +2,7 @@
 import 'fake-indexeddb/auto'
 import { describe, expect, it } from 'vitest'
 import type { Chapter, Subject } from './content'
-import type { StudyContext, StudyGoal, StudyQueueItem, StudySession } from './contract'
+import type { ContentRef, StudyContext, StudyGoal, StudyQueueItem, StudySession } from './contract'
 import { buildIndex, goalStreak, streak } from './analytics'
 import { buildDashboard, HEATMAP_WEEKS, type DashboardInput } from './dashboard'
 import type { Progress } from './store'
@@ -151,7 +151,7 @@ describe('dashboard view model', () => {
   })
 
   it('queue: waiting items in the order given, completed ones newest first; the active timer is passed through', () => {
-    const item = (id: string, order: number, completedAt?: string): StudyQueueItem => ({ id, target: ctx(id).ref, title: id, reason: 'manual', order, createdAt: '2026-10-01T00:00:00.000Z', ...(completedAt ? { completedAt } : {}) })
+    const item = (id: string, order: number, completedAt?: string): StudyQueueItem => ({ id, target: ctx(id).ref as ContentRef, title: id, reason: 'manual', order, createdAt: '2026-10-01T00:00:00.000Z', ...(completedAt ? { completedAt } : {}) })
     const queue = [item('a', 1), item('b', 2, '2026-10-02T00:00:00.000Z'), item('c', 3), item('d', 4, '2026-10-03T00:00:00.000Z')]
     const active = { sessionId: 'x', state: 'running' as const, startedAt: new Date(NOW - 5 * MIN).toISOString(), currentContext: ctx('parliament'), currentSpanStartedAt: new Date(NOW - 5 * MIN).toISOString(), accumulatedMs: 0, completedSpans: [], ownerDeviceId: 'A', updatedAt: new Date(NOW).toISOString(), revision: 1 }
     const m = buildDashboard(input([], { queue, active }))

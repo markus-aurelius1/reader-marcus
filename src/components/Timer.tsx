@@ -5,12 +5,13 @@ import { stageTitle } from '../lib/content'
 import { refHref } from '../lib/nav'
 import { useStore } from '../lib/store'
 import { activeTimer, clock, continueHere, keepAwayTime, ownsTimer, pauseTimer, resumeTimer, startTimer, stopTimer, useStudy } from '../lib/study'
-import { clockText, contextKey, durationText, elapsed, shortClock } from '../lib/timer'
+import { clockText, contextKey, durationText, elapsed, isCaRef, shortClock } from '../lib/timer'
 import { linked } from '../sync'
 
-/** Prelims → Economy → Economic Concepts, National Income & Growth */
-export const pathOf = (c: StudyContext) => [stageTitle(c.ref.stage), c.subjectTitle, c.chapterTitle, c.sectionTitle].filter(Boolean).join(' → ')
-const sameChapter = (a: StudyContext, b: StudyContext | null) => !!b && contextKey({ ...a, ref: { ...a.ref, sectionId: undefined } }) === contextKey({ ...b, ref: { ...b.ref, sectionId: undefined } })
+/** Prelims → Economy → Economic Concepts, National Income & Growth · Current Affairs → Sat 4 Oct 2026 */
+export const pathOf = (c: StudyContext) => [isCaRef(c.ref) ? '' : stageTitle(c.ref.stage), c.subjectTitle, c.chapterTitle, c.sectionTitle].filter(Boolean).join(' → ')
+const chapterOf = (c: StudyContext) => contextKey(isCaRef(c.ref) ? c : { ...c, ref: { ...c.ref, sectionId: undefined } })
+const sameChapter = (a: StudyContext, b: StudyContext | null) => !!b && chapterOf(a) === chapterOf(b)
 
 /** Re-render twice a second while the timer runs; the time itself always comes from the timestamps. */
 export function useElapsed(a: ActiveStudySession | null) {
@@ -93,7 +94,7 @@ export function TimerControl({ context, say }: { context: StudyContext | null; s
             ) : (
               <button className="primary" onClick={() => { act.takeOver(); setOpen(false) }}>Continue here</button>
             )}
-            {!sameChapter(a.currentContext, context) && <a href={refHref(a.currentContext.ref)} onClick={() => setOpen(false)}>Open topic</a>}
+            {!sameChapter(a.currentContext, context) && <a href={refHref(a.currentContext.ref)} onClick={() => setOpen(false)}>{isCaRef(a.currentContext.ref) ? 'Open Current Affairs' : 'Open topic'}</a>}
             <hr />
             <label className="tp-opt">
               <input type="checkbox" checked={prefs.followNavigation} onChange={(e) => setPrefs({ followNavigation: e.target.checked })} />
