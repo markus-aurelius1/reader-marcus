@@ -138,7 +138,7 @@ When a subject is added: run `extract-pyq`, then write its `pyq-meta.json` from 
    npm run build
    ```
    `npm run check` fails if a taxonomy node is covered zero or several times, a chapter is missing/unlisted, a cross-link is broken (in any subject), or a marker is unbalanced. The PYQs and Insights tabs appear only when `pyq.json` exists.
-   `extract-pyq` reads both pack layouts: leaf packs (`## 2. PYQ Demand Map` → `### UPSC`) and topic packs with a child-subtopic ledger (`### 3. PYQ Demand Map` → `#### A. <child>` → `##### UPSC`).
+   `extract-pyq` reads both pack layouts: leaf packs (`## 2. PYQ Demand Map` → `### UPSC`) and topic packs with a child-subtopic ledger (`### 3. PYQ Demand Map` → `#### A. <child>` → `##### UPSC`). In a topic pack the child heading may sit at any level (`## A.` … `#### A.`), the exam heading may carry a suffix (`UPSC — canonical demand`), a sub-heading inside an exam block names a demand cluster, and table rows may name a question as `2011 Q003`.
 6. **Cross-link** — link the new chapters to related sections in the subjects already present (next section). Nothing else is needed for backlinks, search or exports.
 
 No application code changes: reader, editor, highlights, progress, search, cross-links, export and print pick the subject up automatically.

@@ -56,7 +56,7 @@ taxonomy: prelims-history-and-culture-ancient-and-medieval-india-historical-geog
 
 > [!TRAP] Hampi–Malaprabha, Kamboja–Vipas and Avanti–Mahanadi are wrong pairs.
 
-Present-day river courses → [Geography](@prelims/geography)
+Present-day river courses → [Peninsular rivers](@prelims/geography/india-drainage#peninsular-rivers) · [Ganga system](@prelims/geography/india-drainage#ganga)
 
 ## Ancient River Names {#ancient-rivers}
 

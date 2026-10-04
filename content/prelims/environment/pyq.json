@@ -1,0 +1,814 @@
+{
+ "source": "source/Environment-v01-source-pack-CLAUDE-READY.md",
+ "chapters": {
+  "species": {
+   "upsc": [
+    {
+     "label": "Natural occurrence / habitat / distribution",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q051",
+      "UPSC-CSE-2012-GS1-Q097",
+      "UPSC-CSE-2013-GS1-Q007",
+      "UPSC-CSE-2013-GS1-Q035",
+      "UPSC-CSE-2016-GS1-Q022",
+      "UPSC-CSE-2017-GS1-Q067",
+      "UPSC-CSE-2019-GS1-Q022",
+      "UPSC-CSE-2019-GS1-Q029",
+      "UPSC-CSE-2020-GS1-Q075",
+      "UPSC-CSE-2020-GS1-Q077",
+      "UPSC-CSE-2024-GS1-Q023",
+      "UPSC-CSE-2025-GS1-Q037",
+      "UPSC-CSE-2026-GS1-Q032",
+      "UPSC-CSE-2026-GS1-Q037"
+     ]
+    },
+    {
+     "label": "Classification / behaviour / traits",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q095",
+      "UPSC-CSE-2013-GS1-Q010",
+      "UPSC-CSE-2014-GS1-Q020",
+      "UPSC-CSE-2016-GS1-Q044",
+      "UPSC-CSE-2017-GS1-Q021",
+      "UPSC-CSE-2019-GS1-Q028",
+      "UPSC-CSE-2020-GS1-Q074",
+      "UPSC-CSE-2021-GS1-Q023",
+      "UPSC-CSE-2022-GS1-Q090",
+      "UPSC-CSE-2023-GS1-Q012",
+      "UPSC-CSE-2023-GS1-Q014",
+      "UPSC-CSE-2023-GS1-Q015",
+      "UPSC-CSE-2023-GS1-Q017",
+      "UPSC-CSE-2023-GS1-Q019",
+      "UPSC-CSE-2024-GS1-Q018",
+      "UPSC-CSE-2024-GS1-Q029",
+      "UPSC-CSE-2025-GS1-Q037",
+      "UPSC-CSE-2026-GS1-Q032"
+     ]
+    },
+    {
+     "label": "Threats / conservation status",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q079",
+      "UPSC-CSE-2012-GS1-Q092",
+      "UPSC-CSE-2012-GS1-Q100",
+      "UPSC-CSE-2013-GS1-Q087",
+      "UPSC-CSE-2014-GS1-Q014",
+      "UPSC-CSE-2024-GS1-Q025"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q079",
+      "UPPCS-2018-GS1-Q145",
+      "UPPCS-2019-GS1-Q133",
+      "UPPCS-2022-GS1-Q055",
+      "UPPCS-2023-GS1-Q115",
+      "UPPCS-2025-GS1-Q098"
+     ]
+    }
+   ],
+   "synthesis": "- Species questions are **attribute matrices**, not encyclopaedia tests: **class → natural range → habitat → behaviour → diet → adaptation → threat/status**.\n- “Naturally found” is a recurring qualifier: **native occurrence ≠ zoo/captive presence ≠ reintroduction/translocation**.\n- Recent UPSC trend: multi-organism “how many” lists and unusual behaviour; memorize discriminators, not paragraphs.\n- Legal schedules/current population/translocation details are unstable; keep in dynamic layer, not permanent species core."
+  },
+  "ecology-ecosystems": {
+   "upsc": [
+    {
+     "label": "Energy flow / trophic structure / productivity",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q023",
+      "UPSC-CSE-2013-GS1-Q031",
+      "UPSC-CSE-2013-GS1-Q053",
+      "UPSC-CSE-2014-GS1-Q080",
+      "UPSC-CSE-2015-GS1-Q084"
+     ]
+    },
+    {
+     "label": "Biogeochemical cycles",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q048",
+      "UPSC-CSE-2014-GS1-Q019",
+      "UPSC-CSE-2018-GS1-Q082",
+      "UPSC-CSE-2021-GS1-Q027"
+     ]
+    },
+    {
+     "label": "Niche / succession / interactions / ecosystem services",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q094",
+      "UPSC-CSE-2013-GS1-Q022",
+      "UPSC-CSE-2013-GS1-Q048",
+      "UPSC-CSE-2014-GS1-Q022",
+      "UPSC-CSE-2016-GS1-Q052",
+      "UPSC-CSE-2024-GS1-Q017"
+     ]
+    },
+    {
+     "label": "Sustainable development",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q043",
+      "UPSC-CSE-2016-GS1-Q057",
+      "UPSC-CSE-2016-GS1-Q098"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Core ecology",
+     "ids": [
+      "UPPCS-2018-GS1-Q144",
+      "UPPCS-2020-GS1-Q079",
+      "UPPCS-2022-GS1-Q148",
+      "UPPCS-2023-GS1-Q117",
+      "UPPCS-2024-GS1-Q009",
+      "UPPCS-2024-GS1-Q026",
+      "UPPCS-2025-GS1-Q005"
+     ]
+    },
+    {
+     "label": "Sustainable development — higher-volume UPPCS layer",
+     "ids": [
+      "UPPCS-2018-GS1-Q061",
+      "UPPCS-2019-GS1-Q071",
+      "UPPCS-2019-GS1-Q140",
+      "UPPCS-2019-GS1-Q145",
+      "UPPCS-2019-GS1-Q146",
+      "UPPCS-2020-GS1-Q013",
+      "UPPCS-2020-GS1-Q148",
+      "UPPCS-2023-GS1-Q124",
+      "UPPCS-2023-GS1-Q129",
+      "UPPCS-2023-GS1-Q132",
+      "UPPCS-2023-GS1-Q133",
+      "UPPCS-2023-GS1-Q135",
+      "UPPCS-2024-GS1-Q051",
+      "UPPCS-2025-GS1-Q051"
+     ]
+    }
+   ],
+   "synthesis": "- Carbon-cycle process wording has been **repeated almost identically** → memorize direction of flux.\n- UPPCS repeatedly asks **Brundtland / Our Common Future / Limits to Growth / Agenda 21 / SDG mapping**.\n- Common qualifier trap: **10% law concerns energy transfer**, not a fixed 10% transfer of biomass/organic matter.\n- Niche ≠ habitat; succession ≠ seasonal change; nutrient cycles are cyclic while ecosystem energy flow is unidirectional."
+  },
+  "plants": {
+   "upsc": [
+    {
+     "label": "Uses / products",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q041",
+      "UPSC-CSE-2014-GS1-Q040",
+      "UPSC-CSE-2014-GS1-Q064",
+      "UPSC-CSE-2014-GS1-Q073",
+      "UPSC-CSE-2019-GS1-Q031",
+      "UPSC-CSE-2021-GS1-Q052",
+      "UPSC-CSE-2021-GS1-Q063"
+     ]
+    },
+    {
+     "label": "Native / introduced / classification / growth form",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q044",
+      "UPSC-CSE-2016-GS1-Q053",
+      "UPSC-CSE-2024-GS1-Q019",
+      "UPSC-CSE-2024-GS1-Q028",
+      "UPSC-CSE-2024-GS1-Q030",
+      "UPSC-CSE-2025-GS1-Q039",
+      "UPSC-CSE-2025-GS1-Q075",
+      "UPSC-CSE-2026-GS1-Q026"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q054",
+      "UPPCS-2020-GS1-Q103",
+      "UPPCS-2021-GS1-Q081",
+      "UPPCS-2021-GS1-Q146",
+      "UPPCS-2022-GS1-Q080",
+      "UPPCS-2023-GS1-Q107"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC has shifted from “plant in news” toward **morphology + origin + use + family**.\n- Native/endemic/introduced are deliberately mixed; Portuguese/New World introductions are elimination-friendly.\n- Plant-use statements often contain one attractive false industrial use; learn the **actual plant part/product**."
+  },
+  "marine-ecology": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q021",
+      "UPSC-CSE-2011-GS1-Q022",
+      "UPSC-CSE-2011-GS1-Q047",
+      "UPSC-CSE-2011-GS1-Q076",
+      "UPSC-CSE-2012-GS1-Q050",
+      "UPSC-CSE-2012-GS1-Q099",
+      "UPSC-CSE-2014-GS1-Q041",
+      "UPSC-CSE-2015-GS1-Q019",
+      "UPSC-CSE-2018-GS1-Q087",
+      "UPSC-CSE-2021-GS1-Q019",
+      "UPSC-CSE-2021-GS1-Q022",
+      "UPSC-CSE-2022-GS1-Q049",
+      "UPSC-CSE-2025-GS1-Q040",
+      "UPSC-CSE-2026-GS1-Q033"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q075",
+      "UPPCS-2020-GS1-Q146",
+      "UPPCS-2024-GS1-Q019"
+     ]
+    }
+   ],
+   "synthesis": "- Recurrent chain: **upwelling/nutrients → phytoplankton → food web/productivity → carbon/oxygen role**.\n- Coral questions mix **biology (animal + symbiont), location, physical requirements, bleaching, acidification, restoration**.\n- Mangrove questions emphasize **roots/coastal protection + carbon storage**, not only plant taxonomy."
+  },
+  "bioenergy-bio-inputs": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q007",
+      "UPSC-CSE-2012-GS1-Q012",
+      "UPSC-CSE-2013-GS1-Q013",
+      "UPSC-CSE-2013-GS1-Q033",
+      "UPSC-CSE-2013-GS1-Q097",
+      "UPSC-CSE-2017-GS1-Q022",
+      "UPSC-CSE-2020-GS1-Q084",
+      "UPSC-CSE-2024-GS1-Q046",
+      "UPSC-CSE-2025-GS1-Q063"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q046",
+      "UPPCS-2019-GS1-Q135",
+      "UPPCS-2021-GS1-Q121",
+      "UPPCS-2023-GS1-Q104"
+     ]
+    }
+   ],
+   "synthesis": "- Main eliminators: **feedstock ↔ fuel**, **1G/2G/3G**, **biomass gasification vs combustion**, and **organism ↔ biofertiliser role**.\n- Policy milestones/blending percentages are dynamic; feedstock eligibility and generation logic are more durable.\n- Biological inputs repeatedly converge on **Rhizobium/cyanobacteria/Azolla/mycorrhiza**."
+  },
+  "biodiversity": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q020",
+      "UPSC-CSE-2011-GS1-Q024",
+      "UPSC-CSE-2011-GS1-Q061",
+      "UPSC-CSE-2011-GS1-Q096",
+      "UPSC-CSE-2012-GS1-Q096",
+      "UPSC-CSE-2014-GS1-Q050",
+      "UPSC-CSE-2015-GS1-Q076",
+      "UPSC-CSE-2018-GS1-Q060",
+      "UPSC-CSE-2018-GS1-Q086",
+      "UPSC-CSE-2023-GS1-Q013"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q002",
+      "UPPCS-2018-GS1-Q070",
+      "UPPCS-2019-GS1-Q058",
+      "UPPCS-2019-GS1-Q139",
+      "UPPCS-2020-GS1-Q029",
+      "UPPCS-2023-GS1-Q100",
+      "UPPCS-2023-GS1-Q118"
+     ]
+    }
+   ],
+   "synthesis": "- Hotspots are tested as **criteria**, not just a list.\n- Highest-value distinction: **native vs endemic vs alien vs invasive**.\n- Conservation questions are category-elimination: **in-situ = natural habitat/ecosystem; ex-situ = outside natural habitat under managed care**.\n- Habitat loss/fragmentation + invasive alien species are durable core threats; current species counts are not."
+  },
+  "international-conventions": {
+   "upsc": [
+    {
+     "label": "Convention / protocol / treaty architecture",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q015",
+      "UPSC-CSE-2014-GS1-Q078",
+      "UPSC-CSE-2015-GS1-Q040",
+      "UPSC-CSE-2016-GS1-Q013",
+      "UPSC-CSE-2016-GS1-Q030",
+      "UPSC-CSE-2016-GS1-Q097",
+      "UPSC-CSE-2025-GS1-Q034"
+     ]
+    },
+    {
+     "label": "Paris/NDC/UNFCCC demand",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q006",
+      "UPSC-CSE-2016-GS1-Q097",
+      "UPSC-CSE-2018-GS1-Q088",
+      "UPSC-CSE-2020-GS1-Q010",
+      "UPSC-CSE-2025-GS1-Q032",
+      "UPSC-CSE-2025-GS1-Q034"
+     ]
+    },
+    {
+     "label": "Climate finance / REDD / forest-finance",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q006",
+      "UPSC-CSE-2015-GS1-Q049",
+      "UPSC-CSE-2015-GS1-Q056",
+      "UPSC-CSE-2015-GS1-Q074",
+      "UPSC-CSE-2016-GS1-Q054",
+      "UPSC-CSE-2021-GS1-Q024",
+      "UPSC-CSE-2025-GS1-Q035",
+      "UPSC-CSE-2026-GS1-Q030"
+     ]
+    },
+    {
+     "label": "Conservation organisations / who-runs-what",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q079",
+      "UPSC-CSE-2014-GS1-Q005",
+      "UPSC-CSE-2014-GS1-Q010",
+      "UPSC-CSE-2014-GS1-Q079",
+      "UPSC-CSE-2015-GS1-Q012",
+      "UPSC-CSE-2015-GS1-Q076",
+      "UPSC-CSE-2017-GS1-Q006",
+      "UPSC-CSE-2023-GS1-Q013"
+     ]
+    },
+    {
+     "label": "Sustainable-development summits/frameworks",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q043",
+      "UPSC-CSE-2016-GS1-Q057",
+      "UPSC-CSE-2018-GS1-Q083"
+     ]
+    },
+    {
+     "label": "Initiative → launching/hosting body; abroad-policy elimination",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q027",
+      "UPSC-CSE-2016-GS1-Q052",
+      "UPSC-CSE-2016-GS1-Q055",
+      "UPSC-CSE-2016-GS1-Q081",
+      "UPSC-CSE-2017-GS1-Q065",
+      "UPSC-CSE-2018-GS1-Q035",
+      "UPSC-CSE-2021-GS1-Q029",
+      "UPSC-CSE-2022-GS1-Q041",
+      "UPSC-CSE-2022-GS1-Q042",
+      "UPSC-CSE-2024-GS1-Q026",
+      "UPSC-CSE-2024-GS1-Q096",
+      "UPSC-CSE-2025-GS1-Q090"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Convention/event chronology and matching",
+     "ids": [
+      "UPPCS-2018-GS1-Q073",
+      "UPPCS-2019-GS1-Q132",
+      "UPPCS-2019-GS1-Q146",
+      "UPPCS-2020-GS1-Q148",
+      "UPPCS-2021-GS1-Q124",
+      "UPPCS-2024-GS1-Q051",
+      "UPPCS-2025-GS1-Q051"
+     ]
+    },
+    {
+     "label": "Bodies / initiatives",
+     "ids": [
+      "UPPCS-2018-GS1-Q066",
+      "UPPCS-2019-GS1-Q063",
+      "UPPCS-2025-GS1-Q109",
+      "UPPCS-2025-GS1-Q139",
+      "UPPCS-2025-GS1-Q145"
+     ]
+    },
+    {
+     "label": "Observance days",
+     "ids": [
+      "UPPCS-2018-GS1-Q148",
+      "UPPCS-2021-GS1-Q043",
+      "UPPCS-2022-GS1-Q121",
+      "UPPCS-2022-GS1-Q137",
+      "UPPCS-2023-GS1-Q147",
+      "UPPCS-2025-GS1-Q062"
+     ]
+    }
+   ],
+   "synthesis": "- Repeated UPSC move: **name → institutional home → legal/organisational character → objective**, not generic environmental awareness.\n- Distinguish **Convention / Protocol / Agreement / voluntary initiative / NGO / fund / intergovernmental organisation**.\n- Climate questions increasingly test:\n  - Kyoto vs Paris architecture;\n  - market vs non-market mechanisms;\n  - fund/operator identity;\n  - UN body vs World Bank/MDB vs NGO/private coalition;\n  - EU law vs global treaty.\n- UPPCS adds high-value direct recall:\n  - event chronology;\n  - observance dates;\n  - headquarters/secretariat;\n  - convention-purpose pairing.\n- **One-off platforms are a recurring question format but not stable permanent content.** Retain only a replaceable “initiative → launcher/host” anchor set."
+  },
+  "protected-areas": {
+   "upsc": [
+    {
+     "label": "Protected-area location / river / ecological uniqueness",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q012",
+      "UPSC-CSE-2013-GS1-Q017",
+      "UPSC-CSE-2013-GS1-Q032",
+      "UPSC-CSE-2014-GS1-Q009",
+      "UPSC-CSE-2015-GS1-Q009",
+      "UPSC-CSE-2015-GS1-Q052",
+      "UPSC-CSE-2017-GS1-Q004",
+      "UPSC-CSE-2018-GS1-Q094",
+      "UPSC-CSE-2019-GS1-Q018",
+      "UPSC-CSE-2019-GS1-Q027",
+      "UPSC-CSE-2020-GS1-Q073",
+      "UPSC-CSE-2020-GS1-Q075",
+      "UPSC-CSE-2020-GS1-Q095",
+      "UPSC-CSE-2022-GS1-Q030",
+      "UPSC-CSE-2026-GS1-Q022"
+     ]
+    },
+    {
+     "label": "Wetlands / Ramsar",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q046",
+      "UPSC-CSE-2014-GS1-Q002",
+      "UPSC-CSE-2014-GS1-Q046",
+      "UPSC-CSE-2019-GS1-Q040",
+      "UPSC-CSE-2022-GS1-Q043"
+     ]
+    },
+    {
+     "label": "Legal categories / in-situ conservation",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q072",
+      "UPSC-CSE-2012-GS1-Q090",
+      "UPSC-CSE-2014-GS1-Q050",
+      "UPSC-CSE-2023-GS1-Q038"
+     ]
+    },
+    {
+     "label": "Tiger reserves",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q087",
+      "UPSC-CSE-2017-GS1-Q080",
+      "UPSC-CSE-2020-GS1-Q100"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Direct PA/location recall",
+     "ids": [
+      "UPPCS-2018-GS1-Q002",
+      "UPPCS-2018-GS1-Q006",
+      "UPPCS-2018-GS1-Q147",
+      "UPPCS-2020-GS1-Q056",
+      "UPPCS-2020-GS1-Q062",
+      "UPPCS-2022-GS1-Q020",
+      "UPPCS-2022-GS1-Q103",
+      "UPPCS-2023-GS1-Q056",
+      "UPPCS-2023-GS1-Q118",
+      "UPPCS-2024-GS1-Q031",
+      "UPPCS-2025-GS1-Q090"
+     ]
+    },
+    {
+     "label": "Biosphere reserves",
+     "ids": [
+      "UPPCS-2021-GS1-Q103",
+      "UPPCS-2022-GS1-Q041",
+      "UPPCS-2024-GS1-Q010",
+      "UPPCS-2025-GS1-Q144"
+     ]
+    },
+    {
+     "label": "Ramsar / tiger-current layer",
+     "ids": [
+      "UPPCS-2020-GS1-Q048",
+      "UPPCS-2020-GS1-Q051",
+      "UPPCS-2021-GS1-Q078",
+      "UPPCS-2025-GS1-Q058"
+     ]
+    }
+   ],
+   "synthesis": "- **Map logic matters:** state + river basin + physiography + unique ecological feature.\n- UPSC repeatedly chooses PAs with a distinctive eliminator:\n  - floating park;\n  - alpine park;\n  - biodiversity corridor/link;\n  - river/delta association;\n  - signature species.\n- Legal-category questions require separating:\n  - statutory WPA protected areas;\n  - tiger-reserve statutory overlay;\n  - UNESCO MAB Biosphere Reserve;\n  - Ramsar international designation.\n- UPPCS has heavier **state/UP-specific direct recall**; location matrices retain value even when not conceptually difficult.\n- New Ramsar/Tiger notifications and counts are **replaceable current layer**, not permanent core."
+  },
+  "environmental-laws": {
+   "upsc": [
+    {
+     "label": "Act → body / statutory source",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q003",
+      "UPSC-CSE-2012-GS1-Q004",
+      "UPSC-CSE-2014-GS1-Q096",
+      "UPSC-CSE-2015-GS1-Q063",
+      "UPSC-CSE-2016-GS1-Q023",
+      "UPSC-CSE-2018-GS1-Q004",
+      "UPSC-CSE-2020-GS1-Q098",
+      "UPSC-CSE-2022-GS1-Q075",
+      "UPSC-CSE-2026-GS1-Q042"
+     ]
+    },
+    {
+     "label": "Wildlife (Protection) Act / schedule implication",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q019",
+      "UPSC-CSE-2017-GS1-Q035",
+      "UPSC-CSE-2017-GS1-Q091",
+      "UPSC-CSE-2020-GS1-Q081",
+      "UPSC-CSE-2022-GS1-Q089"
+     ]
+    },
+    {
+     "label": "Forest Rights Act",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q026",
+      "UPSC-CSE-2018-GS1-Q098",
+      "UPSC-CSE-2019-GS1-Q055",
+      "UPSC-CSE-2021-GS1-Q084"
+     ]
+    },
+    {
+     "label": "Biological Diversity Act",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q025",
+      "UPSC-CSE-2012-GS1-Q003",
+      "UPSC-CSE-2023-GS1-Q079"
+     ]
+    },
+    {
+     "label": "EPA / ESZ / forest governance / waste",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q025",
+      "UPSC-CSE-2014-GS1-Q095",
+      "UPSC-CSE-2019-GS1-Q058",
+      "UPSC-CSE-2019-GS1-Q059",
+      "UPSC-CSE-2019-GS1-Q068",
+      "UPSC-CSE-2019-GS1-Q078"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q067",
+      "UPPCS-2019-GS1-Q098",
+      "UPPCS-2020-GS1-Q077",
+      "UPPCS-2021-GS1-Q066",
+      "UPPCS-2022-GS1-Q005",
+      "UPPCS-2022-GS1-Q115",
+      "UPPCS-2023-GS1-Q111",
+      "UPPCS-2025-GS1-Q070"
+     ]
+    }
+   ],
+   "synthesis": "- Most valuable eliminator = **which Act created/empowers which body?**\n- Historical schedule questions require knowing **old schedule architecture at question date** while final notes should use **current WPA schedule architecture**.\n- FRA demand is not “tribal welfare” generically; it tests **rights-recognition authority, eligible category, MFP, CWH and nodal ministry**.\n- NGT demand tests **tribunal vs regulator** and **Schedule-I jurisdiction**, not generic environmental powers.\n- UPPCS heavily rewards **Act year + chronology + constitutional provision**."
+  },
+  "pollution": {
+   "upsc": [
+    {
+     "label": "Industrial source → pollutant / by-product",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q002",
+      "UPSC-CSE-2014-GS1-Q024",
+      "UPSC-CSE-2020-GS1-Q079",
+      "UPSC-CSE-2021-GS1-Q017",
+      "UPSC-CSE-2021-GS1-Q018",
+      "UPSC-CSE-2024-GS1-Q090",
+      "UPSC-CSE-2025-GS1-Q031"
+     ]
+    },
+    {
+     "label": "Air-pollutant chemistry / standards / exposure",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q049",
+      "UPSC-CSE-2016-GS1-Q086",
+      "UPSC-CSE-2019-GS1-Q035",
+      "UPSC-CSE-2020-GS1-Q048",
+      "UPSC-CSE-2021-GS1-Q025",
+      "UPSC-CSE-2022-GS1-Q044",
+      "UPSC-CSE-2022-GS1-Q100"
+     ]
+    },
+    {
+     "label": "Emerging contaminants / consumer-product chemistry",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q098",
+      "UPSC-CSE-2019-GS1-Q030",
+      "UPSC-CSE-2021-GS1-Q074",
+      "UPSC-CSE-2021-GS1-Q075",
+      "UPSC-CSE-2022-GS1-Q098",
+      "UPSC-CSE-2024-GS1-Q017",
+      "UPSC-CSE-2024-GS1-Q022"
+     ]
+    },
+    {
+     "label": "Heavy metals / groundwater contaminants / persistent chemicals",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q015",
+      "UPSC-CSE-2013-GS1-Q008",
+      "UPSC-CSE-2013-GS1-Q029",
+      "UPSC-CSE-2023-GS1-Q059"
+     ]
+    },
+    {
+     "label": "Water-pollution indicators / resource impacts",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q059",
+      "UPSC-CSE-2018-GS1-Q081",
+      "UPSC-CSE-2019-GS1-Q039",
+      "UPSC-CSE-2019-GS1-Q041"
+     ]
+    },
+    {
+     "label": "Suspicious wording flag",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q030"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Direct pollutant / indicator recall",
+     "ids": [
+      "UPPCS-2018-GS1-Q069",
+      "UPPCS-2018-GS1-Q085",
+      "UPPCS-2019-GS1-Q059",
+      "UPPCS-2019-GS1-Q136",
+      "UPPCS-2021-GS1-Q040",
+      "UPPCS-2021-GS1-Q068",
+      "UPPCS-2025-GS1-Q061"
+     ]
+    },
+    {
+     "label": "Water pollution",
+     "ids": [
+      "UPPCS-2019-GS1-Q056",
+      "UPPCS-2020-GS1-Q075",
+      "UPPCS-2021-GS1-Q038",
+      "UPPCS-2022-GS1-Q084",
+      "UPPCS-2023-GS1-Q103"
+     ]
+    },
+    {
+     "label": "Combustion / particulate / agrochemical",
+     "ids": [
+      "UPPCS-2021-GS1-Q011",
+      "UPPCS-2022-GS1-Q009",
+      "UPPCS-2022-GS1-Q072",
+      "UPPCS-2023-GS1-Q120"
+     ]
+    },
+    {
+     "label": "Acid-rain wording caution",
+     "ids": [
+      "UPPCS-2024-GS1-Q108"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-value pattern = **source → pollutant → transformation → effect**, not isolated definitions.\n- UPSC repeatedly tests unfamiliar chemicals through **product association + persistence + trophic/health pathway**.\n- Elimination hinges on qualifiers: **primary vs secondary; gas vs particulate; PM₁₀ vs PM₂.₅; GHG vs air pollutant; persistent vs biodegradable; source-specific vs universal**.\n- Industrial pollution is recurrent enough to retain a compact **industry-emission matrix** rather than memorising one-off factories.\n- UPPCS adds simple named-recall anchors; keep them in a separate extension layer so they do not inflate UPSC notes."
+  },
+  "climate-change": {
+   "upsc": [
+    {
+     "label": "Greenhouse physics / carbon-cycle science",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q062",
+      "UPSC-CSE-2018-GS1-Q065",
+      "UPSC-CSE-2019-GS1-Q034",
+      "UPSC-CSE-2022-GS1-Q021",
+      "UPSC-CSE-2022-GS1-Q022",
+      "UPSC-CSE-2024-GS1-Q001"
+     ]
+    },
+    {
+     "label": "Carbon sinks / sequestration / climate valuation",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q098",
+      "UPSC-CSE-2012-GS1-Q099",
+      "UPSC-CSE-2017-GS1-Q025",
+      "UPSC-CSE-2020-GS1-Q080",
+      "UPSC-CSE-2020-GS1-Q083",
+      "UPSC-CSE-2020-GS1-Q085",
+      "UPSC-CSE-2021-GS1-Q019",
+      "UPSC-CSE-2024-GS1-Q016"
+     ]
+    },
+    {
+     "label": "Geoengineering + CDR/CCS",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q025",
+      "UPSC-CSE-2023-GS1-Q068",
+      "UPSC-CSE-2025-GS1-Q036"
+     ]
+    },
+    {
+     "label": "Carbon markets / terminology",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q015",
+      "UPSC-CSE-2021-GS1-Q029",
+      "UPSC-CSE-2023-GS1-Q023",
+      "UPSC-CSE-2025-GS1-Q034"
+     ]
+    },
+    {
+     "label": "India climate policy",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q005",
+      "UPSC-CSE-2016-GS1-Q033",
+      "UPSC-CSE-2026-GS1-Q031"
+     ]
+    },
+    {
+     "label": "Ozone / ODS / HFC",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q009",
+      "UPSC-CSE-2012-GS1-Q017",
+      "UPSC-CSE-2015-GS1-Q040",
+      "UPSC-CSE-2017-GS1-Q065",
+      "UPSC-CSE-2023-GS1-Q020"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q001",
+      "UPPCS-2018-GS1-Q011",
+      "UPPCS-2018-GS1-Q074",
+      "UPPCS-2018-GS1-Q077",
+      "UPPCS-2018-GS1-Q150",
+      "UPPCS-2019-GS1-Q062",
+      "UPPCS-2019-GS1-Q132",
+      "UPPCS-2020-GS1-Q139",
+      "UPPCS-2020-GS1-Q146",
+      "UPPCS-2021-GS1-Q124",
+      "UPPCS-2022-GS1-Q025",
+      "UPPCS-2023-GS1-Q052",
+      "UPPCS-2023-GS1-Q105",
+      "UPPCS-2024-GS1-Q019",
+      "UPPCS-2024-GS1-Q047",
+      "UPPCS-2025-GS1-Q045"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC has shifted from generic “global warming” to **mechanistic climate technologies and carbon accounting**: sequestration sites → SRM → enhanced weathering/ocean alkalinity → DAC.\n- Prepare a **classification framework**, not a list: source reduction / sink enhancement / CDR / point-source capture / radiation management / market instrument.\n- Ozone questions increasingly exploit **ODS vs GHG** confusion.\n- India-policy questions target **mission → purpose**, not target numerology; permanent pack should keep mission architecture and omit fast-changing quantitative pledges.\n- Carbon-market questions test institutional logic and false universal claims (“UN fixes price”, “all markets necessarily transfer funds to the State”)."
+  },
+  "waste-remediation": {
+   "upsc": [
+    {
+     "label": "Biological remediation / treatment",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q007",
+      "UPSC-CSE-2011-GS1-Q065",
+      "UPSC-CSE-2017-GS1-Q014",
+      "UPSC-CSE-2023-GS1-Q055",
+      "UPSC-CSE-2024-GS1-Q039"
+     ]
+    },
+    {
+     "label": "Adsorptive treatment",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q050"
+     ]
+    },
+    {
+     "label": "Waste-to-energy / thermal conversion",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q026",
+      "UPSC-CSE-2022-GS1-Q046"
+     ]
+    },
+    {
+     "label": "Industrial by-product reuse",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q018",
+      "UPSC-CSE-2020-GS1-Q076",
+      "UPSC-CSE-2020-GS1-Q078",
+      "UPSC-CSE-2021-GS1-Q017"
+     ]
+    },
+    {
+     "label": "Waste governance concepts with direct technological relevance",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q059",
+      "UPSC-CSE-2019-GS1-Q078"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q076",
+      "UPPCS-2019-GS1-Q044",
+      "UPPCS-2022-GS1-Q134",
+      "UPPCS-2025-GS1-Q010",
+      "UPPCS-2025-GS1-Q022"
+     ]
+    }
+   ],
+   "synthesis": "- Repeated eliminator = **what a technology can actually do**: degrade organic pollutants, adsorb pollutants, convert ammonia, separate solids, recover energy—but not magically destroy elemental heavy metals or eliminate all emissions.\n- Industrial “waste” is repeatedly reframed as **secondary raw material**—fly ash, steel/copper slag, carbon-rich waste feedstock.\n- UPSC expects process-level distinctions sufficient to separate **bioremediation / phytoremediation / biofilter / MBR / activated carbon / WtE** without engineering-detail overload."
+  }
+ }
+}

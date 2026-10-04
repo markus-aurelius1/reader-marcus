@@ -1,0 +1,727 @@
+{
+ "source": "source/Science-Technology-v01-source-pack-CLAUDE-READY.md",
+ "chapters": {
+  "physics-everyday": {
+   "upsc": [
+    {
+     "label": "Everyday heat / pressure / capillarity / mechanics",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q050",
+      "UPSC-CSE-2012-GS1-Q093",
+      "UPSC-CSE-2013-GS1-Q088",
+      "UPSC-CSE-2021-GS1-Q068"
+     ]
+    },
+    {
+     "label": "Optics / light / lighting",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q064",
+      "UPSC-CSE-2013-GS1-Q089",
+      "UPSC-CSE-2013-GS1-Q090",
+      "UPSC-CSE-2017-GS1-Q074",
+      "UPSC-CSE-2021-GS1-Q072"
+     ]
+    },
+    {
+     "label": "Gravity / forces / particle physics",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q081",
+      "UPSC-CSE-2012-GS1-Q018",
+      "UPSC-CSE-2013-GS1-Q095",
+      "UPSC-CSE-2013-GS1-Q096",
+      "UPSC-CSE-2015-GS1-Q030",
+      "UPSC-CSE-2018-GS1-Q062"
+     ]
+    },
+    {
+     "label": "Sensors",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q054",
+      "UPSC-CSE-2024-GS1-Q034"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Units / formula / simple electrical-physics recall",
+     "ids": [
+      "UPPCS-2021-GS1-Q119",
+      "UPPCS-2022-GS1-Q074",
+      "UPPCS-2024-GS1-Q106",
+      "UPPCS-2025-GS1-Q036"
+     ]
+    },
+    {
+     "label": "Waves / sound",
+     "ids": [
+      "UPPCS-2018-GS1-Q072",
+      "UPPCS-2018-GS1-Q084",
+      "UPPCS-2022-GS1-Q030"
+     ]
+    },
+    {
+     "label": "Optics / EM / semiconductor",
+     "ids": [
+      "UPPCS-2018-GS1-Q010",
+      "UPPCS-2018-GS1-Q012",
+      "UPPCS-2018-GS1-Q082",
+      "UPPCS-2019-GS1-Q125",
+      "UPPCS-2021-GS1-Q025",
+      "UPPCS-2021-GS1-Q126",
+      "UPPCS-2025-GS1-Q117"
+     ]
+    },
+    {
+     "label": "Heat / matter / charge",
+     "ids": [
+      "UPPCS-2019-GS1-Q047",
+      "UPPCS-2019-GS1-Q050",
+      "UPPCS-2025-GS1-Q125"
+     ]
+    },
+    {
+     "label": "Nuclear/particle",
+     "ids": [
+      "UPPCS-2021-GS1-Q023",
+      "UPPCS-2021-GS1-Q072"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC asks **mechanism → application → exception**; UPPCS adds **unit/instrument/formula/direct property**.\n- Permanent-note priority:\n  1. pressure/heat/capillarity/friction;\n  2. optics + EM spectrum;\n  3. waves/sound;\n  4. forces + particle basics;\n  5. lighting/displays;\n  6. sensors;\n  7. SI/instruments quick-recall.\n- Large experiments themselves are dynamic; store **detector/particle/principle**, not annual experiment-news."
+  },
+  "biology-basics": {
+   "upsc": [
+    {
+     "label": "Cell biology",
+     "ids": [
+      "UPSC-CSE-2020-GS1-Q047"
+     ]
+    },
+    {
+     "label": "Microorganisms / fungi / viruses",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q022",
+      "UPSC-CSE-2016-GS1-Q059",
+      "UPSC-CSE-2021-GS1-Q069",
+      "UPSC-CSE-2021-GS1-Q070",
+      "UPSC-CSE-2022-GS1-Q045",
+      "UPSC-CSE-2025-GS1-Q049"
+     ]
+    },
+    {
+     "label": "Plant physiology",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q018",
+      "UPSC-CSE-2014-GS1-Q065",
+      "UPSC-CSE-2018-GS1-Q099",
+      "UPSC-CSE-2021-GS1-Q020"
+     ]
+    },
+    {
+     "label": "Evolution",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q092"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Classification / cell",
+     "ids": [
+      "UPPCS-2024-GS1-Q012",
+      "UPPCS-2024-GS1-Q062",
+      "UPPCS-2024-GS1-Q107"
+     ]
+    },
+    {
+     "label": "Microbes / symbiosis / nitrogen fixation",
+     "ids": [
+      "UPPCS-2019-GS1-Q046",
+      "UPPCS-2019-GS1-Q135",
+      "UPPCS-2023-GS1-Q104",
+      "UPPCS-2024-GS1-Q064",
+      "UPPCS-2025-GS1-Q061"
+     ]
+    },
+    {
+     "label": "Plant physiology / morphology",
+     "ids": [
+      "UPPCS-2023-GS1-Q101",
+      "UPPCS-2023-GS1-Q107"
+     ]
+    },
+    {
+     "label": "Animal/classification recall",
+     "ids": [
+      "UPPCS-2018-GS1-Q071",
+      "UPPCS-2019-GS1-Q045",
+      "UPPCS-2022-GS1-Q055"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC repeatedly turns simple biology into **capability statements**: “can/cannot infect”, “can/cannot culture”, “present/absent”, “source/sink/transport”.\n- UPPCS needs a thin but broader **classification + morphology + plant/animal fact** layer.\n- Disease/vaccine/immune-system facts are not expanded here even if adjacent reference pages contain them."
+  },
+  "chemistry-daily-life": {
+   "upsc": [
+    {
+     "label": "Water / purification",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q013",
+      "UPSC-CSE-2021-GS1-Q071",
+      "UPSC-CSE-2025-GS1-Q050"
+     ]
+    },
+    {
+     "label": "Physical vs chemical change",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q070"
+     ]
+    },
+    {
+     "label": "Plastics / consumer materials",
+     "ids": [
+      "UPSC-CSE-2021-GS1-Q074",
+      "UPSC-CSE-2021-GS1-Q075",
+      "UPSC-CSE-2022-GS1-Q046",
+      "UPSC-CSE-2024-GS1-Q017",
+      "UPSC-CSE-2025-GS1-Q044"
+     ]
+    },
+    {
+     "label": "Explosives / cloud seeding",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q046",
+      "UPSC-CSE-2025-GS1-Q085"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Everyday chemistry / formula / property",
+     "ids": [
+      "UPPCS-2019-GS1-Q052",
+      "UPPCS-2019-GS1-Q124",
+      "UPPCS-2020-GS1-Q093",
+      "UPPCS-2020-GS1-Q105",
+      "UPPCS-2020-GS1-Q109",
+      "UPPCS-2021-GS1-Q077",
+      "UPPCS-2021-GS1-Q086",
+      "UPPCS-2022-GS1-Q054",
+      "UPPCS-2022-GS1-Q113",
+      "UPPCS-2023-GS1-Q096",
+      "UPPCS-2023-GS1-Q105",
+      "UPPCS-2023-GS1-Q114",
+      "UPPCS-2025-GS1-Q016",
+      "UPPCS-2025-GS1-Q069",
+      "UPPCS-2025-GS1-Q103",
+      "UPPCS-2025-GS1-Q112"
+     ]
+    },
+    {
+     "label": "Matching-table demand — structure unreliable in gateway",
+     "ids": [
+      "UPPCS-2019-GS1-Q053",
+      "UPPCS-2019-GS1-Q060",
+      "UPPCS-2020-GS1-Q107",
+      "UPPCS-2020-GS1-Q111"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC has shifted toward **ordinary material → hidden chemical property → application/risk**.\n- UPPCS still rewards a compact **formula + common name + use + distinguishing property** table.\n- Advanced-material technology and energy-system chemistry are cross-linked, not duplicated here."
+  },
+  "scientists-method": {
+   "upsc": [],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q004",
+      "UPPCS-2018-GS1-Q007",
+      "UPPCS-2018-GS1-Q008",
+      "UPPCS-2018-GS1-Q009",
+      "UPPCS-2018-GS1-Q086",
+      "UPPCS-2018-GS1-Q089",
+      "UPPCS-2021-GS1-Q112"
+     ]
+    }
+   ],
+   "synthesis": "- Keep this child **small and pair-based**.\n- Highest-yield structure:\n  - scientist ↔ discovery/contribution;\n  - inventor ↔ device;\n  - book ↔ author;\n  - Nobel field/reason;\n  - science vs non-science/testability."
+  },
+  "health-diseases-nutrition": {
+   "upsc": [
+    {
+     "label": "Nutrition / food-health",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q040",
+      "UPSC-CSE-2011-GS1-Q091",
+      "UPSC-CSE-2014-GS1-Q097",
+      "UPSC-CSE-2023-GS1-Q052"
+     ]
+    },
+    {
+     "label": "Pathogens, disease and transmission",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q046",
+      "UPSC-CSE-2014-GS1-Q012",
+      "UPSC-CSE-2015-GS1-Q017",
+      "UPSC-CSE-2015-GS1-Q092",
+      "UPSC-CSE-2017-GS1-Q031",
+      "UPSC-CSE-2019-GS1-Q100",
+      "UPSC-CSE-2021-GS1-Q070",
+      "UPSC-CSE-2021-GS1-Q073",
+      "UPSC-CSE-2023-GS1-Q067"
+     ]
+    },
+    {
+     "label": "Immunity and vaccines",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q032",
+      "UPSC-CSE-2020-GS1-Q045",
+      "UPSC-CSE-2021-GS1-Q065",
+      "UPSC-CSE-2022-GS1-Q039",
+      "UPSC-CSE-2022-GS1-Q097",
+      "UPSC-CSE-2025-GS1-Q048"
+     ]
+    },
+    {
+     "label": "AMR / microbiome / food toxins",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q027",
+      "UPSC-CSE-2019-GS1-Q098",
+      "UPSC-CSE-2022-GS1-Q037",
+      "UPSC-CSE-2022-GS1-Q038"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Nutrition / vitamins",
+     "ids": [
+      "UPPCS-2018-GS1-Q087",
+      "UPPCS-2019-GS1-Q120",
+      "UPPCS-2019-GS1-Q121",
+      "UPPCS-2019-GS1-Q122",
+      "UPPCS-2020-GS1-Q097",
+      "UPPCS-2020-GS1-Q099",
+      "UPPCS-2021-GS1-Q017",
+      "UPPCS-2021-GS1-Q027",
+      "UPPCS-2021-GS1-Q114",
+      "UPPCS-2021-GS1-Q117",
+      "UPPCS-2024-GS1-Q141",
+      "UPPCS-2025-GS1-Q053"
+     ]
+    },
+    {
+     "label": "Human physiology: organs / blood / glands",
+     "ids": [
+      "UPPCS-2019-GS1-Q048",
+      "UPPCS-2019-GS1-Q051",
+      "UPPCS-2020-GS1-Q095",
+      "UPPCS-2020-GS1-Q101",
+      "UPPCS-2021-GS1-Q038",
+      "UPPCS-2021-GS1-Q079",
+      "UPPCS-2021-GS1-Q090",
+      "UPPCS-2022-GS1-Q130",
+      "UPPCS-2023-GS1-Q097",
+      "UPPCS-2023-GS1-Q108",
+      "UPPCS-2024-GS1-Q068",
+      "UPPCS-2024-GS1-Q069",
+      "UPPCS-2025-GS1-Q080"
+     ]
+    },
+    {
+     "label": "Disease / pathogen / vector / vaccine",
+     "ids": [
+      "UPPCS-2018-GS1-Q103",
+      "UPPCS-2021-GS1-Q019",
+      "UPPCS-2022-GS1-Q062",
+      "UPPCS-2022-GS1-Q064",
+      "UPPCS-2022-GS1-Q069",
+      "UPPCS-2023-GS1-Q098",
+      "UPPCS-2023-GS1-Q099",
+      "UPPCS-2023-GS1-Q116",
+      "UPPCS-2024-GS1-Q055",
+      "UPPCS-2024-GS1-Q064",
+      "UPPCS-2024-GS1-Q070"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-value recurring frame = **disease/pathogen/vector/transmission + vaccine availability/platform**.\n- UPSC increasingly asks **technology mechanism**, not just name recall: vector vaccine, conjugate vaccine, monoclonal antibody, Wolbachia.\n- AMR is tested through **causal mechanism**: selection pressure + misuse/overuse + agricultural use + biofilm protection, not vague “weak immunity”.\n- Strong qualifier sensitivity: **no vaccine / no side effect / only / all / entirely / cannot** are frequent elimination points.\n- Current events usually serve as entry points; permanent notes should retain the **science**, not outbreak/approval chronology."
+  },
+  "genetics-biotechnology": {
+   "upsc": [
+    {
+     "label": "Gene/genome / genomics tools",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q005",
+      "UPSC-CSE-2016-GS1-Q031",
+      "UPSC-CSE-2017-GS1-Q045",
+      "UPSC-CSE-2022-GS1-Q099",
+      "UPSC-CSE-2023-GS1-Q069",
+      "UPSC-CSE-2023-GS1-Q070"
+     ]
+    },
+    {
+     "label": "Recombinant DNA / GM applications",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q029",
+      "UPSC-CSE-2012-GS1-Q065",
+      "UPSC-CSE-2013-GS1-Q005",
+      "UPSC-CSE-2014-GS1-Q072",
+      "UPSC-CSE-2015-GS1-Q063",
+      "UPSC-CSE-2018-GS1-Q063",
+      "UPSC-CSE-2021-GS1-Q067"
+     ]
+    },
+    {
+     "label": "RNAi / gene editing",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q096",
+      "UPSC-CSE-2019-GS1-Q099",
+      "UPSC-CSE-2020-GS1-Q044"
+     ]
+    },
+    {
+     "label": "Stem cells / cloning / reproductive gene tech",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q016",
+      "UPSC-CSE-2020-GS1-Q037",
+      "UPSC-CSE-2020-GS1-Q044",
+      "UPSC-CSE-2021-GS1-Q066"
+     ]
+    },
+    {
+     "label": "Synthetic / genetic medicine",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q093",
+      "UPSC-CSE-2026-GS1-Q066",
+      "UPSC-CSE-2026-GS1-Q073"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q005",
+      "UPPCS-2018-GS1-Q009",
+      "UPPCS-2020-GS1-Q089",
+      "UPPCS-2021-GS1-Q063",
+      "UPPCS-2024-GS1-Q107"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC repeatedly tests **tool → target → application → limitation**.\n- Highest-value tools: recombinant DNA, CRISPR-Cas, RNAi, genome sequencing, transcriptome, DNA barcoding, microsatellites, metagenomics.\n- Reproductive biotech has become a recurring capability domain: stem cells, germline editing, mitochondrial replacement.\n- “Entire genome/all diseases/only mammals” style absolutes are common distractors.\n- Current projects should not displace durable concepts."
+  },
+  "computing-digital": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q069",
+      "UPSC-CSE-2014-GS1-Q066",
+      "UPSC-CSE-2016-GS1-Q066",
+      "UPSC-CSE-2017-GS1-Q085",
+      "UPSC-CSE-2018-GS1-Q058",
+      "UPSC-CSE-2018-GS1-Q066",
+      "UPSC-CSE-2018-GS1-Q084",
+      "UPSC-CSE-2019-GS1-Q091",
+      "UPSC-CSE-2019-GS1-Q094",
+      "UPSC-CSE-2019-GS1-Q095",
+      "UPSC-CSE-2020-GS1-Q038",
+      "UPSC-CSE-2020-GS1-Q040",
+      "UPSC-CSE-2020-GS1-Q046",
+      "UPSC-CSE-2020-GS1-Q060",
+      "UPSC-CSE-2022-GS1-Q032",
+      "UPSC-CSE-2022-GS1-Q033",
+      "UPSC-CSE-2022-GS1-Q035",
+      "UPSC-CSE-2022-GS1-Q069",
+      "UPSC-CSE-2024-GS1-Q048",
+      "UPSC-CSE-2025-GS1-Q047",
+      "UPSC-CSE-2026-GS1-Q051",
+      "UPSC-CSE-2026-GS1-Q056",
+      "UPSC-CSE-2026-GS1-Q067",
+      "UPSC-CSE-2026-GS1-Q074"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2024-GS1-Q104",
+      "UPPCS-2024-GS1-Q105"
+     ]
+    }
+   ],
+   "synthesis": "**High-frequency permanent core**\n1. Blockchain/Web3/NFT/tokenization.\n2. AI → ML → DL → LLM capability hierarchy.\n3. Cyber security primitives: malware, digital signature/certificate/PKI.\n4. Quantum: qubit, superposition/decoherence vocabulary, NQM.\n5. IoT/wearables + connected-device logic.\n6. SaaS/cloud service model.\n7. 3D printing/additive manufacturing.\n8. AR/VR/metaverse.\n9. Biometrics + storage basics.\n10. UPPCS hardware/memory fundamentals.\n\n**Question style**\n- UPSC repeatedly tests **properties, exceptions and comparative statements**, not definitions alone.\n- Elimination hinges on absolute claims: “only”, “all data”, “unbiased”, “one metre”, “voice-only”, “data-only”, “central bank tracked”.\n- Dynamic examples should be used only to anchor a durable concept."
+  },
+  "communication-tech": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q057",
+      "UPSC-CSE-2011-GS1-Q099",
+      "UPSC-CSE-2015-GS1-Q032",
+      "UPSC-CSE-2016-GS1-Q005",
+      "UPSC-CSE-2019-GS1-Q075",
+      "UPSC-CSE-2020-GS1-Q039",
+      "UPSC-CSE-2022-GS1-Q036"
+     ]
+    }
+   ],
+   "uppcs": [],
+   "synthesis": "- Comparative table is more valuable than isolated definitions.\n- Repeated discriminators: **medium used, range, frequency band, line-of-sight, interference, security/encryption, network scope, voice/data behavior**.\n- Avoid fixed speed/range numbers unless canonical PYQ demands them."
+  },
+  "space-technology": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q003",
+      "UPSC-CSE-2011-GS1-Q081",
+      "UPSC-CSE-2014-GS1-Q068",
+      "UPSC-CSE-2015-GS1-Q071",
+      "UPSC-CSE-2016-GS1-Q087",
+      "UPSC-CSE-2016-GS1-Q091",
+      "UPSC-CSE-2018-GS1-Q055",
+      "UPSC-CSE-2018-GS1-Q061",
+      "UPSC-CSE-2018-GS1-Q095",
+      "UPSC-CSE-2019-GS1-Q032",
+      "UPSC-CSE-2023-GS1-Q057",
+      "UPSC-CSE-2025-GS1-Q083",
+      "UPSC-CSE-2025-GS1-Q094",
+      "UPSC-CSE-2026-GS1-Q071"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q043",
+      "UPPCS-2020-GS1-Q033",
+      "UPPCS-2022-GS1-Q109",
+      "UPPCS-2023-GS1-Q074",
+      "UPPCS-2024-GS1-Q053",
+      "UPPCS-2024-GS1-Q088",
+      "UPPCS-2025-GS1-Q017"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-value stable spine: **orbits → launch vehicles → navigation → remote sensing → mission objectives**.\n- UPSC repeatedly converts a current trigger into a **durable property/capability test**.\n- Frequent trap forms: category swap, same-family mismatch, false exclusivity, wrong orbit/altitude, wrong mission partner/objective, current fact presented as timeless."
+  },
+  "astronomy": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q086",
+      "UPSC-CSE-2012-GS1-Q018",
+      "UPSC-CSE-2012-GS1-Q019",
+      "UPSC-CSE-2015-GS1-Q030",
+      "UPSC-CSE-2015-GS1-Q045",
+      "UPSC-CSE-2017-GS1-Q044",
+      "UPSC-CSE-2017-GS1-Q087",
+      "UPSC-CSE-2019-GS1-Q097",
+      "UPSC-CSE-2020-GS1-Q043",
+      "UPSC-CSE-2022-GS1-Q040",
+      "UPSC-CSE-2023-GS1-Q056",
+      "UPSC-CSE-2024-GS1-Q032",
+      "UPSC-CSE-2025-GS1-Q033"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q007",
+      "UPPCS-2018-GS1-Q033",
+      "UPPCS-2018-GS1-Q088",
+      "UPPCS-2019-GS1-Q138"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC concentration: **gravitational waves/detectors + stellar evolution/types + cosmology terms + space weather + object-definition discrimination**.\n- Questions reward relations rather than encyclopaedic catalogues: *source → phenomenon → detector → effect*.\n- Named observatories/detections should remain examples; their **measurement principle** is the permanent note."
+  },
+  "energy-technologies": {
+   "upsc": [
+    {
+     "label": "Hydrogen / fuel cells",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q007",
+      "UPSC-CSE-2015-GS1-Q095",
+      "UPSC-CSE-2019-GS1-Q043",
+      "UPSC-CSE-2023-GS1-Q060",
+      "UPSC-CSE-2023-GS1-Q099",
+      "UPSC-CSE-2024-GS1-Q037",
+      "UPSC-CSE-2025-GS1-Q041",
+      "UPSC-CSE-2026-GS1-Q070"
+     ]
+    },
+    {
+     "label": "Solar / DER / storage",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q007",
+      "UPSC-CSE-2016-GS1-Q036",
+      "UPSC-CSE-2018-GS1-Q067",
+      "UPSC-CSE-2020-GS1-Q088",
+      "UPSC-CSE-2022-GS1-Q084",
+      "UPSC-CSE-2024-GS1-Q027",
+      "UPSC-CSE-2025-GS1-Q043",
+      "UPSC-CSE-2025-GS1-Q070"
+     ]
+    },
+    {
+     "label": "Nuclear: fission / thorium / fusion / RTG",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q032",
+      "UPSC-CSE-2012-GS1-Q061",
+      "UPSC-CSE-2016-GS1-Q079",
+      "UPSC-CSE-2022-GS1-Q028",
+      "UPSC-CSE-2023-GS1-Q011",
+      "UPSC-CSE-2024-GS1-Q031"
+     ]
+    },
+    {
+     "label": "Bioenergy / gasification / conversion",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q012",
+      "UPSC-CSE-2013-GS1-Q013",
+      "UPSC-CSE-2017-GS1-Q022",
+      "UPSC-CSE-2019-GS1-Q026",
+      "UPSC-CSE-2020-GS1-Q084",
+      "UPSC-CSE-2024-GS1-Q046",
+      "UPSC-CSE-2025-GS1-Q045",
+      "UPSC-CSE-2025-GS1-Q063"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Stable/direct recall",
+     "ids": [
+      "UPPCS-2018-GS1-Q090",
+      "UPPCS-2021-GS1-Q023",
+      "UPPCS-2021-GS1-Q121",
+      "UPPCS-2022-GS1-Q067",
+      "UPPCS-2023-GS1-Q102"
+     ]
+    },
+    {
+     "label": "Use only as demand evidence / dynamic wrapper",
+     "ids": [
+      "UPPCS-2019-GS1-Q063",
+      "UPPCS-2019-GS1-Q064",
+      "UPPCS-2020-GS1-Q046",
+      "UPPCS-2022-GS1-Q117",
+      "UPPCS-2023-GS1-Q058",
+      "UPPCS-2025-GS1-Q106",
+      "UPPCS-2025-GS1-Q109"
+     ]
+    },
+    {
+     "label": "Scientifically suspect wording — quarantine",
+     "ids": [
+      "UPPCS-2022-GS1-Q004",
+      "UPPCS-2022-GS1-Q024"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC repeatedly tests **technology distinctions**, not scheme trivia: fuel cell vs combustion; PV vs solar thermal; fission vs fusion vs radioisotope decay; anode vs cathode; gasification feedstock/product chains.\n- Strong trap family = **absolute qualifiers**: “only”, “cannot”, “no pollution”, “always”, “requires 60% enrichment”, “not usable in small devices”.\n- Current events usually act as the wrapper; permanent preparation should retain the underlying mechanism and property statement.\n- UPPCS adds more **direct classification + location/installation recall**; the latter should remain a replaceable current layer."
+  },
+  "nanotech-materials": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q014",
+      "UPSC-CSE-2015-GS1-Q023",
+      "UPSC-CSE-2020-GS1-Q041",
+      "UPSC-CSE-2022-GS1-Q098",
+      "UPSC-CSE-2023-GS1-Q053",
+      "UPSC-CSE-2024-GS1-Q036"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q083",
+      "UPPCS-2019-GS1-Q128",
+      "UPPCS-2022-GS1-Q054"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC pattern = **material → structure/property → application → exception**.\n- High-value elimination cues: natural vs man-made; carbon vs silicon; biocompatibility/biodegradability; “can/cannot be recycled”; established application vs speculative one.\n- Do not let current nano-products or launch announcements replace the small, durable material-science core."
+  },
+  "defence-technology": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q037",
+      "UPSC-CSE-2016-GS1-Q046",
+      "UPSC-CSE-2018-GS1-Q043",
+      "UPSC-CSE-2020-GS1-Q042",
+      "UPSC-CSE-2022-GS1-Q034",
+      "UPSC-CSE-2023-GS1-Q058",
+      "UPSC-CSE-2024-GS1-Q035",
+      "UPSC-CSE-2025-GS1-Q042",
+      "UPSC-CSE-2025-GS1-Q046",
+      "UPSC-CSE-2025-GS1-Q084",
+      "UPSC-CSE-2026-GS1-Q072",
+      "UPSC-CSE-2026-GS1-Q085",
+      "UPSC-CSE-2026-GS1-Q093"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q028",
+      "UPPCS-2019-GS1-Q123",
+      "UPPCS-2020-GS1-Q055",
+      "UPPCS-2023-GS1-Q078",
+      "UPPCS-2023-GS1-Q082",
+      "UPPCS-2024-GS1-Q057",
+      "UPPCS-2024-GS1-Q082",
+      "UPPCS-2024-GS1-Q110",
+      "UPPCS-2025-GS1-Q130"
+     ]
+    }
+   ],
+   "synthesis": ""
+  },
+  "defence-organisations": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q091",
+      "UPSC-CSE-2024-GS1-Q069",
+      "UPSC-CSE-2024-GS1-Q077",
+      "UPSC-CSE-2024-GS1-Q082",
+      "UPSC-CSE-2026-GS1-Q098"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2021-GS1-Q062",
+      "UPPCS-2023-GS1-Q072",
+      "UPPCS-2024-GS1-Q112",
+      "UPPCS-2025-GS1-Q110"
+     ]
+    }
+   ],
+   "synthesis": ""
+  }
+ }
+}

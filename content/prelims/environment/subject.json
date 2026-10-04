@@ -1,0 +1,23 @@
+{
+  "title": "Environment & Ecology",
+  "source": "source/Environment-v01-source-pack-CLAUDE-READY.md",
+  "topics": [
+    { "id": "ecology", "title": "Ecology, Biodiversity & Species", "chapters": ["ecology-ecosystems", "biodiversity", "species", "plants", "marine-ecology", "bioenergy-bio-inputs"] },
+    { "id": "conservation", "title": "Conservation Governance & Protected Areas", "chapters": ["protected-areas", "environmental-laws", "international-conventions"] },
+    { "id": "pollution-climate", "title": "Pollution & Climate Change", "chapters": ["pollution", "waste-remediation", "climate-change"] }
+  ],
+  "taxonomy": [
+    "prelims-environment-and-ecology-ecology-biodiversity-and-species-species-traits-habitats-and-distribution",
+    "prelims-environment-and-ecology-ecology-biodiversity-and-species-ecology-and-ecosystem-functioning",
+    "prelims-environment-and-ecology-ecology-biodiversity-and-species-plants-uses-adaptations-and-tree-species",
+    "prelims-environment-and-ecology-ecology-biodiversity-and-species-marine-ecology",
+    "prelims-environment-and-ecology-ecology-biodiversity-and-species-bioenergy-and-biological-inputs",
+    "prelims-environment-and-ecology-ecology-biodiversity-and-species-biodiversity-patterns-hotspots-and-conservation",
+    "prelims-environment-and-ecology-conservation-governance-and-protected-areas-international-environmental-conventions-bodies-and-initiatives",
+    "prelims-environment-and-ecology-conservation-governance-and-protected-areas-protected-areas-wetlands-and-reserves",
+    "prelims-environment-and-ecology-conservation-governance-and-protected-areas-indian-environmental-laws-and-institutions",
+    "prelims-environment-and-ecology-pollution-and-climate-change-pollution-and-pollutants",
+    "prelims-environment-and-ecology-pollution-and-climate-change-climate-change-science-mitigation-and-policy",
+    "prelims-environment-and-ecology-pollution-and-climate-change-remediation-and-waste-management"
+  ]
+}

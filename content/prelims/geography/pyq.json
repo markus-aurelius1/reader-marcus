@@ -1,0 +1,917 @@
+{
+ "source": "source/Geography-v01-source-pack-CLAUDE-READY.md",
+ "chapters": {
+  "climatology": {
+   "upsc": [
+    {
+     "label": "Atmospheric layers/composition/ozone/ionosphere",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q009",
+      "UPSC-CSE-2011-GS1-Q027",
+      "UPSC-CSE-2011-GS1-Q095",
+      "UPSC-CSE-2024-GS1-Q002"
+     ]
+    },
+    {
+     "label": "Heat budget / greenhouse / cloud radiative effect",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q049",
+      "UPSC-CSE-2022-GS1-Q081",
+      "UPSC-CSE-2023-GS1-Q062",
+      "UPSC-CSE-2024-GS1-Q001",
+      "UPSC-CSE-2025-GS1-Q029"
+     ]
+    },
+    {
+     "label": "Pressure, winds, Coriolis, temperature distribution",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q089",
+      "UPSC-CSE-2015-GS1-Q066",
+      "UPSC-CSE-2021-GS1-Q058",
+      "UPSC-CSE-2024-GS1-Q004",
+      "UPSC-CSE-2024-GS1-Q014",
+      "UPSC-CSE-2025-GS1-Q026",
+      "UPSC-CSE-2025-GS1-Q027"
+     ]
+    },
+    {
+     "label": "ENSO / IOD",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q052",
+      "UPSC-CSE-2017-GS1-Q066"
+     ]
+    },
+    {
+     "label": "Cyclones / jet streams / condensation",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q005",
+      "UPSC-CSE-2019-GS1-Q044",
+      "UPSC-CSE-2020-GS1-Q099"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q005",
+      "UPPCS-2018-GS1-Q150",
+      "UPPCS-2022-GS1-Q093",
+      "UPPCS-2023-GS1-Q052",
+      "UPPCS-2023-GS1-Q067",
+      "UPPCS-2023-GS1-Q068",
+      "UPPCS-2024-GS1-Q027",
+      "UPPCS-2024-GS1-Q060",
+      "UPPCS-2025-GS1-Q045"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-yield pattern = **process + qualifier** rather than raw definition.\n- Recurrent eliminators: `no/only/always`; confusing solar shortwave with terrestrial longwave; treating Coriolis as a force that changes wind speed; mixing stratosphere/ionosphere; reversing El Niño/La Niña upwelling; reversing high/low cloud radiative effects.\n- Required answerability: layer → property → consequence; heat-transfer chain; pressure/wind cause → deflection; ENSO/IOD sign conventions; cyclone prerequisites; RH/dew/cloud logic."
+  },
+  "climatic-regions": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q023",
+      "UPSC-CSE-2013-GS1-Q065",
+      "UPSC-CSE-2014-GS1-Q043",
+      "UPSC-CSE-2015-GS1-Q080",
+      "UPSC-CSE-2021-GS1-Q060",
+      "UPSC-CSE-2024-GS1-Q013"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q124",
+      "UPPCS-2019-GS1-Q003",
+      "UPPCS-2019-GS1-Q010",
+      "UPPCS-2022-GS1-Q096",
+      "UPPCS-2024-GS1-Q029",
+      "UPPCS-2024-GS1-Q075",
+      "UPPCS-2024-GS1-Q079"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC asks **description → climate/biome** and underlying mechanism; UPPCS adds named regional equivalents.\n- Must distinguish: equatorial vs savanna; savanna vs steppe; hot desert vs steppe; Mediterranean vs marine west coast.\n- Soil/vegetation questions require nutrient-cycle logic, not merely species lists."
+  },
+  "earth-in-space": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q043",
+      "UPSC-CSE-2013-GS1-Q014",
+      "UPSC-CSE-2018-GS1-Q029",
+      "UPSC-CSE-2024-GS1-Q015",
+      "UPSC-CSE-2025-GS1-Q033",
+      "UPSC-CSE-2025-GS1-Q076"
+     ]
+    }
+   ],
+   "uppcs": [],
+   "synthesis": "- UPSC is moving from formula recall to **spatial/physical reasoning**: where a latitude passes, how day length changes, how standard/civil time differs from geometric longitude, and how mass redistribution alters rotation.\n- Do not expand into astronomy/stellar evolution merely because the base notes contain it; taxonomy ownership is Earth motions, coordinates, seasons and time."
+  },
+  "geomorphology": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q048",
+      "UPSC-CSE-2014-GS1-Q013",
+      "UPSC-CSE-2018-GS1-Q057",
+      "UPSC-CSE-2023-GS1-Q065",
+      "UPSC-CSE-2024-GS1-Q003",
+      "UPSC-CSE-2024-GS1-Q007",
+      "UPSC-CSE-2024-GS1-Q010",
+      "UPSC-CSE-2025-GS1-Q025"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q007",
+      "UPPCS-2019-GS1-Q009",
+      "UPPCS-2019-GS1-Q011",
+      "UPPCS-2021-GS1-Q087",
+      "UPPCS-2022-GS1-Q127"
+     ]
+    }
+   ],
+   "synthesis": "- Earth-interior questions are **wave property → state of matter → layer inference**.\n- Tectonics questions are **evidence/mechanism/boundary effect**, not lists of plates alone.\n- Rock/weathering questions increasingly use multi-statement causal logic.\n- Earth-history facts need correct broad chronology; avoid false precision and obsolete dates."
+  },
+  "oceanography": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q045",
+      "UPSC-CSE-2013-GS1-Q016",
+      "UPSC-CSE-2013-GS1-Q054",
+      "UPSC-CSE-2015-GS1-Q014",
+      "UPSC-CSE-2015-GS1-Q070",
+      "UPSC-CSE-2024-GS1-Q004"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2020-GS1-Q078",
+      "UPPCS-2023-GS1-Q061",
+      "UPPCS-2024-GS1-Q028",
+      "UPPCS-2025-GS1-Q075"
+     ]
+    }
+   ],
+   "synthesis": "- Three recurring axes: **current drivers/direction**, **temperature–salinity–density structure**, **tidal/freshwater-store recall**.\n- High elimination value in property-name swaps: thermocline ≠ air temperature; halocline ≠ temperature; pycnocline = density.\n- Current names must be paired with basin + thermal character, especially for UPPCS."
+  },
+  "world-regional": {
+   "upsc": [
+    {
+     "label": "Straits / canals / maritime choke points",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q090",
+      "UPSC-CSE-2026-GS1-Q040"
+     ]
+    },
+    {
+     "label": "Seas, coasts, borders, neighbour counts",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q051",
+      "UPSC-CSE-2015-GS1-Q077",
+      "UPSC-CSE-2017-GS1-Q054",
+      "UPSC-CSE-2019-GS1-Q036",
+      "UPSC-CSE-2023-GS1-Q061",
+      "UPSC-CSE-2024-GS1-Q008",
+      "UPSC-CSE-2024-GS1-Q079"
+     ]
+    },
+    {
+     "label": "Relative location / regional identification",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q052",
+      "UPSC-CSE-2022-GS1-Q026",
+      "UPSC-CSE-2022-GS1-Q027",
+      "UPSC-CSE-2022-GS1-Q088"
+     ]
+    },
+    {
+     "label": "World mountains",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q003",
+      "UPSC-CSE-2024-GS1-Q010",
+      "UPSC-CSE-2025-GS1-Q022"
+     ]
+    },
+    {
+     "label": "World rivers",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q097",
+      "UPSC-CSE-2020-GS1-Q068"
+     ]
+    },
+    {
+     "label": "World lakes / water-body change",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q013",
+      "UPSC-CSE-2022-GS1-Q023",
+      "UPSC-CSE-2026-GS1-Q029"
+     ]
+    },
+    {
+     "label": "Polar research",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q073"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Regional plains/deserts/canals",
+     "ids": [
+      "UPPCS-2018-GS1-Q124",
+      "UPPCS-2018-GS1-Q125",
+      "UPPCS-2018-GS1-Q127",
+      "UPPCS-2018-GS1-Q131",
+      "UPPCS-2022-GS1-Q105",
+      "UPPCS-2022-GS1-Q141",
+      "UPPCS-2023-GS1-Q063",
+      "UPPCS-2025-GS1-Q001",
+      "UPPCS-2025-GS1-Q027",
+      "UPPCS-2025-GS1-Q138"
+     ]
+    },
+    {
+     "label": "Capitals / cities / sequences",
+     "ids": [
+      "UPPCS-2019-GS1-Q002",
+      "UPPCS-2019-GS1-Q076",
+      "UPPCS-2019-GS1-Q079",
+      "UPPCS-2020-GS1-Q082",
+      "UPPCS-2021-GS1-Q105",
+      "UPPCS-2024-GS1-Q040"
+     ]
+    },
+    {
+     "label": "Mountains / ranges",
+     "ids": [
+      "UPPCS-2019-GS1-Q082",
+      "UPPCS-2020-GS1-Q076",
+      "UPPCS-2020-GS1-Q086",
+      "UPPCS-2023-GS1-Q065",
+      "UPPCS-2024-GS1-Q061",
+      "UPPCS-2024-GS1-Q076"
+     ]
+    },
+    {
+     "label": "Rivers / lakes",
+     "ids": [
+      "UPPCS-2021-GS1-Q113",
+      "UPPCS-2023-GS1-Q062",
+      "UPPCS-2023-GS1-Q066",
+      "UPPCS-2024-GS1-Q077",
+      "UPPCS-2025-GS1-Q068"
+     ]
+    },
+    {
+     "label": "Islands / regions / sea access",
+     "ids": [
+      "UPPCS-2020-GS1-Q090",
+      "UPPCS-2021-GS1-Q002",
+      "UPPCS-2021-GS1-Q053",
+      "UPPCS-2021-GS1-Q092",
+      "UPPCS-2021-GS1-Q100",
+      "UPPCS-2022-GS1-Q127",
+      "UPPCS-2023-GS1-Q060"
+     ]
+    },
+    {
+     "label": "Polar",
+     "ids": [
+      "UPPCS-2021-GS1-Q139"
+     ]
+    },
+    {
+     "label": "Current/geopolitical regional item retained for demand only",
+     "ids": [
+      "UPPCS-2022-GS1-Q049"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC repeatedly converts map memory into **elimination**: one wrong coast/sea, one misplaced region, “how many” neighbours, route sequence, river mouth, or country-range pair.\n- UPPCS asks the same substrate at **greater recall volume**: capitals, deserts, islands, mountains, rivers/lakes, coal/mineral regions and direct location matching.\n- Best durable unit = **feature → countries/region → direction/connection → one trap**; not isolated encyclopaedic lists.\n- Polar demand is narrow but high-elimination: **historical vs operational station; Arctic vs Antarctic; surface station vs underwater observatory**."
+  },
+  "world-resources": {
+   "upsc": [
+    {
+     "label": "Crude oil / energy geography",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q031",
+      "UPSC-CSE-2020-GS1-Q053",
+      "UPSC-CSE-2024-GS1-Q088",
+      "UPSC-CSE-2024-GS1-Q097"
+     ]
+    },
+    {
+     "label": "Critical minerals / REEs / batteries",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q086",
+      "UPSC-CSE-2023-GS1-Q007",
+      "UPSC-CSE-2025-GS1-Q043",
+      "UPSC-CSE-2025-GS1-Q081",
+      "UPSC-CSE-2026-GS1-Q060"
+     ]
+    },
+    {
+     "label": "Major crop geography",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q005"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Producer-country recall",
+     "ids": [
+      "UPPCS-2018-GS1-Q057",
+      "UPPCS-2018-GS1-Q126",
+      "UPPCS-2021-GS1-Q006",
+      "UPPCS-2022-GS1-Q051",
+      "UPPCS-2022-GS1-Q100"
+     ]
+    },
+    {
+     "label": "Mineral / industrial region matching",
+     "ids": [
+      "UPPCS-2020-GS1-Q070",
+      "UPPCS-2020-GS1-Q084",
+      "UPPCS-2020-GS1-Q088",
+      "UPPCS-2022-GS1-Q042",
+      "UPPCS-2022-GS1-Q138",
+      "UPPCS-2022-GS1-Q145",
+      "UPPCS-2023-GS1-Q069",
+      "UPPCS-2023-GS1-Q070",
+      "UPPCS-2024-GS1-Q078",
+      "UPPCS-2025-GS1-Q004"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC: **resource-country concentration + technological use + qualifier** (“producer” vs “reserve”, “cathode” vs “anode”, “grade” vs “benchmark”).\n- UPPCS: **named field/region → commodity → country** and date-sensitive producer rankings.\n- Permanent layer should preserve **structural leaders/regions**; exact rank/percentage must be **date-stamped** and refreshed before an exam cycle."
+  },
+  "india-drainage": {
+   "upsc": [
+    {
+     "label": "River-system structure / tributaries / direction / antecedence",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q012",
+      "UPSC-CSE-2011-GS1-Q097",
+      "UPSC-CSE-2013-GS1-Q015",
+      "UPSC-CSE-2014-GS1-Q045",
+      "UPSC-CSE-2015-GS1-Q036",
+      "UPSC-CSE-2016-GS1-Q028",
+      "UPSC-CSE-2017-GS1-Q030",
+      "UPSC-CSE-2021-GS1-Q053",
+      "UPSC-CSE-2021-GS1-Q055",
+      "UPSC-CSE-2022-GS1-Q024",
+      "UPSC-CSE-2024-GS1-Q006",
+      "UPSC-CSE-2026-GS1-Q001",
+      "UPSC-CSE-2026-GS1-Q003",
+      "UPSC-CSE-2026-GS1-Q035"
+     ]
+    },
+    {
+     "label": "Lakes / wetlands / reservoirs / waterfall–river geography",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q046",
+      "UPSC-CSE-2018-GS1-Q077",
+      "UPSC-CSE-2019-GS1-Q042",
+      "UPSC-CSE-2021-GS1-Q054",
+      "UPSC-CSE-2022-GS1-Q030",
+      "UPSC-CSE-2022-GS1-Q070",
+      "UPSC-CSE-2023-GS1-Q001",
+      "UPSC-CSE-2024-GS1-Q009"
+     ]
+    },
+    {
+     "label": "Glaciers / groundwater / projects",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q085",
+      "UPSC-CSE-2018-GS1-Q081",
+      "UPSC-CSE-2019-GS1-Q038",
+      "UPSC-CSE-2020-GS1-Q098",
+      "UPSC-CSE-2023-GS1-Q076"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "River origins/tributaries",
+     "ids": [
+      "UPPCS-2018-GS1-Q051",
+      "UPPCS-2020-GS1-Q068",
+      "UPPCS-2023-GS1-Q049",
+      "UPPCS-2023-GS1-Q053",
+      "UPPCS-2025-GS1-Q116"
+     ]
+    },
+    {
+     "label": "Waterfalls",
+     "ids": [
+      "UPPCS-2018-GS1-Q122",
+      "UPPCS-2021-GS1-Q085",
+      "UPPCS-2022-GS1-Q047"
+     ]
+    },
+    {
+     "label": "Lakes",
+     "ids": [
+      "UPPCS-2020-GS1-Q056",
+      "UPPCS-2021-GS1-Q061",
+      "UPPCS-2021-GS1-Q106"
+     ]
+    },
+    {
+     "label": "Himalayan rivers",
+     "ids": [
+      "UPPCS-2020-GS1-Q052",
+      "UPPCS-2021-GS1-Q133",
+      "UPPCS-2025-GS1-Q094"
+     ]
+    },
+    {
+     "label": "Prayags",
+     "ids": [
+      "UPPCS-2023-GS1-Q050",
+      "UPPCS-2024-GS1-Q074"
+     ]
+    },
+    {
+     "label": "One-off but eliminative",
+     "ids": [
+      "UPPCS-2019-GS1-Q009",
+      "UPPCS-2019-GS1-Q084",
+      "UPPCS-2019-GS1-Q085",
+      "UPPCS-2021-GS1-Q089",
+      "UPPCS-2022-GS1-Q079",
+      "UPPCS-2023-GS1-Q055"
+     ]
+    },
+    {
+     "label": "River-project cross-links inside this child’s explicit scope",
+     "ids": [
+      "UPPCS-2024-GS1-Q072",
+      "UPPCS-2025-GS1-Q092"
+     ]
+    }
+   ],
+   "synthesis": "- Prepare rivers as **networks**, not isolated names: source → states/terrain → major tributaries → confluences → mouth/delta/estuary.\n- UPSC repeatedly tests **structural explanation**: rift valleys, antecedence, syntaxial bends, drainage capture, west/east flow.\n- Memorise **diagnostic pairs**: glacier–river, lake–river, reservoir–state, waterfall–river/region.\n- UPPCS adds direct recall of **waterfalls + lakes + Prayags + origins**.\n- Groundwater questions demand both distribution and mechanism; avoid retaining transient percentages."
+  },
+  "india-physiography": {
+   "upsc": [
+    {
+     "label": "State/route identification",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q071",
+      "UPSC-CSE-2011-GS1-Q098",
+      "UPSC-CSE-2012-GS1-Q043",
+      "UPSC-CSE-2015-GS1-Q006",
+      "UPSC-CSE-2017-GS1-Q049"
+     ]
+    },
+    {
+     "label": "Himalaya / ranges / peaks / coastal landforms",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q048",
+      "UPSC-CSE-2014-GS1-Q048",
+      "UPSC-CSE-2017-GS1-Q019",
+      "UPSC-CSE-2020-GS1-Q096",
+      "UPSC-CSE-2022-GS1-Q025",
+      "UPSC-CSE-2023-GS1-Q005",
+      "UPSC-CSE-2023-GS1-Q009",
+      "UPSC-CSE-2026-GS1-Q024"
+     ]
+    },
+    {
+     "label": "Islands/channels",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q003",
+      "UPSC-CSE-2018-GS1-Q085"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Direct recall emphasis: physiography + location + passes",
+     "ids": [
+      "UPPCS-2018-GS1-Q047",
+      "UPPCS-2018-GS1-Q056",
+      "UPPCS-2019-GS1-Q006",
+      "UPPCS-2019-GS1-Q007",
+      "UPPCS-2019-GS1-Q008",
+      "UPPCS-2019-GS1-Q011",
+      "UPPCS-2019-GS1-Q082",
+      "UPPCS-2020-GS1-Q060",
+      "UPPCS-2021-GS1-Q120",
+      "UPPCS-2022-GS1-Q012",
+      "UPPCS-2022-GS1-Q033",
+      "UPPCS-2022-GS1-Q098",
+      "UPPCS-2022-GS1-Q114",
+      "UPPCS-2023-GS1-Q057",
+      "UPPCS-2024-GS1-Q032",
+      "UPPCS-2024-GS1-Q042",
+      "UPPCS-2025-GS1-Q035",
+      "UPPCS-2025-GS1-Q037",
+      "UPPCS-2025-GS1-Q044",
+      "UPPCS-2025-GS1-Q055",
+      "UPPCS-2025-GS1-Q094"
+     ]
+    },
+    {
+     "label": "Malformed/review records used for demand only",
+     "ids": [
+      "UPPCS-2019-GS1-Q007",
+      "UPPCS-2021-GS1-Q120",
+      "UPPCS-2022-GS1-Q012"
+     ]
+    }
+   ],
+   "synthesis": "- Dominant mode = **map elimination**: “where is it?”, “which range?”, “which state?”, “what lies north/south/east/west?”, “which pass connects what?”.\n- UPSC prefers descriptive identification and relational geography; UPPCS asks a broader pass/range/peak inventory.\n- Island questions demand channel order + volcanic/coral origin distinction + relative location."
+  },
+  "india-climate-soils-vegetation": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q088",
+      "UPSC-CSE-2013-GS1-Q062",
+      "UPSC-CSE-2014-GS1-Q043",
+      "UPSC-CSE-2015-GS1-Q038",
+      "UPSC-CSE-2015-GS1-Q072",
+      "UPSC-CSE-2015-GS1-Q078",
+      "UPSC-CSE-2017-GS1-Q066",
+      "UPSC-CSE-2021-GS1-Q064",
+      "UPSC-CSE-2026-GS1-Q023"
+     ]
+    },
+    {
+     "label": "Cross-linked later natural-vegetation demand",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q003"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q129",
+      "UPPCS-2018-GS1-Q142",
+      "UPPCS-2019-GS1-Q083",
+      "UPPCS-2021-GS1-Q010",
+      "UPPCS-2022-GS1-Q123",
+      "UPPCS-2023-GS1-Q051",
+      "UPPCS-2023-GS1-Q054",
+      "UPPCS-2024-GS1-Q037",
+      "UPPCS-2024-GS1-Q039",
+      "UPPCS-2025-GS1-Q021"
+     ]
+    }
+   ],
+   "synthesis": "- Monsoon questions are causal + spatial: onset/withdrawal, branch orientation, rain shadow, westward rainfall decline, western disturbances.\n- Soil questions rely on **parent material + climate + chemistry + distribution**, not colour alone.\n- Vegetation questions rely on **rainfall/temperature/altitude ↔ forest type ↔ distribution ↔ dominant species**.\n- Old forest-report percentages should never become permanent memory targets."
+  },
+  "up-geography": {
+   "upsc": [],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q048",
+      "UPPCS-2018-GS1-Q101",
+      "UPPCS-2021-GS1-Q078",
+      "UPPCS-2021-GS1-Q111",
+      "UPPCS-2022-GS1-Q103",
+      "UPPCS-2023-GS1-Q056",
+      "UPPCS-2023-GS1-Q059",
+      "UPPCS-2024-GS1-Q041",
+      "UPPCS-2025-GS1-Q008",
+      "UPPCS-2025-GS1-Q032",
+      "UPPCS-2025-GS1-Q058",
+      "UPPCS-2025-GS1-Q084"
+     ]
+    }
+   ],
+   "synthesis": "- UPPCS state geography is overwhelmingly **map/region/district association**, not long theory.\n- Permanent layer should prioritize: physiographic regions, rivers, rainfall/soils/vegetation, state borders, divisions/district-map relations, protected/wetland locations.\n- Schemes, current forest percentages, new infrastructure status, current Ramsar counts = replaceable layer only."
+  },
+  "india-minerals-energy-industry": {
+   "upsc": [
+    {
+     "label": "Coal quality, location, imports, institutions",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q084",
+      "UPSC-CSE-2013-GS1-Q061",
+      "UPSC-CSE-2019-GS1-Q048",
+      "UPSC-CSE-2020-GS1-Q079",
+      "UPSC-CSE-2022-GS1-Q072",
+      "UPSC-CSE-2025-GS1-Q045"
+     ]
+    },
+    {
+     "label": "Mineral law / legal classification",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q062",
+      "UPSC-CSE-2018-GS1-Q027",
+      "UPSC-CSE-2019-GS1-Q062",
+      "UPSC-CSE-2020-GS1-Q092",
+      "UPSC-CSE-2025-GS1-Q089"
+     ]
+    },
+    {
+     "label": "Atomic / beach-sand minerals",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q061",
+      "UPSC-CSE-2022-GS1-Q028",
+      "UPSC-CSE-2023-GS1-Q006",
+      "UPSC-CSE-2023-GS1-Q011"
+     ]
+    },
+    {
+     "label": "Unconventional hydrocarbons",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q038",
+      "UPSC-CSE-2016-GS1-Q074",
+      "UPSC-CSE-2019-GS1-Q034"
+     ]
+    },
+    {
+     "label": "Mineral–rock / mineral–region reasoning",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q063",
+      "UPSC-CSE-2018-GS1-Q027"
+     ]
+    },
+    {
+     "label": "Critical minerals / technology linkage",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q006",
+      "UPSC-CSE-2025-GS1-Q043",
+      "UPSC-CSE-2026-GS1-Q060"
+     ]
+    },
+    {
+     "label": "Thermal-power spatial logic",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q066"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Mineral / mine / agency mapping",
+     "ids": [
+      "UPPCS-2020-GS1-Q064",
+      "UPPCS-2021-GS1-Q047",
+      "UPPCS-2022-GS1-Q014",
+      "UPPCS-2022-GS1-Q149",
+      "UPPCS-2025-GS1-Q108"
+     ]
+    },
+    {
+     "label": "Coal / petroleum / power mapping",
+     "ids": [
+      "UPPCS-2023-GS1-Q058",
+      "UPPCS-2025-GS1-Q009",
+      "UPPCS-2025-GS1-Q014",
+      "UPPCS-2025-GS1-Q106"
+     ]
+    },
+    {
+     "label": "Critical/renewable current interface",
+     "ids": [
+      "UPPCS-2020-GS1-Q046",
+      "UPPCS-2023-GS1-Q077"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-return axis = **category + location + qualifier**.\n- UPSC repeatedly converts simple mineral geography into legal/institutional statements: **minor mineral ≠ “small” mineral; DMF ≠ exploration body; State vs Centre powers matter**.\n- Geological association is a recurring elimination tool: **Dharwar → metallic minerals; Gondwana → coal; sedimentary basins → petroleum/natural gas; beach placers → heavy minerals**.\n- Coal questions combine **quality + industrial use + import dependence + institutions** rather than only coalfield maps.\n- Beach minerals are a compact recurring cluster: **monazite–thorium/REE; ilmenite/rutile–Ti; discontinuous coastal occurrence**.\n- Unconventional hydrocarbons demand mechanism distinction: **CBM / shale gas / methane hydrate are not interchangeable**.\n- UPPCS adds high-volume pair matching: **mine/state, refinery/state, plant/state, agency/HQ**.\n- Current critical-mineral policies are examinable, but permanent notes should hold only the **concept, supply-risk logic, core examples, REE definition, battery-use distinctions**."
+  },
+  "india-transport": {
+   "upsc": [
+    {
+     "label": "Highways / corridor endpoints",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q077",
+      "UPSC-CSE-2023-GS1-Q010"
+     ]
+    },
+    {
+     "label": "Ports / maritime structure",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q096",
+      "UPSC-CSE-2023-GS1-Q002",
+      "UPSC-CSE-2026-GS1-Q025",
+      "UPSC-CSE-2026-GS1-Q034"
+     ]
+    },
+    {
+     "label": "Airports",
+     "ids": [
+      "UPSC-CSE-2022-GS1-Q084",
+      "UPSC-CSE-2024-GS1-Q011"
+     ]
+    },
+    {
+     "label": "Railways",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q082"
+     ]
+    },
+    {
+     "label": "Boundary-interface UPSC PYQs — not permanent child payload",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q084",
+      "UPSC-CSE-2025-GS1-Q062",
+      "UPSC-CSE-2026-GS1-Q091"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "UP transport projects / airports",
+     "ids": [
+      "UPPCS-2018-GS1-Q101",
+      "UPPCS-2020-GS1-Q061",
+      "UPPCS-2023-GS1-Q145"
+     ]
+    },
+    {
+     "label": "Airports / “firsts”",
+     "ids": [
+      "UPPCS-2022-GS1-Q117"
+     ]
+    },
+    {
+     "label": "Railways / schemes / HQ",
+     "ids": [
+      "UPPCS-2023-GS1-Q071",
+      "UPPCS-2023-GS1-Q136",
+      "UPPCS-2025-GS1-Q136",
+      "UPPCS-2025-GS1-Q150"
+     ]
+    },
+    {
+     "label": "Ports / tunnels",
+     "ids": [
+      "UPPCS-2025-GS1-Q044",
+      "UPPCS-2025-GS1-Q050"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC emphasises **endpoints + structural rationale + “first” distinctions + absolute qualifiers**, not exhaustive infrastructure inventories.\n- Repeated trap = **dynamic superlative presented as permanent fact**: “largest”, “first”, “all”, “none”, route target dates.\n- Old/new NH numbering creates a special chronology trap; preserve the PYQ’s demand, not a stale route table.\n- Port questions mix **type/location/governance history**: riverine vs sea port; natural harbour vs artificial/developed; corporatised “first”; private-port claims.\n- UPPCS adds **direct mapping**: port–state, railway-zone–HQ, bridge/tunnel location, UP expressway routes.\n- Current infrastructure schemes should be stored as a replaceable layer; permanent core = **geographical logic + stable endpoint/location anchors**."
+  },
+  "population-demography": {
+   "upsc": [
+    {
+     "label": "Demographic dividend → age structure + conversion into growth",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q014",
+      "UPSC-CSE-2013-GS1-Q078"
+     ]
+    },
+    {
+     "label": "Demographic transition → sequence logic",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q038"
+     ]
+    },
+    {
+     "label": "Fertility indicator definition",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q041"
+     ]
+    },
+    {
+     "label": "Low fertility / ageing / population decline",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q067"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "Census 2011: state/district rankings + UP urban history",
+     "ids": [
+      "UPPCS-2018-GS1-Q053",
+      "UPPCS-2018-GS1-Q058",
+      "UPPCS-2018-GS1-Q059",
+      "UPPCS-2020-GS1-Q023",
+      "UPPCS-2021-GS1-Q020",
+      "UPPCS-2021-GS1-Q137",
+      "UPPCS-2022-GS1-Q057",
+      "UPPCS-2023-GS1-Q128",
+      "UPPCS-2024-GS1-Q005"
+     ]
+    },
+    {
+     "label": "Fertility, birth/death, dependency, dividend",
+     "ids": [
+      "UPPCS-2018-GS1-Q132",
+      "UPPCS-2018-GS1-Q140",
+      "UPPCS-2019-GS1-Q144",
+      "UPPCS-2020-GS1-Q117",
+      "UPPCS-2021-GS1-Q044",
+      "UPPCS-2021-GS1-Q045",
+      "UPPCS-2022-GS1-Q045"
+     ]
+    },
+    {
+     "label": "Population theory",
+     "ids": [
+      "UPPCS-2022-GS1-Q032",
+      "UPPCS-2023-GS1-Q122",
+      "UPPCS-2024-GS1-Q094"
+     ]
+    },
+    {
+     "label": "Urbanisation / settlement",
+     "ids": [
+      "UPPCS-2018-GS1-Q068",
+      "UPPCS-2021-GS1-Q050",
+      "UPPCS-2022-GS1-Q011"
+     ]
+    },
+    {
+     "label": "Low-value but durable direct recall",
+     "ids": [
+      "UPPCS-2018-GS1-Q062",
+      "UPPCS-2018-GS1-Q136"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC is **concept-first**: definition → causal sequence → age structure → conditions that convert a favourable age structure into a dividend.\n- UPPCS adds **Census-2011 precision**: state/district rankings, settlement milestones, historical census chronology, replacement fertility, urbanisation stages.\n- Main traps:\n  - **TFR ≠ birth rate**; TFR is children per woman, not “per 1,000”.\n  - **Natural growth ≠ actual growth**; migration enters actual growth.\n  - **Demographic dividend ≠ merely a large population**; it is a favourable age structure + enabling human-capital/employment conditions.\n  - Working-age cut-off is **source-dependent**: UPSC used **15–64**; UPPCS used **15–59**.\n  - **Ageing** can result from fertility decline + longer life expectancy even when total population is still growing.\n  - Census ranking questions are **year-locked**; do not replace 2011 answers with later estimates."
+  },
+  "tribes-communities": {
+   "upsc": [
+    {
+     "label": "Tribe–state elimination",
+     "ids": [
+      "UPSC-CSE-2013-GS1-Q073"
+     ]
+    },
+    {
+     "label": "Community livelihood",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q039"
+     ]
+    },
+    {
+     "label": "Cultural practice",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q091",
+      "UPSC-CSE-2015-GS1-Q069"
+     ]
+    },
+    {
+     "label": "Tribal languages",
+     "ids": [
+      "UPSC-CSE-2021-GS1-Q095"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "World tribe–habitat matching",
+     "ids": [
+      "UPPCS-2019-GS1-Q004",
+      "UPPCS-2021-GS1-Q130",
+      "UPPCS-2025-GS1-Q023"
+     ]
+    },
+    {
+     "label": "Indian tribe–state / island matching",
+     "ids": [
+      "UPPCS-2020-GS1-Q050",
+      "UPPCS-2020-GS1-Q054",
+      "UPPCS-2022-GS1-Q089"
+     ]
+    },
+    {
+     "label": "Human-geography concepts",
+     "ids": [
+      "UPPCS-2018-GS1-Q144",
+      "UPPCS-2019-GS1-Q057",
+      "UPPCS-2021-GS1-Q080",
+      "UPPCS-2022-GS1-Q061",
+      "UPPCS-2024-GS1-Q038"
+     ]
+    }
+   ],
+   "synthesis": "- Dominant form = **pair/match/elimination**, not descriptive anthropology.\n- Highest-value memory structure: **Community → region → livelihood/practice → language**.\n- Common traps:\n  - adjacent-region swaps: Karbi→Himachal, Khas→Arunachal, Maasai→West Africa;\n  - same-family spelling/OCR: Kirghiz/Kyrgyz, Paliyan/Palliyan, Keria/Kharia;\n  - livelihood swaps: hunter-gatherer vs pastoral nomad;\n  - island vs mainland tribe;\n  - a cultural practice may be tested without naming the community directly (living-root bridges)."
+  }
+ }
+}

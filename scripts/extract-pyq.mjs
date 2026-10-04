@@ -55,15 +55,24 @@ function clusters(block, exam) {
   let label = 'General'
   const add = (l, ids) => {
     if (!ids.length) return
-    const key = !l || /^canonical (semantic set|ids?$)/i.test(l) ? 'General' : l
+    const key = !l || /^canonical (semantic set|ids?$)/i.test(l) || /^\d{4}\s+Q\d+$/.test(l) ? 'General' : l
     out.set(key, [...new Set([...(out.get(key) ?? []), ...ids])])
   }
+  let skip = false // under a "Demand synthesis" sub-heading: prose, not demand
   for (const raw of block.split('\n')) {
     const line = raw.trim()
     if (!line || /^\|?\s*-{3}/.test(line)) continue
+    const head = line.match(/^#{3,6}\s+(.+)$/) // a sub-heading inside the exam block names a cluster
+    if (head) {
+      skip = /^demand/i.test(head[1])
+      if (!skip) label = cleanLabel(head[1]) || 'General'
+      continue
+    }
+    if (skip) continue
     const ids = []
     let pre = null // [exam, year, paper] carried from the last full ID on the line
-    const lead = line.match(/^(\d{4})\s*→/)
+    // year-led rows: "2019 → Q066", "| 2011 Q003 |", "- 2019 Q043 →"
+    const lead = line.match(/^(\d{4})\s*→/) ?? line.match(/^[|*-]?\s*(\d{4})\s+Q\d{2,3}\b/)
     if (lead && exam) pre = [exam, lead[1], '-GS1-']
     for (const m of line.matchAll(TOKEN)) {
       if (m[1]) pre = [m[1], m[2], m[3]]
@@ -80,7 +89,8 @@ function clusters(block, exam) {
     if (bold) {
       const l = cleanLabel(bold[1])
       if (ids.length) add(l, ids)
-      else if (!/^demand/i.test(l)) label = l // heading line: the ID lines after it belong to it
+      // heading line: the ID lines after it belong to it (an indented bold line continues a list item)
+      else if (!/^demand/i.test(l) && !/^\s+\*\*/.test(raw)) label = l
       continue
     }
     const named = line.match(/^[-*]?\s*([A-Z][^`:]{3,60}):\s*`/)
@@ -101,8 +111,10 @@ const put = (chapter, entry) => {
     : entry
 }
 const entry = (body, h) => {
-  const sec = (name) => body.match(new RegExp(`${h} ${name}[\\n]([^]*?)(?=[\\n]#{2,${h.length}} |$)`))?.[1] ?? ''
-  return { upsc: clusters(sec('UPSC'), 'UPSC-CSE-'), uppcs: clusters(sec('UPPCS'), 'UPPCS-'), synthesis: strip(sec('Demand synthesis')).replace(/\n---\s*$/, '').trim() }
+  // an exam heading may carry a suffix ("UPSC — canonical demand"); the synthesis may sit one level deeper
+  const sec = (name, lv = h) => body.match(new RegExp(`(?:^|[\\n])${lv} ${name}\\b[^\\n]*[\\n]([^]*?)(?=[\\n]#{2,${lv.length}} |$)`))?.[1] ?? ''
+  const synthesis = sec('Demand synthesis') || sec('Demand synthesis', h + '#')
+  return { upsc: clusters(sec('UPSC'), 'UPSC-CSE-'), uppcs: clusters(sec('UPPCS'), 'UPPCS-'), synthesis: strip(synthesis).replace(/\n---\s*$/, '').trim() }
 }
 
 // leaf packs
@@ -124,10 +136,12 @@ for (const part of pack.split(/\n(?=## [^\n]*Topic Source Pack)/).slice(1)) {
   }
   const demand = part.match(/\n### 3\. PYQ Demand Map\n([\s\S]*?)(?=\n### 4\.)/)
   if (!demand) continue
-  for (const child of demand[1].split(/\n(?=#### [A-Z]\. )/)) {
-    const name = child.match(/^#### [A-Z]\. (.+)$/m)
+  // the child heading sits at any level (## A. … #### A.); its exam headings are the first UPSC / UPPCS heading below it
+  for (const child of demand[1].split(/\n(?=#{2,4} [A-Z]\. )/)) {
+    const name = child.match(/^#{2,4} [A-Z]\. (.+)$/m)
     const chapter = name && byName.get(slug(name[1]))
-    if (chapter) put(chapter, entry(child, '#####'))
+    const exam = child.match(/^(#{3,6}) UPP?CS\b/m)
+    if (chapter && exam) put(chapter, entry(child, exam[1]))
   }
 }
 

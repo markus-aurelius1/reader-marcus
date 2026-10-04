@@ -1,0 +1,107 @@
+{
+  "status": {
+    "UPSC-CSE-2024-GS1-Q023": { "status": "review-required", "note": "EDITABLE_REVIEW · EMPTY_STATEMENT — demand only" },
+    "UPSC-CSE-2024-GS1-Q025": { "status": "review-required", "note": "EDITABLE_REVIEW · EMPTY_STATEMENT — reconstruction does not reconcile; not for scoring" },
+    "UPSC-CSE-2024-GS1-Q029": { "status": "review-required", "note": "EDITABLE_REVIEW · EMPTY_STATEMENT — demand only" },
+    "UPSC-CSE-2024-GS1-Q030": { "status": "review-required", "note": "EDITABLE_REVIEW · EMPTY_STATEMENT — demand only" },
+    "UPPCS-2019-GS1-Q071": { "status": "review-required", "note": "EDITABLE_REVIEW · OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2019-GS1-Q133": { "status": "review-required", "note": "EDITABLE_REVIEW · OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2023-GS1-Q129": { "status": "review-required", "note": "EDITABLE_REVIEW · TABLE_STRUCTURE_UNCLEAR" },
+    "UPSC-CSE-2025-GS1-Q063": { "dynamic": true, "note": "Producer-ranking statement is time-sensitive" },
+
+    "UPSC-CSE-2016-GS1-Q097": { "status": "demand-only", "note": "EDITABLE_REVIEW · EMPTY_STATEMENT · NEEDS_FIX_BEFORE_SCORING" },
+    "UPPCS-2022-GS1-Q121": { "status": "review-required", "note": "EDITABLE_REVIEW · OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2021-GS1-Q103": { "status": "review-required", "note": "EDITABLE_REVIEW · TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2022-GS1-Q041": { "status": "review-required", "note": "EDITABLE_REVIEW · OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2025-GS1-Q070": { "status": "review-required", "note": "Canonical answer A overridden — official author is the Central Ground Water Board" },
+    "UPSC-CSE-2025-GS1-Q032": { "dynamic": true, "note": "COP28 declaration — dynamic PYQ anchor" },
+    "UPSC-CSE-2025-GS1-Q035": { "dynamic": true, "note": "Replaceable initiative → host anchor" },
+    "UPSC-CSE-2026-GS1-Q030": { "dynamic": true, "note": "Replaceable anchor" },
+    "UPPCS-2025-GS1-Q139": { "dynamic": true, "note": "Current-platform anchor" },
+    "UPSC-CSE-2026-GS1-Q022": { "dynamic": true, "note": "2025 tiger-reserve status — dynamic anchor" },
+    "UPSC-CSE-2012-GS1-Q046": { "status": "demand-only", "dynamic": true, "note": "Time-bound wetland statistics" },
+    "UPSC-CSE-2020-GS1-Q100": { "status": "demand-only", "dynamic": true, "note": "Numeric / current-sensitive area comparison" },
+    "UPSC-CSE-2019-GS1-Q040": { "dynamic": true, "note": "Rules component tested is the superseded 2010 Rules" },
+    "UPPCS-2020-GS1-Q048": { "status": "demand-only", "dynamic": true, "note": "New Ramsar sites — dynamic" },
+    "UPPCS-2020-GS1-Q051": { "status": "demand-only", "dynamic": true, "note": "Tiger Census 2018 data" },
+    "UPPCS-2025-GS1-Q058": { "dynamic": true, "note": "Ramsar list in UP — dynamic" },
+    "UPSC-CSE-2026-GS1-Q042": { "dynamic": true, "note": "NIRANTAR platform — dynamic anchor" },
+    "UPSC-CSE-2020-GS1-Q081": { "dynamic": true, "note": "Old Schedule VI — historical schedule architecture" },
+    "UPSC-CSE-2015-GS1-Q019": { "dynamic": true, "note": "Then-applicable Schedule I" },
+
+    "UPSC-CSE-2013-GS1-Q030": { "status": "demand-only", "note": "Keyed option says “nitrous oxide” — wording not carried into notes" },
+    "UPPCS-2024-GS1-Q108": { "status": "demand-only", "note": "Assertion frames CO₂ as acid-rain cause — wording not carried into notes" },
+    "UPSC-CSE-2026-GS1-Q031": { "dynamic": true, "note": "BUR / emissions figure is current layer" },
+    "UPPCS-2019-GS1-Q044": { "status": "demand-only", "note": "Low-transfer-value example" }
+  },
+  "sections": {
+    "species": {
+      "Natural occurrence / habitat / distribution": ["distribution"],
+      "Classification / behaviour / traits": ["behaviour"],
+      "Threats / conservation status": ["threats", "vocabulary"]
+    },
+    "ecology-ecosystems": {
+      "Energy flow / trophic structure / productivity": ["energy-flow", "pyramids", "productivity"],
+      "Biogeochemical cycles": ["nutrient-cycles"],
+      "Niche / succession / interactions / ecosystem services": ["succession-niche", "interactions", "ecosystem-services", "bioaccumulation"],
+      "Sustainable development": ["sustainable-development"],
+      "Sustainable development — higher-volume UPPCS layer": ["sustainable-development"]
+    },
+    "plants": {
+      "Uses / products": ["uses"],
+      "Native / introduced / classification / growth form": ["native-introduced", "plant-forms", "legumes"]
+    },
+    "international-conventions": {
+      "Convention / protocol / treaty architecture": ["convention-map", "climate-treaties"],
+      "Paris/NDC/UNFCCC demand": ["climate-treaties"],
+      "Climate finance / REDD / forest-finance": ["finance", "redd"],
+      "Conservation organisations / who-runs-what": ["organisations"],
+      "Sustainable-development summits/frameworks": ["summits"],
+      "Initiative → launching/hosting body; abroad-policy elimination": ["initiatives"],
+      "Convention/event chronology and matching": ["summits", "convention-map"],
+      "Bodies / initiatives": ["initiatives", "organisations", "finance"],
+      "Observance days": ["days"]
+    },
+    "protected-areas": {
+      "Protected-area location / river / ecological uniqueness": ["pa-locations"],
+      "Wetlands / Ramsar": ["wetlands-ramsar"],
+      "Legal categories / in-situ conservation": ["pa-categories"],
+      "Tiger reserves": ["tiger-reserves"],
+      "Direct PA/location recall": ["pa-locations"],
+      "Biosphere reserves": ["biosphere-reserves"],
+      "Ramsar / tiger-current layer": ["wetlands-ramsar", "tiger-reserves"]
+    },
+    "environmental-laws": {
+      "Act → body / statutory source": ["epa", "ngt"],
+      "Wildlife (Protection) Act / schedule implication": ["wildlife-act"],
+      "Forest Rights Act": ["forest-rights-act"],
+      "Biological Diversity Act": ["biodiversity-act"],
+      "EPA / ESZ / forest governance / waste": ["epa", "campa", "waste-rules"]
+    },
+    "pollution": {
+      "Industrial source → pollutant / by-product": ["industry-emissions"],
+      "Air-pollutant chemistry / standards / exposure": ["air-pollution", "smog-acid-rain", "aqi"],
+      "Emerging contaminants / consumer-product chemistry": ["emerging-contaminants"],
+      "Heavy metals / groundwater contaminants / persistent chemicals": ["heavy-metals"],
+      "Water-pollution indicators / resource impacts": ["water-pollution"],
+      "Direct pollutant / indicator recall": ["air-pollution", "smog-acid-rain"],
+      "Water pollution": ["water-pollution", "heavy-metals"],
+      "Combustion / particulate / agrochemical": ["air-pollution", "emerging-contaminants"],
+      "Acid-rain wording caution": ["smog-acid-rain"]
+    },
+    "climate-change": {
+      "Greenhouse physics / carbon-cycle science": ["climate-science"],
+      "Carbon sinks / sequestration / climate valuation": ["carbon-sinks", "mitigation-taxonomy", "carbon-markets"],
+      "Geoengineering + CDR/CCS": ["mitigation-taxonomy"],
+      "Carbon markets / terminology": ["carbon-markets"],
+      "India climate policy": ["india-policy"],
+      "Ozone / ODS / HFC": ["ozone"]
+    },
+    "waste-remediation": {
+      "Biological remediation / treatment": ["bioremediation", "treatment-technologies"],
+      "Adsorptive treatment": ["treatment-technologies"],
+      "Waste-to-energy / thermal conversion": ["waste-to-energy"],
+      "Industrial by-product reuse": ["byproduct-reuse"]
+    }
+  }
+}

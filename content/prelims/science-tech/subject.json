@@ -1,0 +1,28 @@
+{
+  "title": "Science & Technology",
+  "source": "source/Science-Technology-v01-source-pack-CLAUDE-READY.md",
+  "topics": [
+    { "id": "foundations", "title": "Foundations of General Science", "chapters": ["physics-everyday", "chemistry-daily-life", "biology-basics", "scientists-method"] },
+    { "id": "life-science", "title": "Life Science, Health & Biotechnology", "chapters": ["health-diseases-nutrition", "genetics-biotechnology"] },
+    { "id": "digital", "title": "Digital, Computing & Communication", "chapters": ["computing-digital", "communication-tech"] },
+    { "id": "space", "title": "Space & Astronomy", "chapters": ["space-technology", "astronomy"] },
+    { "id": "energy-materials", "title": "Energy & Advanced Materials", "chapters": ["energy-technologies", "nanotech-materials"] },
+    { "id": "defence", "title": "Defence & Security Technology", "chapters": ["defence-technology", "defence-organisations"] }
+  ],
+  "taxonomy": [
+    "prelims-science-and-technology-foundations-of-general-science-physics-and-everyday-science",
+    "prelims-science-and-technology-foundations-of-general-science-biology-cells-microbes-plants-and-evolution",
+    "prelims-science-and-technology-foundations-of-general-science-chemistry-and-materials-in-daily-life",
+    "prelims-science-and-technology-foundations-of-general-science-scientists-inventions-and-scientific-method",
+    "prelims-science-and-technology-life-science-health-and-biotechnology-health-diseases-and-nutrition",
+    "prelims-science-and-technology-life-science-health-and-biotechnology-genetics-and-biotechnology",
+    "prelims-science-and-technology-digital-computing-and-communication-technologies-computing-and-digital-technologies",
+    "prelims-science-and-technology-digital-computing-and-communication-technologies-communication-technologies",
+    "prelims-science-and-technology-space-and-astronomy-space-technology-and-applications",
+    "prelims-science-and-technology-space-and-astronomy-astronomy-and-astrophysics",
+    "prelims-science-and-technology-energy-and-advanced-materials-energy-technologies",
+    "prelims-science-and-technology-energy-and-advanced-materials-nanotechnology-and-advanced-materials",
+    "prelims-science-and-technology-defence-and-security-technology-defence-technology",
+    "prelims-science-and-technology-defence-and-security-technology-defence-organisations-exercises-and-operational-structures"
+  ]
+}

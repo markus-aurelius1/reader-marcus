@@ -1,0 +1,28 @@
+{
+  "title": "Geography",
+  "source": "source/Geography-v01-source-pack-CLAUDE-READY.md",
+  "topics": [
+    { "id": "physical", "title": "Physical Geography", "chapters": ["earth-in-space", "geomorphology", "climatology", "climatic-regions", "oceanography"] },
+    { "id": "india-physical", "title": "India & Uttar Pradesh", "chapters": ["india-physiography", "india-drainage", "india-climate-soils-vegetation", "up-geography"] },
+    { "id": "world", "title": "World Geography", "chapters": ["world-regional", "world-resources"] },
+    { "id": "india-economic", "title": "India: Resources & Infrastructure", "chapters": ["india-minerals-energy-industry", "india-transport"] },
+    { "id": "human", "title": "Human Geography", "chapters": ["population-demography", "tribes-communities"] }
+  ],
+  "taxonomy": [
+    "prelims-geography-physical-geography-climatology-atmosphere-heat-budget-winds-and-enso",
+    "prelims-geography-physical-geography-climatic-regions-and-biomes",
+    "prelims-geography-physical-geography-earth-in-space-latitudes-seasons-and-time",
+    "prelims-geography-physical-geography-geomorphology-and-earth-history",
+    "prelims-geography-physical-geography-oceanography-and-hydrosphere",
+    "prelims-geography-world-regional-and-economic-geography-world-regional-locational-and-polar-geography",
+    "prelims-geography-world-regional-and-economic-geography-world-economic-geography-resources",
+    "prelims-geography-india-and-uttar-pradesh-physical-and-regional-geography-india-drainage-lakes-and-river-projects",
+    "prelims-geography-india-and-uttar-pradesh-physical-and-regional-geography-india-physiography-islands-and-political-map",
+    "prelims-geography-india-and-uttar-pradesh-physical-and-regional-geography-india-climate-soils-and-natural-vegetation",
+    "prelims-geography-india-and-uttar-pradesh-physical-and-regional-geography-uttar-pradesh-geography",
+    "prelims-geography-india-economic-geography-and-infrastructure-india-minerals-energy-and-industry",
+    "prelims-geography-india-economic-geography-and-infrastructure-india-transport-and-infrastructure",
+    "prelims-geography-human-and-social-geography-population-and-demography",
+    "prelims-geography-human-and-social-geography-human-geography-tribes-and-communities"
+  ]
+}

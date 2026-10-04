@@ -1,0 +1,124 @@
+{
+  "status": {
+    "UPSC-CSE-2018-GS1-Q062": { "status": "review-required", "note": "EMPTY_STATEMENT — General Relativity demand only" },
+    "UPSC-CSE-2024-GS1-Q034": { "status": "review-required", "note": "EMPTY_STATEMENT — radar demand only; activity list not reconstructed" },
+    "UPPCS-2022-GS1-Q030": { "status": "review-required", "note": "TABLE_STRUCTURE_UNCLEAR — noise-level matching demand only" },
+    "UPPCS-2019-GS1-Q053": { "status": "review-required", "note": "TABLE_STRUCTURE_UNCLEAR — substance–use demand only" },
+    "UPPCS-2020-GS1-Q107": { "status": "review-required", "note": "TABLE_STRUCTURE_UNCLEAR — metal–property demand only" },
+    "UPPCS-2020-GS1-Q111": { "status": "review-required", "note": "TABLE_STRUCTURE_UNCLEAR — substance–use demand" },
+    "UPPCS-2018-GS1-Q072": { "status": "review-required", "note": "Canonical key A,B overridden by the pack — 20 dB (B only)" },
+    "UPPCS-2025-GS1-Q036": { "status": "review-required", "note": "Canonical key A overridden by the pack — assertion true, reason false (B)" },
+    "UPPCS-2025-GS1-Q016": { "status": "review-required", "note": "Canonical key A overridden by the pack — both statements true (C)" },
+    "UPPCS-2025-GS1-Q069": { "status": "review-required", "note": "Canonical key B overridden by the pack — both statements true (C)" },
+    "UPPCS-2025-GS1-Q112": { "status": "review-required", "note": "Canonical key B overridden by the pack — statement 1 only (D)" },
+
+    "UPPCS-2022-GS1-Q064": { "status": "demand-only", "note": "Canonical key conflicts with reference biology; defective single-answer structure" },
+    "UPPCS-2019-GS1-Q122": { "status": "review-required", "note": "EDITABLE_REVIEW · OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2023-GS1-Q116": { "status": "review-required", "note": "EDITABLE_REVIEW · TABLE_STRUCTURE_UNCLEAR" },
+    "UPSC-CSE-2018-GS1-Q063": { "status": "review-required", "note": "EDITABLE_REVIEW · EMPTY_STATEMENT" },
+    "UPSC-CSE-2015-GS1-Q017": { "dynamic": true, "note": "Historical outbreak geography" },
+    "UPPCS-2018-GS1-Q103": { "dynamic": true, "note": "2018 outbreak location" },
+    "UPPCS-2024-GS1-Q055": { "dynamic": true, "note": "Current vaccine / brand association" },
+    "UPSC-CSE-2026-GS1-Q073": { "dynamic": true, "note": "Genome-project current layer" },
+
+    "UPSC-CSE-2025-GS1-Q047": { "dynamic": true, "note": "Product-launch example (Majorana 1)" },
+    "UPSC-CSE-2020-GS1-Q038": { "dynamic": true, "note": "AI capability statement tied to its 2020 context" },
+
+    "UPSC-CSE-2018-GS1-Q061": { "status": "review-required", "note": "EDITABLE_REVIEW · NEEDS_FIX_BEFORE_SCORING · EMPTY_STATEMENT — not reconstructed" },
+    "UPPCS-2020-GS1-Q033": { "dynamic": true, "note": "Dynamic global-mission fact" },
+    "UPPCS-2022-GS1-Q109": { "status": "demand-only", "dynamic": true, "note": "Pure dynamic crew record" },
+    "UPPCS-2024-GS1-Q053": { "status": "demand-only", "dynamic": true, "note": "Dynamic persons layer" },
+    "UPPCS-2024-GS1-Q088": { "dynamic": true, "note": "Schedule / roles refreshable" },
+    "UPPCS-2025-GS1-Q017": { "status": "demand-only", "dynamic": true, "note": "Pure chronology" },
+    "UPPCS-2018-GS1-Q033": { "dynamic": true, "note": "One-off discovery" },
+    "UPSC-CSE-2026-GS1-Q071": { "dynamic": true, "note": "Private-sector capability claims are current layer" },
+
+    "UPSC-CSE-2018-GS1-Q067": { "status": "review-required", "note": "Empty statements — solar manufacturing / tariff demand only" },
+    "UPSC-CSE-2024-GS1-Q027": { "status": "review-required", "note": "Canonical list truncated — reconstructed, not pristine" },
+    "UPSC-CSE-2024-GS1-Q031": { "status": "review-required", "note": "Canonical statements truncated — reconstruction used cautiously" },
+    "UPSC-CSE-2024-GS1-Q036": { "status": "review-required", "note": "Hydrogel use-combination unresolved — sources conflict" },
+    "UPPCS-2022-GS1-Q004": { "status": "demand-only", "note": "Scientifically ambiguous (geothermal also not solar-derived)" },
+    "UPPCS-2022-GS1-Q024": { "status": "demand-only", "note": "Coal / biomass framing unsafe" },
+    "UPPCS-2025-GS1-Q106": { "status": "review-required", "note": "Canonical table structure unclear — plant ↔ state demand only" },
+    "UPSC-CSE-2022-GS1-Q084": { "status": "demand-only", "dynamic": true, "note": "Largest / first installation wrapper" },
+    "UPSC-CSE-2025-GS1-Q070": { "dynamic": true, "note": "Scheme counts / targets" },
+    "UPSC-CSE-2026-GS1-Q070": { "dynamic": true, "note": "Mission-number statement is dynamic" },
+    "UPPCS-2019-GS1-Q063": { "status": "demand-only", "dynamic": true, "note": "Location / current fact" },
+    "UPPCS-2019-GS1-Q064": { "status": "demand-only", "dynamic": true, "note": "Location / current fact" },
+    "UPPCS-2020-GS1-Q046": { "status": "demand-only", "dynamic": true, "note": "Current installation fact" },
+    "UPPCS-2022-GS1-Q117": { "status": "demand-only", "dynamic": true, "note": "Installation “first”" },
+    "UPPCS-2023-GS1-Q058": { "status": "demand-only", "dynamic": true, "note": "Plant ↔ type matching wrapper" },
+    "UPPCS-2025-GS1-Q109": { "status": "demand-only", "dynamic": true, "note": "ISA / current fact" },
+
+    "UPSC-CSE-2024-GS1-Q035": { "status": "review-required", "note": "Canonical table lost — aircraft names reconstructed" },
+    "UPSC-CSE-2025-GS1-Q084": { "status": "review-required", "note": "Canonical table lost — reconstructed" },
+    "UPSC-CSE-2024-GS1-Q069": { "status": "review-required", "note": "Canonical table lost — rank table reconstructed" },
+    "UPSC-CSE-2024-GS1-Q077": { "status": "review-required", "note": "Canonical statements lost — reconstructed + official verification" },
+    "UPPCS-2019-GS1-Q123": { "status": "review-required", "note": "Malformed — demand only" },
+    "UPPCS-2020-GS1-Q055": { "status": "demand-only", "dynamic": true, "note": "Canonical text dropped the vessel name; launch event dynamic" },
+    "UPSC-CSE-2026-GS1-Q085": { "dynamic": true, "note": "Current mission example" },
+    "UPSC-CSE-2026-GS1-Q093": { "dynamic": true, "note": "Manufacturing / indigenisation current layer" },
+    "UPSC-CSE-2026-GS1-Q098": { "dynamic": true, "note": "Corps HQ mapping can change" },
+    "UPSC-CSE-2024-GS1-Q082": { "dynamic": true, "note": "Exercise edition detail" },
+    "UPPCS-2023-GS1-Q078": { "dynamic": true, "note": "Annual event" },
+    "UPPCS-2023-GS1-Q082": { "dynamic": true, "note": "Induction event" },
+    "UPPCS-2024-GS1-Q057": { "dynamic": true, "note": "Test detail dynamic" },
+    "UPPCS-2024-GS1-Q082": { "dynamic": true, "note": "Range / export figures change" },
+    "UPPCS-2024-GS1-Q110": { "dynamic": true, "note": "Named current UAV" },
+    "UPPCS-2021-GS1-Q062": { "dynamic": true, "note": "Exercise edition" },
+    "UPPCS-2023-GS1-Q072": { "dynamic": true, "note": "Venue / date" },
+    "UPPCS-2024-GS1-Q112": { "dynamic": true, "note": "Annual exercise dates" }
+  },
+  "sections": {
+    "physics-everyday": {
+      "Everyday heat / pressure / capillarity / mechanics": ["heat-pressure"],
+      "Optics / light / lighting": ["sound-light", "lighting-displays"],
+      "Gravity / forces / particle physics": ["forces-particles", "gravity-orbits"],
+      "Sensors": ["sensors"],
+      "Waves / sound": ["sound-light"],
+      "Optics / EM / semiconductor": ["sound-light", "em-spectrum"],
+      "Heat / matter / charge": ["heat-pressure"],
+      "Nuclear/particle": ["forces-particles"]
+    },
+    "biology-basics": {
+      "Cell biology": ["cell-basics"],
+      "Microorganisms / fungi / viruses": ["microbes-viruses"],
+      "Plant physiology": ["plant-physiology"],
+      "Evolution": ["classification-evolution"],
+      "Classification / cell": ["classification-evolution", "cell-basics"],
+      "Microbes / symbiosis / nitrogen fixation": ["microbes-viruses"],
+      "Plant physiology / morphology": ["plant-physiology"],
+      "Animal/classification recall": ["classification-evolution"]
+    },
+    "chemistry-daily-life": {
+      "Water / purification": ["water-purification"],
+      "Physical vs chemical change": ["changes-mixtures"],
+      "Plastics / consumer materials": ["polymers"],
+      "Explosives / cloud seeding": ["explosives-cloud-seeding"],
+      "Everyday chemistry / formula / property": ["changes-mixtures", "acids-bases-compounds", "polymers"]
+    },
+    "health-diseases-nutrition": {
+      "Nutrition / food-health": ["vitamins", "amr"],
+      "Pathogens, disease and transmission": ["diseases", "mab-wolbachia"],
+      "Immunity and vaccines": ["immunity", "vaccines", "mab-wolbachia"],
+      "AMR / microbiome / food toxins": ["amr"],
+      "Nutrition / vitamins": ["vitamins", "human-body"],
+      "Human physiology: organs / blood / glands": ["human-body"],
+      "Disease / pathogen / vector / vaccine": ["diseases", "vaccines"]
+    },
+    "genetics-biotechnology": {
+      "Gene/genome / genomics tools": ["genomics-tools"],
+      "Recombinant DNA / GM applications": ["rdna", "gm-crops"],
+      "RNAi / gene editing": ["gene-editing"],
+      "Stem cells / cloning / reproductive gene tech": ["stem-cells-cloning"],
+      "Synthetic / genetic medicine": ["gene-therapy"]
+    },
+    "energy-technologies": {
+      "Hydrogen / fuel cells": ["hydrogen-fuel-cells"],
+      "Solar / DER / storage": ["solar", "batteries"],
+      "Nuclear: fission / thorium / fusion / RTG": ["nuclear"],
+      "Bioenergy / gasification / conversion": ["bioenergy"],
+      "Stable/direct recall": ["solar", "nuclear"]
+    }
+  }
+}
