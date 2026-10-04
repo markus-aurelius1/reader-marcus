@@ -1,0 +1,72 @@
+{
+  "status": {
+    "UPSC-CSE-2018-GS1-Q078": { "status": "review-required", "note": "REVIEW-REQUIRED · EMPTY_STATEMENT" },
+    "UPSC-CSE-2024-GS1-Q042": { "status": "review-required", "note": "review-required · statement content missing" },
+    "UPSC-CSE-2024-GS1-Q099": { "status": "review-required", "note": "REVIEW-REQUIRED · EMPTY_STATEMENT" },
+    "UPSC-CSE-2024-GS1-Q100": { "status": "review-required", "note": "REVIEW-REQUIRED · EMPTY_STATEMENT" },
+    "UPPCS-2019-GS1-Q065": { "status": "review-required", "note": "MANUAL_REVIEW_REQUIRED · OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2019-GS1-Q143": { "status": "review-required", "note": "MANUAL_REVIEW_REQUIRED · OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2021-GS1-Q039": { "status": "review-required", "note": "review-required · TEXTUAL_INTEGRITY" },
+    "UPPCS-2022-GS1-Q026": { "status": "review-required", "note": "review-required · table structure unclear" },
+    "UPPCS-2023-GS1-Q122": { "status": "review-required", "note": "review-required · TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2018-GS1-Q067": { "status": "demand-only", "note": "Answer record suspicious (several options keyed)" },
+    "UPPCS-2020-GS1-Q135": { "status": "demand-only", "dynamic": true, "note": "Budget 2020-21 figure — not a permanent fact" },
+    "UPPCS-2020-GS1-Q143": { "status": "demand-only", "dynamic": true, "note": "Current-budget question" },
+    "UPPCS-2022-GS1-Q007": { "status": "demand-only", "dynamic": true, "note": "Current-layer budget numbers" },
+    "UPPCS-2023-GS1-Q121": { "status": "demand-only", "dynamic": true, "note": "Current-layer budget shares" },
+    "UPPCS-2023-GS1-Q138": { "status": "demand-only", "dynamic": true, "note": "Current-layer scheme allocation" },
+    "UPPCS-2023-GS1-Q140": { "status": "demand-only", "dynamic": true, "note": "Current-layer fiscal targets" },
+    "UPPCS-2023-GS1-Q150": { "status": "demand-only", "dynamic": true, "note": "Current-layer departmental allocation" },
+    "UPSC-CSE-2017-GS1-Q094": { "dynamic": true, "note": "Dynamic data — not permanent values" },
+    "UPSC-CSE-2018-GS1-Q097": { "dynamic": true, "note": "Product list is dynamic" },
+    "UPSC-CSE-2025-GS1-Q008": { "dynamic": true, "note": "Volume / rank statements are dynamic" },
+    "UPPCS-2021-GS1-Q098": { "dynamic": true, "note": "Dated Budget / current-layer anchor" }
+  },
+  "sections": {
+    "money-rbi-monetary-policy": {
+      "RBI functions / legal architecture / lender of last resort": ["rbi-institution"],
+      "Monetary aggregates / liquidity / multiplier": ["monetary-aggregates", "money-multiplier"],
+      "Instruments + direction-of-effect": ["policy-tools"],
+      "Bonds/yields as monetary-transmission bridge": ["omo-sterilisation-transmission"],
+      "Legal tender + CBDC": ["money-and-legal-tender", "cbdc"]
+    },
+    "banking-financial-inclusion": {
+      "Financial inclusion / rural credit / delivery architecture": ["inclusion-architecture"],
+      "Bank regulation / bank types / NBFC distinction": ["bank-vs-nbfc", "regulation-and-governance"],
+      "Cooperative / differentiated banking": ["differentiated-and-cooperative-banks"],
+      "Bank balance sheet / lending risk / stressed assets": ["bank-balance-sheet", "npa-and-resolution"],
+      "Capital adequacy / governance": ["basel", "regulation-and-governance"]
+    },
+    "financial-markets": {
+      "Market classification / money-market instruments": ["money-vs-capital-market", "money-market-instruments"],
+      "Government securities / debt instruments": ["government-securities", "special-bonds"],
+      "Equity / market structure / risk metric": ["market-structure"],
+      "Funds / pooled vehicles / infrastructure trusts": ["funds-and-trusts"],
+      "Regulators / disclosure / credit rating": ["regulators"],
+      "Foreign/derivative participation": ["derivatives-and-p-notes"]
+    },
+    "external-sector": {
+      "BoP account classification": ["bop-accounts"],
+      "FDI/FPI and instruments": ["fdi-vs-fpi"],
+      "Forex reserves / international liquidity / vulnerability": ["forex-reserves"],
+      "Exchange-rate formation / management": ["exchange-rate", "rbi-intervention"],
+      "India trade pattern / current-data style": ["india-trade"]
+    },
+    "international-institutions": {
+      "IMF — institution, liquidity, SDR, lending": ["imf"],
+      "World Bank Group / MDBs / new development banks": ["world-bank-group", "regional-banks"],
+      "WTO agreements / agriculture / TRIMs / trade facilitation": ["wto-agreements", "aoa-boxes"],
+      "TRIPS / GI / Indian IPR interface": ["trips-gi-patents"],
+      "Regional / bilateral trade architecture": ["trade-agreements"],
+      "Global debt/fiscal governance": ["reports-and-debt"]
+    },
+    "government-schemes": {
+      "Health / nutrition / maternal-child health": ["health-and-nutrition"],
+      "Skills / education": ["skills-and-education"],
+      "Pension / insurance / social security": ["pension-and-social-security"],
+      "Rural employment / livelihood": ["rural-employment"],
+      "Financial inclusion": ["financial-inclusion"],
+      "Energy": ["energy-schemes"]
+    }
+  }
+}

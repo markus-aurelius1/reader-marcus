@@ -8,6 +8,10 @@
 //                "### 3. PYQ Demand Map" → "#### A. <child>" → "##### UPSC"
 //
 //   node scripts/extract-pyq.mjs <source-pack.md> <content/stage/subject>
+//
+// The hub's review / demand-only flags and its demand label → section links are not derived here:
+// they are curated in <subject>/pyq-meta.json, which this script never touches. After re-running
+// it, `npm run check` reports any label or ID in pyq-meta.json that no longer exists.
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 

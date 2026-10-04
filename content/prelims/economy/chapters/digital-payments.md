@@ -38,6 +38,8 @@ taxonomy: prelims-economy-and-social-development-money-banking-and-financial-sys
 | **NACH** | Bulk recurring payments and collections |
 | **NETC / FASTag** | Electronic toll |
 
+Aadhaar authentication, UIDAI → [Polity: Aadhaar & UIDAI](@prelims/polity/governance-regulators#aadhaar-and-uidai)
+
 ## UPI, MDR & Data Localisation {#upi-mdr-data}
 
 ### UPI

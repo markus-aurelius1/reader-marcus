@@ -45,6 +45,8 @@ taxonomy: prelims-economy-and-social-development-development-industry-and-social
 | **Unnat Bharat Abhiyan** | Higher-education institutions work with villages | |
 | **Samagra Shiksha** | Pre-school to Class XII | = {{SSA + RMSA + Teacher Education}} |
 
+`Art. 21A`, RTE Act (age 6–14) → [Polity: Right to Education](@prelims/polity/rights-legislation#right-to-education)
+
 > [!VERIFY] UPSC 2018 item on PMKVY — statements missing in the record; demand only.
 
 ## Pension & Social Security {#pension-and-social-security}

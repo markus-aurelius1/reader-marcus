@@ -25,7 +25,7 @@ export function refHref(r: ContentRef): string {
     case 'topic': return href.subject(subject)
     case 'chapter': return href.reader(`${subject}/${r.chapterId}`)
     case 'section': return href.reader(`${subject}/${r.chapterId}`, r.sectionId)
-    case 'pyq': return href.pyqs()
+    case 'pyq': return href.pyqs({ id: r.pyqId })
   }
 }
 

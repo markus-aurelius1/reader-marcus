@@ -24,9 +24,11 @@ content/                      ← all notes; the reader never names a subject in
   prelims/polity/
     subject.json              ← title, topics → chapter order, taxonomy coverage contract
     chapters/<chapter>.md     ← one file per reading unit; "## " starts a section
-    pyq.json                  ← generated from the Source Pack (PYQs + Insights tabs)
+    pyq.json                  ← generated from the Source Pack (PYQ Hub, PYQs + Insights tabs)
+    pyq-meta.json             ← curated: the pack's review / demand-only / dynamic flags, demand label → sections
+    pyq-oneliners.json        ← optional, none yet: { "<pyqId>": "one line" } — shown as soon as it exists
 source/                       ← Source Packs as supplied (input only)
-scripts/check-content.mjs     ← coverage + cross-link checks (npm run check)
+scripts/check-content.mjs     ← coverage, cross-link and PYQ-file checks (npm run check)
 scripts/extract-pyq.mjs       ← builds pyq.json from a Source Pack
 scripts/e2e.mjs               ← end-to-end regression         (npm run e2e)
 src/                          ← reader UI (lib/, views/, editor/, components/, styles/) + sync/
@@ -96,6 +98,20 @@ With no tracked sessions the time tabs say so and draw nothing. Old links `#/pro
 
 Code: `src/lib/analytics.ts` (pure calculations, `analytics.test.ts`), `src/views/Insights.tsx` (the five tabs), `src/components/Charts.tsx` (bar, line and heatmap in plain HTML/SVG — no chart dependency).
 
+## PYQ Hub (Reader v2)
+
+`#/pyqs` lists every previous-year question the library records, **one record per canonical ID** however many chapters or subjects cite it. Prelims is the default stage; a Mains subject with a `pyq.json` adds a stage tab with no code change.
+
+- **Built from content, not typed in** — `src/lib/pyq.ts` builds `PyqHubRecord`s once, on first use, from each subject's `pyq.json` (IDs under the Source Pack's own demand labels) and `pyq-meta.json`. Nothing is stored or synced. The Source Packs carry no question text, so the hub shows the ID, exam, year, subject / topic, demand labels and linked notes — never a reconstructed question.
+- **Status** — `validated` unless the pack flags the record: `review-required` (canonical record under review: empty statement, unclear table / option boundaries …) or `demand-only` (malformed, defective or current-layer item used as evidence of demand only). The pack's own flag code is shown with the warning. `dynamic` marks current-layer questions. Flags live in `pyq-meta.json → status`, copied by hand from the pack's integrity notes.
+- **Linked notes** — `pyq-meta.json → sections` maps a chapter's demand label to the section(s) that cover it; a label without a mapping (e.g. `General`) links to the chapter. A link is added only where the label names what the section is about.
+- **One-liners** — `PyqHubRecord.oneLiner` is filled from `pyq-oneliners.json` when a subject has one; the hub, search and the palette show and index it with no further change. No file exists today, so no one-liner (or placeholder) is shown.
+- **Filters** — exam, year, subject, topic / chapter, section, status, and the learner's own flags once any exist; search by ID, concept, subject, topic (and one-liner when present). The filter is the query string (`#/pyqs?subject=polity&chapter=parliament`), changed in place, so Back leaves the hub in one step and returns to it as it was.
+- **Your flags** — Seen / Revised / Difficult per question (`src/lib/pyqState.ts`): IndexedDB `pyqUserState`, synced as `pyq~<pyqId>`, merged field by field. Only these flags are uploaded.
+- **Notes ↔ PYQs** — each section and chapter shows how many questions are recorded against it and opens the hub filtered to them; each question opens its exact sections.
+
+When a subject is added: run `extract-pyq`, then write its `pyq-meta.json` from the pack's integrity notes and demand labels. `npm run check` rejects a flag on an unknown ID, an unknown demand label or section, and a non-canonical ID.
+
 ## Adding the next subject
 
 1. **Place the source** — put the Source Pack in `source/`.
@@ -140,8 +156,10 @@ One mechanism for every subject, present and future. A link names its destinatio
 
 - `stage/subject` is the folder under `content/` (`prelims/economy`, `mains/gs3-economy`, `mains/sociology`). Give a section a fixed id with `## Title {#id}` when other chapters link to it.
 - **Back** in the browser / app returns to where the link was followed; a link opens the exact section and expands it if collapsed.
-- **Related** — the destination lists, under the section, every section elsewhere that links to it. Nothing is written twice: one link gives both directions. Links inside a single chapter are not listed.
-- **Search (Ctrl K)** — destinations linked with the best match are offered right after the top results ("related to …").
+- **One index** — `src/lib/links.ts → buildLinks` turns every link into a contract `CrossLink`: links in the notes, `related:` frontmatter, and each question's linked sections. The relation is derived from where the two ends live — `related` (same subject), `see-also` (chapter-level), `inter-subject`, `prelims-mains`, `pyq-note` — never typed by hand. The index is built once.
+- **Backlinks are derived** — a link is stored once, in the direction it was written; the destination finds it in the index. Nothing is written twice, and an existing subject's text is not edited to receive links from a new one.
+- **Related** — under a section: every section elsewhere that links to it, plus its PYQs. At the end of a chapter: its chapter-level links and PYQs. In the reader header (phones: More → Related): everything linked with the chapter, grouped as *This subject / Other subjects / Prelims ↔ Mains / PYQs*, eight shown, **View all** for the rest. Links inside a single chapter are not listed.
+- **Search (Ctrl K)** — every result is labelled: Subject, Chapter, Section, In text (including your own edits), Related (a destination cross-linked with the best match), PYQ (a question named by ID — `2019 q45`, `UPSC-CSE-2019-GS1-Q045`) and PYQ theme (a demand label).
 - **Edits and sync** — a link keeps its id inside edited text; its route is re-derived from the id whenever the section is shown, so old edits follow the current library.
 - **Exports** — Markdown keeps `[label](@id)`. In exported HTML a link inside the file jumps within the file; any other link opens the reader the file was exported from.
 - **Subjects not added yet** — a link into a subject that is not in the library renders as plain text, is reported by `npm run check` as *pending* (not an error), and switches on by itself when that subject is added. A wrong chapter or section id in an existing subject is an error.
@@ -229,6 +247,7 @@ Troubleshooting
 | **First sign-in** | Nothing local is replaced. Every local record is compared with the cloud: local-only records are uploaded, cloud-only records downloaded, flags and preferences merged field by field. |
 | **Merging** | Flags, status, position and preferences: newest change per field wins, so progress from one device and a highlight from another both survive. Highlights: newest change per highlight wins; removals propagate. |
 | **Conflicts** | Only when the *same section's text* was edited on two devices before they synced. Both versions are kept; status shows `Conflict`; choose **Keep this device**, **Keep cloud version** or **View both**. Until you choose, this device keeps its own text and the cloud copy is stored locally. |
+| **PYQ flags** | Seen / Revised / Difficult on a question is one small record per question, merged field by field. The questions themselves are static content and are never uploaded. |
 | **Queue and goals** | Each queue item and the goal are small records merged field by field: completing an item on one device and reordering it on another both survive; removals propagate. Dashboard figures are never uploaded — every device derives them. |
 | **Study timer** | Completed sessions are written once and never changed. The active timer is one record with one owning device; it is the only record with a live listener, so a timer started on one device appears on the others within a moment. Two timers that diverged offline are reconciled without dropping time (see *Study timer* above). |
 | **Sign out** | Stops syncing; everything stays on the device. Signing in to a different account merges this device's data into that account. |
@@ -239,9 +258,9 @@ Troubleshooting
 ## Checks
 
 ```bash
-npm run test     # merge, queue, conflict, anchoring, migration, cross-link, study-timer, timer-sync, analytics,
-                 # dashboard and study-queue / goals unit tests
-npm run check    # content contract (taxonomy coverage, cross-links across subjects, markers)
+npm run test     # merge, queue, conflict, anchoring, migration, cross-link index, PYQ index, PYQ flags,
+                 # study-timer, timer-sync, analytics, dashboard and study-queue / goals unit tests
+npm run check    # content contract (taxonomy coverage, cross-links across subjects, PYQ files, markers)
 npm run e2e      # headless-Chrome regression of the production build: reader, migration, print-to-PDF,
                  # cross-links, offline, responsive, and two-device sync against the mock cloud  → e2e-out/
 npm run verify   # typecheck + all of the above
@@ -260,6 +279,7 @@ There is no linter: typescript-eslint does not yet support the TypeScript 7 comp
 | Completed study sessions | IndexedDB → `studySessions` (one immutable row each) · cloud `users/{uid}/studySessions/{sessionId}` |
 | The active study timer | IndexedDB → `activeStudySession` (one row) · cloud `users/{uid}/studyRuntime/active` |
 | Study queue | IndexedDB → `studyQueue` (one row per item) · cloud `users/{uid}/studyQueue/{itemId}` |
+| PYQ flags (seen / revised / difficult) | IndexedDB → `pyqUserState` (one row per flagged question) · cloud `users/{uid}/pyqState/{pyqId}` |
 | Study goals (only once set) | IndexedDB → `studyGoals` (one row) · cloud `users/{uid}/studyGoals/default` |
 | Theme, Recall Mode, explorer panel, collapsed sections, favourites, recent destinations | localStorage `upsc-prefs` (all but the panel state sync as `pref~main`) |
 

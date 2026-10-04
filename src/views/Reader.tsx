@@ -1,8 +1,8 @@
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { create } from 'zustand'
 import { Check, ChevronDown, RotateCw, Star, X } from 'lucide-react'
-import { linkGraph, type Chapter, type Section, type Subject } from '../lib/content'
-import { neighbours, type Place } from '../lib/links'
+import { linkIndex, type Chapter, type Section, type Subject } from '../lib/content'
+import { related, relatedPyqs, type RelatedItem } from '../lib/links'
 import { STATUS_LABEL, chapterProgress, highlightsBySection, secHtml, secTitle, useStore, type Highlight, type Status } from '../lib/store'
 import { href, type Route } from '../lib/router'
 import { COLORS, applyHighlights, markExtent, marksInRange, newHid, rangeOffsets, squash, type Color } from '../lib/highlight'
@@ -11,6 +11,7 @@ import { EditorSection, Toolbar, editors } from '../editor/Editor'
 import { Related } from '../components/Related'
 import { chapterRef, recordVisit } from '../lib/nav'
 import { FavButton } from './Pages'
+import type { PyqFilter } from '../lib/pyq'
 import { QueueButton } from '../components/Queue'
 
 /** Section currently in view — read by the top bar breadcrumbs and the sidebar. */
@@ -35,8 +36,18 @@ export function Reader({ subject, chapter, route, n }: { subject: Subject; chapt
   const idx = subject.chapters.indexOf(chapter)
   const prev = subject.chapters[idx - 1]
   const next = subject.chapters[idx + 1]
-  const graph = linkGraph()
-  const chapterLinks = useMemo(() => neighbours(graph, chapter.key), [graph, chapter.key])
+  // Cross-links are read from the static index once per chapter, never per render or per section.
+  const links = useMemo(() => {
+    const ix = linkIndex()
+    const keys = chapter.sections.map((s) => s.key)
+    return {
+      pyqFilter: { stage: subject.stage === 'prelims' ? undefined : subject.stage, subject: subject.id, chapter: chapter.id } as PyqFilter,
+      chapter: related(ix, [chapter.key]),
+      chapterPyqs: relatedPyqs(ix, [chapter.key, ...keys]).length,
+      // under a section: the places that link to it (its own links are already in its text)
+      sections: Object.fromEntries(keys.map((k) => [k, { items: related(ix, [k], 'in'), pyqs: relatedPyqs(ix, [k]).length }])),
+    }
+  }, [subject, chapter])
 
   useEffect(() => {
     const st = useStore.getState()
@@ -143,7 +154,9 @@ export function Reader({ subject, chapter, route, n }: { subject: Subject; chapt
           title={secTitle(overrides, s)}
           html={secHtml(overrides, s)}
           marks={bySection[s.key]}
-          related={graph.from.get(s.key)}
+          related={links.sections[s.key].items}
+          pyqs={links.sections[s.key].pyqs}
+          pyqHref={links.pyqFilter}
           from={subject.key}
           tick={ext[s.key] ?? 0}
           edit={editMode}
@@ -151,7 +164,7 @@ export function Reader({ subject, chapter, route, n }: { subject: Subject; chapt
           state={progress.sections[s.key]}
         />
       ))}
-      <Related places={chapterLinks} from={subject.key} label="Related chapters" />
+      <Related items={links.chapter} from={subject.key} label="Related chapters" pyqs={links.chapterPyqs} pyqFilter={links.pyqFilter} />
       <nav className="pn" aria-label="Chapter navigation">
         {prev ? <a href={href.reader(prev.key)}><small>← Previous</small><b>{prev.title}</b></a> : <span style={{ flex: 1 }} />}
         {next ? <a className="next" href={href.reader(next.key)}><small>Next →</small><b>{next.title}</b></a> : <span style={{ flex: 1 }} />}
@@ -166,14 +179,16 @@ interface SecProps {
   title: string
   html: string
   marks?: Highlight[]
-  related?: Place[] // sections elsewhere that link here
+  related: RelatedItem[] // sections elsewhere that link here
+  pyqs: number // questions recorded against this section
+  pyqHref: PyqFilter
   from: string
   tick: number // changes when another device updated this section
   edit: boolean
   closed: boolean
   state?: { done?: boolean; difficult?: boolean; revise?: boolean }
 }
-const SectionView = memo(function SectionView({ section, title, html, marks, related, from, tick, edit, closed, state }: SecProps) {
+const SectionView = memo(function SectionView({ section, title, html, marks, related, pyqs, pyqHref, from, tick, edit, closed, state }: SecProps) {
   const { setSection, setPref, saveOverride } = useStore.getState()
   // highlights are stored apart from the text and laid over it here
   const shown = useMemo(() => (marks?.length ? applyHighlights(html, marks).html : html), [html, marks])
@@ -203,7 +218,7 @@ const SectionView = memo(function SectionView({ section, title, html, marks, rel
       <div className="sec-wrap">
         <div>
           {edit ? <EditorSection key={tick} section={section} /> : <div className="sec-body prose" data-key={section.key} dangerouslySetInnerHTML={{ __html: shown }} />}
-          {!edit && related && <Related places={related} from={from} />}
+          {!edit && <Related items={related} from={from} pyqs={pyqs} pyqFilter={{ ...pyqHref, section: section.id }} max={4} />}
         </div>
       </div>
     </section>

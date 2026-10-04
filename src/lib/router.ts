@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import { PYQ_FILTER_KEYS, type PyqFilter } from './pyq'
 
 // The one place routes are defined (docs/READER_V2_CONTRACT.md → Routes). Every segment is a
 // stable content id; `href` builds links, `parse` reads them, nothing else spells a path.
@@ -10,7 +11,7 @@ export type Route =
   | { name: 'study'; stage?: string }
   | { name: 'subject'; subjectKey: string; tab: SubjectTab }
   | { name: 'reader'; subjectKey: string; chapterId: string; sectionId?: string; hid?: string; q?: string; resume?: boolean }
-  | { name: 'pyqs' }
+  | { name: 'pyqs'; filter: PyqFilter }
   | { name: 'insights'; tab: InsightsTab }
   | { name: 'highlights' }
 
@@ -40,7 +41,12 @@ export function parse(hash: string): Route {
   if (seg[0] === 's' && seg[2]) return { name: 'subject', subjectKey: `${seg[1]}/${seg[2]}`, tab: tabOf(seg[3]) }
   if (seg[0] === 'r' && seg[3]) return reader(seg.slice(1))
   if (seg[0] === 'progress' || seg[0] === 'revision') return { name: 'insights', tab: seg[0] }
-  if (seg[0] === 'pyqs' || seg[0] === 'highlights') return { name: seg[0] }
+  if (seg[0] === 'pyqs') {
+    const filter: PyqFilter = {}
+    for (const k of PYQ_FILTER_KEYS) if (params.get(k)) filter[k] = params.get(k)!
+    return { name: 'pyqs', filter }
+  }
+  if (seg[0] === 'highlights') return { name: 'highlights' }
   return { name: 'home' }
 }
 
@@ -55,7 +61,13 @@ export const href = {
     else if (extra?.resume) h += '?resume'
     return h
   },
-  pyqs: () => '#/pyqs',
+  /** The hub, optionally filtered: the filter is the query string, so it survives Back and reload. */
+  pyqs: (filter?: PyqFilter) => {
+    const q = new URLSearchParams()
+    for (const k of PYQ_FILTER_KEYS) if (filter?.[k]) q.set(k, filter[k]!)
+    const s = q.toString()
+    return '#/pyqs' + (s ? '?' + s : '')
+  },
   insights: (tab?: InsightsTab) => `#/insights${tab && tab !== 'overview' ? '/' + tab : ''}`,
   highlights: () => '#/highlights',
   revision: () => '#/insights/revision',
@@ -69,13 +81,21 @@ export function hrefOf(r: Route): string {
     case 'reader': return href.reader(`${r.subjectKey}/${r.chapterId}`, r.sectionId, { h: r.hid, q: r.q, resume: r.resume })
     case 'insights': return href.insights(r.tab)
     case 'home': return href.home()
-    default: return href[r.name]()
+    case 'pyqs': return href.pyqs(r.filter)
+    case 'highlights': return href.highlights()
   }
 }
 
 export const go = (h: string) => {
   if (location.hash === h) window.dispatchEvent(new HashChangeEvent('hashchange'))
   else location.hash = h
+}
+
+/** Change the current address without adding a history entry (filters, tabs inside a page). */
+export const replace = (h: string) => {
+  if (location.hash === h) return
+  history.replaceState(history.state, '', h)
+  window.dispatchEvent(new HashChangeEvent('hashchange'))
 }
 
 /** An earlier deep link is rewritten in place, so bookmarks keep working and Back is unaffected. */

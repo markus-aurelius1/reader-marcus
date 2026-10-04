@@ -127,7 +127,7 @@ describe('v1 → v2 migration', () => {
       req.onsuccess = () => resolve(req.result)
       req.onerror = () => reject(req.error)
     })
-    expect([...db.objectStoreNames].sort()).toEqual(['activeStudySession', 'conflicts', 'highlights', 'kv', 'outbox', 'overrides', 'studyGoals', 'studyQueue', 'studySessions'])
+    expect([...db.objectStoreNames].sort()).toEqual(['activeStudySession', 'conflicts', 'highlights', 'kv', 'outbox', 'overrides', 'pyqUserState', 'studyGoals', 'studyQueue', 'studySessions'])
     const get = <T>(store: string, key: string) =>
       new Promise<T>((resolve) => {
         const r = db.transaction(store).objectStore(store).get(key)

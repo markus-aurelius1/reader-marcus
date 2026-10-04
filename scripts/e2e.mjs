@@ -477,8 +477,7 @@ try {
   await L.page.keyboard.press('Escape'); await sleep(150)
   check('Home, PYQ Hub and Insights are shells: no explorer panel outside Study', (await L.ev(() => document.querySelector('.app').classList.contains('side-open'))) === false && (await L.count('.sidebar .x-tree')) === 0)
   await L.hash('#/pyqs')
-  check('PYQ Hub shell lists only subjects that have question references', (await L.ev(() => [...document.querySelectorAll('.row b')].map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture')
-  await L.click('a.row'); check('PYQ Hub row opens the subject PYQ tab', (await hashNow()) === '#/study/prelims/polity?tab=pyq' && (await L.count('details.syn')) === 19)
+  check('PYQ Hub is a full page of its own: filters and a result list', (await L.text('h1.title')) === 'PYQ Hub' && (await L.count('.pq-filters select')) >= 4 && (await L.count('.pqlist .pq')) === 40)
 
   // study explorer
   await L.hash('#/study')
@@ -576,6 +575,105 @@ try {
   check('reduced motion: navigation transitions are switched off', await L.ev(() => parseFloat(getComputedStyle(document.querySelector('.sidebar')).transitionDuration) < 0.001 && parseFloat(getComputedStyle(document.querySelector('.tabbar svg')).transitionDuration) < 0.001))
   await L.page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }])
   await L.page.setViewport({ width: 1280, height: 860 }); await L.go(PARL)
+
+  // ==========================================================================
+  section('PYQ Hub + universal cross-links')
+  const pqSel = async (label, value) => { await L.ev((l, v) => { const s = document.querySelector(`.pq-filters select[aria-label="${l}"]`); s.value = v; s.dispatchEvent(new Event('change', { bubbles: true })) }, label, value); await sleep(300) }
+  const pqType = async (q) => { await L.ev((q) => { const i = document.querySelector('.pq-q'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, q); i.dispatchEvent(new Event('input', { bubbles: true })) }, q); await sleep(350) }
+  const pqCount = () => L.text('.pq-count')
+  const pqIds = () => L.ev(() => [...document.querySelectorAll('.pq .pq-id')].map((e) => e.textContent))
+  const pqPalette = async (q) => { await L.ev(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))); await sleep(200); return L.ev(async (q) => { const i = document.querySelector('.palette input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, q); i.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 250)); return [...document.querySelectorAll('.palette li:not(.grp)')].map((li) => (li.querySelector('.kind')?.textContent ?? '?') + '|' + li.querySelector('b').textContent) }, q) }
+  await L.go('#/pyqs')
+  const pqAll = await pqIds()
+  check('hub opens on Prelims with every canonical ID of the imported subjects, newest first, 40 at a time', (await pqCount()) === '1181 questions' && (await L.text('.stat')).includes('1181') && pqAll.length === 40 && new Set(pqAll).size === 40 && pqAll[0].startsWith('UPSC-CSE-2026') && (await L.count('.tabs')) === 0, [await pqCount(), pqAll[0]])
+  check('no question text or one-liner is shown, and none is faked', (await L.count('.pq-one')) === 0 && !/one-liner|coming soon|placeholder|lorem/i.test(await L.text('.pyqhub')) && (await L.text('.lead')).includes('Question text is not in the library'))
+  await L.click('.pq-more')
+  check('Show more extends the list instead of rendering everything', (await L.count('.pq')) === 120)
+  await pqSel('Exam', 'UPPCS'); const pqUppcs = await pqCount()
+  await pqSel('Year', '2019'); await pqSel('Subject', 'polity'); await pqSel('Topic or chapter', 'parliament')
+  const pqFiltered = { hash: await hashNow(), count: await pqCount(), ids: await pqIds(), sections: await L.count('.pq-filters select[aria-label="Section"] option') }
+  check('filters: exam, year, subject, chapter narrow the list and live in the address', pqUppcs === '448 of 1181 questions' && pqFiltered.hash === '#/pyqs?exam=UPPCS&year=2019&subject=polity&chapter=parliament' && pqFiltered.ids.length > 0 && pqFiltered.ids.every((id) => id.startsWith('UPPCS-2019-')) && pqFiltered.sections > 2, pqFiltered)
+  await pqSel('Exam', ''); await pqSel('Year', ''); await pqSel('Section', 'parliamentary-committees')
+  check('section filter: only questions recorded against that section', (await hashNow()) === '#/pyqs?subject=polity&chapter=parliament&section=parliamentary-committees' && (await L.ev(() => [...document.querySelectorAll('.pq')].every((li) => li.querySelector('.pq-notes').textContent.includes('Parliamentary Committees')))) && (await L.count('.pq')) > 0)
+  await L.ev(() => [...document.querySelectorAll('.pq-filters button')].find((b) => b.textContent === 'Clear filters').click()); await sleep(300)
+  check('Clear filters returns to the whole hub', (await hashNow()) === '#/pyqs' && (await pqCount()) === '1181 questions')
+  await pqSel('Status', 'review-required')
+  const pqReview = await L.ev(() => ({ n: document.querySelectorAll('.pq').length, flagged: [...document.querySelectorAll('.pq')].every((li) => li.dataset.status === 'review-required' && li.querySelector('.chip.warn')?.textContent === 'Review required' && li.querySelector('.pq-warn').textContent.startsWith('Review required')) }))
+  check('review-required questions stay flagged, with the reason', pqReview.n === 40 && pqReview.flagged && (await pqCount()) === '44 of 1181 questions', [pqReview, await pqCount()])
+  await L.hash('#/pyqs'); await pqType('finance commission')
+  const pqSearch = { hash: await hashNow(), n: await L.count('.pq'), all: await L.ev(() => [...document.querySelectorAll('.pq')].every((li) => /finance commission/i.test(li.textContent))) }
+  check('hub search by concept / topic', pqSearch.hash === '#/pyqs?q=finance+commission' && pqSearch.n >= 8 && pqSearch.all, pqSearch)
+  await pqType('UPSC-CSE-2024-GS1-Q066')
+  const pqOne = await L.ev(() => { const li = document.querySelector('.pq'); return { n: document.querySelectorAll('.pq').length, id: li.querySelector('.pq-id').textContent, warn: li.querySelector('.pq-warn')?.textContent ?? '', tags: li.querySelector('.pq-tags')?.textContent ?? '', notes: [...li.querySelectorAll('.pq-notes a')].map((a) => a.getAttribute('href')) } })
+  check('hub search by PYQ ID: the record shows its demand, its warning and its notes', pqOne.n === 1 && pqOne.id === 'UPSC-CSE-2024-GS1-Q066' && pqOne.warn.includes('EMPTY_STATEMENT') && pqOne.tags.includes('Nature of amending power') && pqOne.notes.includes('#/study/prelims/polity/amendments-basic-structure/article-368-procedure'), pqOne)
+  const pqHubAt = await hashNow()
+  await L.ev(() => document.querySelector('.pq-notes a').click()); await sleep(500)
+  const pqDest = await L.ev(() => ({ hash: location.hash, top: Math.round(document.getElementById('s-article-368-procedure').getBoundingClientRect().top) }))
+  await L.page.goBack(); await sleep(500)
+  check('Open related notes lands on the exact section; Back returns to the hub as it was', pqDest.hash === '#/study/prelims/polity/amendments-basic-structure/article-368-procedure' && pqDest.top >= 0 && pqDest.top < 200 && (await hashNow()) === pqHubAt && (await pqIds()).join() === 'UPSC-CSE-2024-GS1-Q066', pqDest)
+
+  // notes → PYQs
+  await L.hash('#/study/prelims/polity/amendments-basic-structure/article-368-procedure'); await sleep(300)
+  const pqLink = await L.ev(() => { const a = document.querySelector('#s-article-368-procedure .related a.pq'); return { text: a?.textContent, href: a?.getAttribute('href'), inBody: !!document.querySelector('#s-article-368-procedure .sec-body a.pq') } })
+  const pqReaderAt = await hashNow()
+  await L.ev(() => document.querySelector('#s-article-368-procedure .related a.pq').click()); await sleep(500)
+  const pqFromNote = { hash: await hashNow(), count: await pqCount(), ids: await pqIds() }
+  await L.page.goBack(); await sleep(500)
+  check('a section lists its PYQs: the link opens the hub filtered to that section, and Back returns to the notes', /^\d+ PYQs$/.test(pqLink.text) && !pqLink.inBody && pqFromNote.hash === '#/pyqs?subject=polity&chapter=amendments-basic-structure&section=article-368-procedure' && pqFromNote.count.startsWith(parseInt(pqLink.text) + ' of ') && pqFromNote.ids.includes('UPSC-CSE-2024-GS1-Q066') && (await hashNow()) === pqReaderAt, [pqLink, pqFromNote])
+  check('chapter foot lists the chapter\'s PYQs too', /^\d+ PYQs$/.test(await L.text('.page > .related a.pq')) && (await L.ev(() => document.querySelector('.page > .related a.pq').getAttribute('href'))) === '#/pyqs?subject=polity&chapter=amendments-basic-structure')
+  // header Related: grouped, limited, with the PYQs
+  await L.hash('#/study/prelims/polity/constitutional-bodies/finance-commission'); await sleep(300)
+  await L.click('button[aria-label^="Related"]')
+  const pqPanel = await L.ev(() => ({ groups: [...document.querySelectorAll('.relmenu .related b')].map((b) => b.textContent), links: [...document.querySelectorAll('.relmenu .related a:not(.pq)')].map((a) => a.textContent), pq: document.querySelector('.relmenu a.pq')?.textContent }))
+  await L.page.keyboard.press('Escape'); await sleep(150)
+  check('header Related groups backlinks by subject and shows the PYQs', pqPanel.groups.includes('Other subjects') && pqPanel.groups.includes('PYQs') && pqPanel.links.some((t) => t.includes('Economy') && t.includes('Fiscal Federalism')) && pqPanel.links.some((t) => t.includes('History & Culture')) && pqPanel.links.length <= 8 && /^\d+ PYQs$/.test(pqPanel.pq), pqPanel)
+  await L.hash('#/study/prelims/polity/governance-regulators/aadhaar-and-uidai'); await sleep(300)
+  check('new Economy → Polity links give Polity their backlinks without touching its text', (await L.ev(() => [...document.querySelectorAll('#s-aadhaar-and-uidai .related a')].some((a) => a.getAttribute('href') === '#/study/prelims/economy/digital-payments/npci-products'))) && (await L.ev(() => document.querySelector('#s-aadhaar-and-uidai .sec-body a.xref[data-xref^="prelims/economy"]') === null)))
+
+  // user flags
+  await L.hash('#/pyqs?id=UPSC-CSE-2019-GS1-Q045'); await sleep(300)
+  const pqNoMine = await L.count('.pq-filters select[aria-label="My flags"]')
+  await L.click('.pq button[aria-label="Mark seen"]'); await L.click('.pq button[aria-label="Mark difficult"]')
+  await L.hash('#/pyqs'); await pqSel('My flags', 'difficult')
+  const pqMine = { count: await pqCount(), ids: await pqIds(), row: (await L.idb('pyqUserState'))[0] }
+  check('Mark Seen / Difficult: saved on this device, and filterable once any flag exists', pqNoMine === 0 && pqMine.count === '1 of 1181 questions' && pqMine.ids.join() === 'UPSC-CSE-2019-GS1-Q045' && pqMine.row.pyqId === 'UPSC-CSE-2019-GS1-Q045' && pqMine.row.seen === true && pqMine.row.difficult === true && Object.keys(pqMine.row).sort().join() === 'difficult,pyqId,seen,st,updatedAt', pqMine)
+  await L.reload()
+  check('flags survive a reload; clearing one updates the list', (await L.ev(() => document.querySelector('.pq button[aria-label="Mark seen"]').getAttribute('aria-pressed'))) === 'true' && (await L.ev(() => document.querySelector('.pq').classList.contains('is-seen'))))
+  await L.click('.pq button[aria-label="Mark difficult"]'); await sleep(200)
+  check('a cleared flag leaves the filtered list', (await pqCount()) === '0 of 1181 questions' && (await L.text('.pyqhub .empty')).startsWith('No questions match'))
+  await pqSel('My flags', 'revised'); await L.hash('#/pyqs?id=UPSC-CSE-2019-GS1-Q045'); await L.click('.pq button[aria-label="Mark revised"]')
+  check('Mark Revised', (await L.idb('pyqUserState'))[0].revised === true && (await L.idb('pyqUserState'))[0].difficult === undefined)
+
+  // search
+  const pqById = await pqPalette('2024 q66')
+  await L.ev(() => [...document.querySelectorAll('.palette li:not(.grp)')].find((li) => li.textContent.startsWith('UPSC-CSE-2024-GS1-Q066')).click()); await sleep(400)
+  check('Ctrl+K finds a question by ID and opens its record', pqById[0] === 'PYQ|UPSC-CSE-2024-GS1-Q066' && pqById.every((t) => t.startsWith('PYQ|') && t.includes('-2024-GS1-Q066')) && (await hashNow()) === '#/pyqs?id=UPSC-CSE-2024-GS1-Q066' && (await pqIds()).join() === 'UPSC-CSE-2024-GS1-Q066', pqById)
+  const pqByTag = await pqPalette('tenth schedule')
+  await L.ev(() => [...document.querySelectorAll('.palette li:not(.grp)')].find((li) => li.querySelector('.kind').textContent === 'PYQ theme').click()); await sleep(400)
+  const pqTagHub = { hash: await hashNow(), n: await L.count('.pq'), all: await L.ev(() => [...document.querySelectorAll('.pq')].every((li) => li.querySelector('.pq-tags').textContent.includes('Tenth Schedule'))) }
+  check('Ctrl+K finds PYQ demand themes after the notes, and opens them in the hub', pqByTag[0] === 'Section|Tenth Schedule — Anti-Defection' && pqByTag.includes('PYQ theme|Anti-defection / Tenth Schedule') && pqTagHub.hash.startsWith('#/pyqs?subject=polity&chapter=parts-schedules&q=') && pqTagHub.n === 3 && pqTagHub.all, [pqByTag.slice(0, 4), pqTagHub])
+  const pqKinds = await pqPalette('economy'); await L.page.keyboard.press('Escape'); await sleep(150)
+  const pqKinds2 = await pqPalette('fiscal federalism'); await L.page.keyboard.press('Escape'); await sleep(150)
+  const pqKinds3 = await pqPalette('Article 368'); await L.page.keyboard.press('Escape'); await sleep(150)
+  check('search results say what they are: subject, chapter, section, text, related, PYQ', pqKinds[0] === 'Subject|Economy & Social Development' && pqKinds2[0] === 'Section|Fiscal Federalism' && pqKinds2.some((t) => t.startsWith('Related|Finance Commission')) && pqKinds3[0] === 'Section|Article 368 — Procedure' && pqKinds3.includes('In text|Three Routes of Change') && pqKinds.includes('Chapter|British Administration, Economy & Policies') && ![...pqKinds, ...pqKinds2, ...pqKinds3].some((t) => t.startsWith('?|')), [pqKinds.slice(0, 3), pqKinds2.slice(0, 4), pqKinds3.slice(0, 3)])
+
+  // subject PYQ tab ↔ hub, phone
+  await L.hash('#/study/prelims/polity?tab=pyq')
+  const pqChip = await L.ev(() => { const chips = [...document.querySelectorAll('details.syn a.chip')]; return { n: chips.length, first: chips[0].getAttribute('href'), flagged: chips.filter((c) => c.classList.contains('warn')).length } })
+  check('subject PYQ tab: every reference opens its hub record; flagged ones are marked', pqChip.n > 390 && pqChip.first.startsWith('#/pyqs?id=') && pqChip.flagged >= 20, pqChip)
+  await L.page.setViewport({ width: 375, height: 812 }); await L.go('#/pyqs?subject=polity&chapter=parliament')
+  const pqPhone = await L.ev(() => ({ overflow: document.documentElement.scrollWidth > innerWidth + 1, rows: document.querySelectorAll('.pq').length, tab: document.querySelector('.tabbar .on')?.textContent, acts: [...document.querySelectorAll('.pq')[0].querySelectorAll('.pq-acts button')].every((b) => b.getBoundingClientRect().right <= innerWidth) }))
+  await L.page.screenshot({ path: join(OUT, 'phone-pyqs.png') })
+  await L.ev(() => document.querySelector('.pq-notes a').click()); await sleep(450)
+  const pqPhoneReader = await hashNow()
+  await L.click('.tabbar button'); await L.ev(() => [...document.querySelectorAll('.menu.more button')].find((b) => b.textContent.includes('Related notes')).click()); await sleep(300)
+  const pqPhoneRel = await L.ev(() => { const m = document.querySelector('.relmenu'); const r = m?.getBoundingClientRect(); return { fits: !!r && r.left >= 0 && r.right <= innerWidth && r.bottom <= innerHeight, pq: !!m?.querySelector('a.pq') } })
+  await L.page.keyboard.press('Escape'); await L.page.goBack(); await sleep(450)
+  check('phone: hub fits, flags are reachable, notes open and Back returns; Related is in More', !pqPhone.overflow && pqPhone.rows > 10 && pqPhone.tab === 'PYQs' && pqPhone.acts && pqPhoneReader.startsWith('#/study/prelims/polity/parliament') && pqPhoneRel.fits && pqPhoneRel.pq && (await hashNow()) === '#/pyqs?subject=polity&chapter=parliament', [pqPhone, pqPhoneReader, pqPhoneRel])
+  await L.page.setViewport({ width: 1280, height: 860 })
+  await L.go('#/pyqs?id=UPSC-CSE-2019-GS1-Q045'); await L.click('.pq button[aria-label="Mark seen"]'); await L.click('.pq button[aria-label="Mark revised"]')
+  await L.page.screenshot({ path: join(OUT, 'pyq-hub.png') })
+  await L.go(PARL)
 
   // ==========================================================================
   section('Study timer (local-only)')
@@ -764,7 +862,7 @@ try {
   check('Revision: Clear takes a section off the queue', (await L.count('.row.rv')) === rvBefore - 1 && (await L.idb('kv')).some((v) => v?.sections?.['prelims/polity/parliament/bills-types-and-procedure']?.revise === false))
 
   const disk = await L.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { const out = { stores: [...db.objectStoreNames].sort().join(), kv: g.result.join(), ls: Object.keys(localStorage).join() }; db.close(); res(out) } } }))
-  check('analytics stored nothing: no new IndexedDB store, no counters or caches on disk', disk.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,studyGoals,studyQueue,studySessions' && !/analytic|insight|total|heat|streak|cache|index/i.test(disk.kv + disk.ls), disk)
+  check('analytics stored nothing: no new IndexedDB store, no counters or caches on disk', disk.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,pyqUserState,studyGoals,studyQueue,studySessions' && !/analytic|insight|total|heat|streak|cache|index/i.test(disk.kv + disk.ls), disk)
   check('the sessions themselves were not touched', JSON.stringify(await L.idb('studySessions')) === JSON.stringify(sesAll))
   for (const [w, h, name] of [[375, 812, 'phone'], [768, 1024, 'tablet']]) {
     await L.page.setViewport({ width: w, height: h })
@@ -870,7 +968,7 @@ try {
 
   // nothing derived is stored
   const disk2 = await L.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { const out = { stores: [...db.objectStoreNames].sort().join(), kv: g.result.join(), ls: Object.keys(localStorage).join() }; db.close(); res(out) } } }))
-  check('the dashboard stored nothing: no totals, streaks or view model on disk', disk2.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,studyGoals,studyQueue,studySessions' && !/dash|total|heat|streak|week|today|cache/i.test(disk2.kv + disk2.ls) && !/"(\w*Ms|\w*[Ss]treak\w*|\w*[Pp]ercent\w*)":/.test(JSON.stringify([await L.idb('studyQueue'), await L.idb('studyGoals')]).replace(/"(daily|weekly)TargetMs"/g, '"target"')), disk2)
+  check('the dashboard stored nothing: no totals, streaks or view model on disk', disk2.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,pyqUserState,studyGoals,studyQueue,studySessions' && !/dash|total|heat|streak|week|today|cache/i.test(disk2.kv + disk2.ls) && !/"(\w*Ms|\w*[Ss]treak\w*|\w*[Pp]ercent\w*)":/.test(JSON.stringify([await L.idb('studyQueue'), await L.idb('studyGoals')]).replace(/"(daily|weekly)TargetMs"/g, '"target"')), disk2)
 
   // deep links
   await L.click('.week h3 a'); await sleep(350)
@@ -1033,6 +1131,10 @@ try {
   await L.hash('#/study/prelims/economy/taxation'); await L.click('.chap-meta .fav.q'); await L.reload(); await L.hash('#/'); await sleep(700)
   const offHome = await L.ev(() => ({ cards: document.querySelectorAll('.card').length, cells: document.querySelectorAll('.week .heat i[data-date]').length, bars: document.querySelectorAll('.week .vb').length, today: document.querySelector('.today .big').dataset.final }))
   check('offline: Home is drawn from this device — figures, charts, and a queue change that persists', offHome.cards >= 8 && offHome.cells >= 85 && offHome.bars === 7 && /min$/.test(offHome.today) && (await L.idb('studyQueue')).some((r) => r.target.chapterId === 'taxation' && !r.removed) && (await qTitles()).length === (await L.idb('studyQueue')).filter((r) => !r.removed && !r.completedAt).length, offHome)
+  await L.hash('#/pyqs?subject=economy&status=review-required'); await sleep(300)
+  const offPyq = await L.ev(() => ({ n: document.querySelectorAll('.pq').length, flagged: [...document.querySelectorAll('.pq')].every((li) => li.dataset.status === 'review-required') }))
+  await L.click('.pq button[aria-label="Mark difficult"]'); await L.ev(() => document.querySelector('.pq-notes a').click()); await sleep(450)
+  check('offline: the PYQ Hub filters, flags and opens notes from this device alone', offPyq.n === 9 && offPyq.flagged && (await L.ev(() => location.hash)).startsWith('#/study/prelims/economy/') && (await L.count('.sec')) > 2 && (await L.idb('pyqUserState')).some((r) => r.difficult && r.pyqId.startsWith('U')), offPyq)
   await L.hash('#/insights/time')
   check('offline: Insights is drawn from the sessions on this device', (await L.count('.heat i[data-date]')) >= 365 && (await L.count('.vbars .vb')) >= 7 && (await L.count('.nodata')) === 0)
   await L.hash('#/study/prelims/polity/judiciary')
@@ -1271,6 +1373,20 @@ try {
   check('removing the goal syncs too', (await A.count('.goal')) === 0 && (await B.count('.goal')) === 0)
   await A.click('.queue .qlist li button[title^="Remove"]'); await A.syncNow(); await B.syncNow(); await sleep(300)
   check('a removed item leaves the other device as well', (await qTitles(A)).length === 0 && (await qTitles(B)).length === 0)
+  await A.hash(PARL); await B.hash(PARL)
+
+  section('Sync — PYQ flags')
+  const PQ = 'UPSC-CSE-2019-GS1-Q045'
+  const pqPressed = (d) => d.ev(() => Object.fromEntries([...document.querySelectorAll('.pq .pq-acts button')].map((b) => [b.getAttribute('aria-label').replace('Mark ', ''), b.getAttribute('aria-pressed') === 'true'])))
+  await A.hash('#/pyqs?id=' + PQ); await A.click('.pq button[aria-label="Mark seen"]'); await A.click('.pq button[aria-label="Mark difficult"]')
+  await A.syncNow(); await B.syncNow(); await B.hash('#/pyqs?id=' + PQ); await sleep(400)
+  check('flags set on one device reach the other', JSON.stringify(await pqPressed(B)) === JSON.stringify({ seen: true, revised: false, difficult: true }), await pqPressed(B))
+  const pqDocs = (await cloudDump()).filter((d) => d.rec.kind === 'pyq')
+  check('only the flags are uploaded — one small record per question, never the PYQ corpus', pqDocs.length === 1 && pqDocs[0].rec.id === 'pyq~' + PQ && Object.keys(pqDocs[0].rec.f).sort().join() === 'difficult,seen' && JSON.stringify(pqDocs).length < 400 && !/demandTags|linkedContent|oneLiner|questionAvailable|Finance Commission/.test(JSON.stringify(await cloudDump())), pqDocs)
+  // one device marks it revised while the other clears "difficult"
+  await B.click('.pq button[aria-label="Mark revised"]'); await A.click('.pq button[aria-label="Mark difficult"]')
+  await B.syncNow(); await A.syncNow(); await B.syncNow(); await sleep(300)
+  check('two devices change different flags: both changes survive, both devices agree', JSON.stringify(await pqPressed(A)) === JSON.stringify({ seen: true, revised: true, difficult: false }) && JSON.stringify(await pqPressed(B)) === JSON.stringify(await pqPressed(A)), [await pqPressed(A), await pqPressed(B)])
   await A.hash(PARL); await B.hash(PARL)
 
   section('Sync — reset and sign-out')

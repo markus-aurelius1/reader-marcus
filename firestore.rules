@@ -45,6 +45,16 @@ service cloud.firestore {
         && request.resource.data.id == 'q~' + itemId
         && request.resource.data.st == request.time;
     }
+    // The learner's own flags on a previous-year question. The questions themselves are static
+    // content and are never uploaded.
+    match /users/{uid}/pyqState/{pyqId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.kind == 'pyq'
+        && request.resource.data.id == 'pyq~' + pyqId
+        && request.resource.data.st == request.time;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

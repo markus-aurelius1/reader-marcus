@@ -318,7 +318,9 @@ interface PyqHubRecord {
   exam: PyqExam;
   year: number;
 
-  stage: "prelims";
+  // The stage of the subjects that record the question. Prelims today;
+  // a Mains subject with PYQ files needs no further change.
+  stage: ExamStage;
 
   /*
   Preserve canonical identity.
@@ -530,7 +532,7 @@ IndexedDB
 ├── activeStudySession
 ├── studyGoals              one row, id "default"
 ├── studyQueue              one row per item
-├── pyqUserState
+├── pyqUserState            one row per flagged question, key pyqId
 └── optionalAnalyticsCache   ← regenerable only
 ```
 
@@ -797,6 +799,47 @@ Sync             goal~default and q~<itemId> are merged field by field, like pro
                  the newest field timestamp.
 ```
 
+## PYQ Hub and cross-link rules as built (Job 5)
+
+```text
+PyqHubRecord     built once per page load by buildPyqIndex (src/lib/pyq.ts, pure) from each subject's
+                 pyq.json (IDs under the Source Pack's demand labels, generated) and pyq-meta.json
+                 (flags + demand label → sections, curated). Never stored, never synced.
+Identity         one record per canonical ID. A question listed by several chapters or subjects is
+                 one record whose linkedContent, subjectIds and topicIds name all of them.
+Text             questionAvailable is false and oneLiner is absent unless the content carries them.
+                 oneLiner comes from an optional pyq-oneliners.json per subject ({ pyqId: text });
+                 nothing else changes when it appears. No placeholder is ever shown.
+demandTags       the pack's own demand labels. Bookkeeping labels ("General", "Review flags",
+                 "Cross-linked", exclusions) are not demand and are not shown as tags.
+linkedContent    section refs where pyq-meta.json maps the label to sections, otherwise the chapter.
+status           validated unless the pack flags the ID. Across subjects the strictest wins:
+                 review-required > demand-only > validated. dynamic is independent of status.
+                 The pack's wording for the flag is kept beside the record (index.notes).
+
+PyqUserState     seen / revised / difficult. IndexedDB pyqUserState (key pyqId); cloud
+                 users/{uid}/pyqState/{pyqId} as pyq~<pyqId>, field form { id, kind, t, dev, f, st },
+                 merged field by field. A cleared flag is a field with value null.
+                 updatedAt is the newest field timestamp.
+
+CrossLink        buildLinks (src/lib/links.ts, pure), built once per page load. Sources: a link in
+                 the notes (section → target), a chapter's related: line (chapter → target), a
+                 question's linkedContent (pyq → note). source is "content" for all three.
+id               <from key> ">" <to key>
+relation         derived from the two ends:  pyq → note            pyq-note
+                                             different stages       prelims-mains
+                                             different subjects     inter-subject
+                                             same subject, chapter-level related:   see-also
+                                             same subject, in the text              related
+                 compare / prerequisite are reserved for a link that states it; none does yet.
+Backlinks        never stored. The index keeps each link once and looks it up from either end.
+Related          lists notes linked in either direction, each place once, destinations first;
+                 links inside one chapter are indexed but not listed.
+
+Hub filter       the query string of #/pyqs. Changing a filter replaces the address (no history
+                 entry), so Back leaves the hub in one step and Forward / Back return to it as it was.
+```
+
 ---
 
 # NAVIGATION INFORMATION ARCHITECTURE
@@ -870,7 +913,9 @@ Hash routes, built only by `href` in `src/lib/router.ts`. Every path segment is 
 #/study/{stage}/{subject}                       subject overview   (?tab=pyq | insights)
 #/study/{stage}/{subject}/{chapter}             reader
 #/study/{stage}/{subject}/{chapter}/{section}   reader at a section (?h= | ?q= | ?resume)
-#/pyqs                                          PYQ Hub
+#/pyqs                                          PYQ Hub — Prelims
+#/pyqs?stage=&exam=&year=&subject=&topic=       PYQ Hub filtered; every parameter optional
+       &chapter=&section=&status=&mine=&q=&id=    (subject / topic / chapter / section are content ids)
 #/insights                                      Insights → Overview
 #/insights/{time|subjects|progress|revision}    Insights tabs
 #/highlights                                    Highlights
@@ -899,4 +944,6 @@ Earlier links keep working and are rewritten in place (no extra history entry):
 | 2026-10-03 | Routes: `#/insights/{tab}`; `#/progress` → `#/insights/progress`; `#/revision` becomes an alias of `#/insights/revision` | Job 3: Insights has five tabs; Progress and the Revision queue live inside it, so each has one address |
 | 2026-10-03 | "Analytics rules as built"; `ProgressSummary` units documented | Job 3 fixed the calculation rules the contract left open (timezone used, week start, overlap, session attribution, percentage rule); types unchanged |
 | 2026-10-03 | "Dashboard rules as built": streak and goal-streak rules, goal semantics, queue order / completion / removal, field-merged `goal` and `q` records | Job 4 built Home, the study queue and goals; a removal has to reach other devices, and two devices must be able to change one queue item without losing either change. Types unchanged |
+| 2026-10-04 | `PyqHubRecord.stage` is `ExamStage` (was the literal `"prelims"`) | Job 5: the hub must take Mains questions later without another redesign |
+| 2026-10-04 | "PYQ Hub and cross-link rules as built"; `#/pyqs` query parameters; `pyqUserState` row key | Job 5 fixed what the contract left open: how records, status, relations and backlinks are derived, and where the hub filter lives. No other type changed |
 | 2026-10-03 | "Timer rules as built": span ids, stopped marker in `studyRuntime/active`, record envelope for study documents, meaning of `source: "recovered"`, two-device reconciliation | Job 2 needed a deterministic, loss-free rule for timers that diverge offline; types unchanged |

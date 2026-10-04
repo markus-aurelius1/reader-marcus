@@ -401,7 +401,7 @@ if (typeof window !== 'undefined') {
 }
 
 // ---- sync adapter: the store seen as a set of independent records -------------
-/** Record kinds kept outside this store (study sessions and the timer: study.ts; goals and the queue: plan.ts). */
+/** Record kinds kept outside this store (study sessions and the timer: study.ts; goals and the queue: plan.ts; PYQ flags: pyqState.ts). */
 export interface KindAdapter {
   get(id: string): Rec | null
   apply(rec: Rec): void
@@ -436,6 +436,7 @@ export const syncLocal = {
       case 'run':
       case 'goal':
       case 'q':
+      case 'pyq':
         return adapters[kindOf(id)]?.get(id) ?? null
       case 'edit': {
         const o = s.overrides[key]
@@ -462,7 +463,7 @@ export const syncLocal = {
   apply(rec: Rec) {
     const s = useStore.getState()
     const key = keyOf(rec.id)
-    if (rec.kind === 'ses' || rec.kind === 'run' || rec.kind === 'goal' || rec.kind === 'q') adapters[rec.kind]?.apply(rec)
+    if (rec.kind === 'ses' || rec.kind === 'run' || rec.kind === 'goal' || rec.kind === 'q' || rec.kind === 'pyq') adapters[rec.kind]?.apply(rec)
     else if (rec.kind === 'edit') {
       const d = (rec.data ?? {}) as { title?: string | null; html?: string | null }
       const row: Override = rec.del

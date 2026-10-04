@@ -571,6 +571,49 @@ a.cont-t:hover { color: var(--accent); }
 .focus-exit:hover { opacity: 1; }
 .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 16px; border-radius: 999px; font-size: 13px; z-index: 90; animation: pop 180ms ease both; }
 
+/* ---- Related surface: note links, view all, PYQ link ---- */
+.related .more { color: var(--ink-2); font-size: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.related .more:hover { color: var(--accent); }
+.related a.pq { padding: 0 8px; border-radius: 999px; background: var(--accent-soft); font-weight: 550; font-variant-numeric: tabular-nums; }
+.related a.pq::before { content: ''; }
+.relmenu .related.grouped b { margin-top: 5px; }
+.relmenu .related.grouped b:first-child { margin-top: 0; }
+.relmenu .related .more { width: auto; padding: 0; }
+.relmenu .related a.pq { align-self: flex-start; }
+
+/* ---- search palette: result types ---- */
+.palette .kind { display: inline-block; margin-right: 6px; padding: 0 5px; border-radius: 4px; background: var(--code); color: var(--ink-2); font: 600 9.5px/1.7 var(--sans); letter-spacing: 0.07em; text-transform: uppercase; vertical-align: 1px; }
+.palette .kind[data-k='pyq'], .palette .kind[data-k='tag'] { background: var(--accent-soft); color: var(--accent); }
+.palette .kind[data-k='related'] { background: none; border: 1px solid var(--line); }
+
+/* ---- PYQ Hub ---- */
+.pq-filters .pq-q { flex: 1 1 230px; min-width: 0; padding: 6px 10px; font-size: 14px; }
+.pq-filters .sel { max-width: 100%; }
+.pq-count { margin: 0 0 8px; font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.pqlist { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); overflow: hidden; }
+.pq { padding: 10px 14px 11px; border-top: 1px solid var(--line-2); }
+.pq:first-child { border-top: 0; }
+.pq-head { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
+.pq-id { font: 600 13px ui-monospace, 'SF Mono', Menlo, Consolas, monospace; background: none; padding: 0; color: var(--ink); }
+.pq.is-seen .pq-id { color: var(--ink-3); }
+.pq-acts { margin-left: auto; display: inline-flex; gap: 2px; }
+.pq:hover .tg { opacity: 1; }
+.chip.warn { display: inline-flex; align-items: center; gap: 4px; background: color-mix(in srgb, #c98a1b 18%, transparent); color: color-mix(in srgb, #c98a1b 70%, var(--ink)); }
+.chip.warn svg { width: 11px; height: 11px; }
+.chip.dyn { background: none; border: 1px solid var(--line); }
+a.chip:hover { text-decoration: underline; }
+.pq p { margin: 5px 0 0; font-size: 13.5px; line-height: 1.5; }
+.pq .pq-one { color: var(--ink); }
+.pq .pq-tags { color: var(--ink-2); }
+.pq .pq-warn { color: color-mix(in srgb, #c98a1b 62%, var(--ink)); font-size: 12.5px; }
+.pq-tags > span, .pq-notes > span { margin-right: 8px; font: 600 10.5px var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.pq-notes a { margin-right: 12px; color: var(--accent); white-space: normal; }
+.pq-notes a::before { content: '↗ '; opacity: 0.7; }
+.pq-notes a:hover { text-decoration: underline; }
+.pq-notes small { color: var(--ink-3); font-size: inherit; }
+.pq-notes .more { color: var(--ink-2); font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
+.pq-more { margin-top: 12px; }
+
 /* ---- focus mode ---- */
 .app.focus .topbar, .app.focus .sidebar, .app.focus .rail, .app.focus .tabbar { display: none; }
 .app.focus .main { padding-left: 0 !important; padding-top: 14px; }
@@ -614,6 +657,11 @@ a.cont-t:hover { color: var(--accent); }
   .sec-head h2, .sec-head input.h2 { font-size: 19px; }
   .tg { opacity: 0.8; }
   .row .meter { width: 54px; }
+  .pq-filters .sel { flex: 1 1 130px; }
+  .pq-filters .pq-q { flex-basis: 100%; }
+  .pq { padding: 10px 12px; }
+  .pq-notes a { display: block; margin: 2px 0 0; }
+  .relmenu { top: auto; left: 8px; right: 8px; width: auto; bottom: calc(var(--tab) + env(safe-area-inset-bottom) + 8px); max-height: 70vh; overflow-y: auto; }
   .hbar { grid-template-columns: 110px 1fr 36px; }
   .tabs a { padding: 8px 10px; }
   .two { grid-template-columns: 1fr; }

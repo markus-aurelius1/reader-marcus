@@ -1,16 +1,29 @@
-import { allLoaded, linkGraph, type Chapter, type Section, type Subject } from './content'
-import { neighbours, placeKey } from './links'
+// Search across the library: subjects, chapters, sections (with the learner's own edits),
+// previous-year questions by ID and by demand theme, and the places cross-linked with the
+// best match. Section text is extracted once per version of a section and cached; the PYQ and
+// cross-link indices are built once (lib/content.ts).
+import { allLoaded, linkIndex, pyqIndex, type Chapter, type Section, type Subject } from './content'
+import type { PyqHubRecord } from './contract'
+import { placeKey, related } from './links'
+import { matchPyqIds, type PyqTag } from './pyq'
 import { secHtml, secTitle, type Override } from './store'
 
+export type HitKind = 'subject' | 'chapter' | 'section' | 'text' | 'related' | 'pyq' | 'tag'
+export const HIT_LABEL: Record<HitKind, string> = { subject: 'Subject', chapter: 'Chapter', section: 'Section', text: 'In text', related: 'Related', pyq: 'PYQ', tag: 'PYQ theme' }
+
 export interface Hit {
-  kind: 'chapter' | 'section' | 'text' | 'related'
-  subject: Subject
-  chapter: Chapter
-  section?: Section
+  kind: HitKind
   title: string
+  score: number
+  /** every kind except a PYQ that spans subjects */
+  subject?: Subject
+  /** chapter, section, text, related, tag */
+  chapter?: Chapter
+  section?: Section
   snippet?: string
   via?: string // related: the hit it is linked with
-  score: number
+  pyq?: PyqHubRecord
+  tag?: PyqTag
 }
 
 const textCache = new Map<string, { html: string; text: string; norm: string }>()
@@ -58,6 +71,7 @@ function snippet(text: string, tokens: string[]): string {
   return (start > 0 ? '…' : '') + text.slice(start, at + 130).trim() + (at + 130 < text.length ? '…' : '')
 }
 
+/** Chapters, sections and section text (including local edits), best first. */
 export function search(q: string, overrides: Record<string, Override>, limit = 40): Hit[] {
   const nq = norm(q)
   if (!nq) return []
@@ -101,18 +115,54 @@ export function search(q: string, overrides: Record<string, Override>, limit = 4
 /** Destinations cross-linked with the best hit, placed right after the leading results. */
 export function withRelated(hits: Hit[], max = 3, after = 3): Hit[] {
   const top = hits[0]
-  if (!top) return hits
-  const g = linkGraph()
+  if (!top?.chapter) return hits
   const keys = top.section ? [top.section.key] : [top.chapter.key, ...top.chapter.sections.map((s) => s.key)]
-  const shown = new Set(hits.map((h) => h.section?.key ?? h.chapter.key))
+  const shown = new Set(hits.map((h) => h.section?.key ?? h.chapter?.key))
   const extra: Hit[] = []
-  for (const p of keys.flatMap((k) => neighbours(g, k))) {
+  for (const { place: p } of related(linkIndex(), keys)) {
     if (extra.length >= max) break
     if (shown.has(placeKey(p))) continue
     shown.add(placeKey(p))
     extra.push({ kind: 'related', subject: p.subject, chapter: p.chapter, section: p.section, title: p.section?.title ?? p.chapter.title, via: top.title, score: 0 })
   }
   return [...hits.slice(0, after), ...extra, ...hits.slice(after)]
+}
+
+/** Subjects whose title matches. */
+export function searchSubjects(q: string): Hit[] {
+  const words = norm(q).split(' ').filter(Boolean).map((t) => ' ' + t)
+  if (!words.length) return []
+  return allLoaded().filter((s) => words.every((t) => (' ' + norm(s.title)).includes(t))).map((subject) => ({ kind: 'subject', subject, title: subject.title, score: 200 }))
+}
+
+/** Questions named by ID ("2019 q45", a full canonical ID), then demand themes whose label matches. */
+export function searchPyqs(q: string, maxIds = 6, maxTags = 4): Hit[] {
+  const ix = pyqIndex()
+  const ids = matchPyqIds(ix, q, maxIds).map((pyq): Hit => ({ kind: 'pyq', pyq, title: pyq.pyqId, score: 150 }))
+  const words = norm(q).split(' ').filter(Boolean).map((t) => ' ' + t)
+  if (ids.length || !words.length) return ids
+  const subjects = new Map(allLoaded().map((s) => [s.key, s]))
+  const tags: Hit[] = []
+  for (const tag of ix.tags) {
+    const label = ' ' + norm(tag.label)
+    if (!words.every((t) => label.includes(t))) continue
+    const subject = subjects.get(tag.subjectKey)
+    const chapter = subject?.chapters.find((c) => c.id === tag.chapterId)
+    if (!subject || !chapter) continue
+    tags.push({ kind: 'tag', subject, chapter, tag, title: tag.label, score: 40 + Math.min(20, tag.ids.length) })
+  }
+  return [...ids, ...tags.sort((a, b) => b.score - a.score).slice(0, maxTags)]
+}
+
+/**
+ * Everything the palette shows for a query, in display order: questions named by ID first
+ * (an ID query means nothing else), then subjects, notes with their cross-linked destinations,
+ * and PYQ demand themes last.
+ */
+export function searchAll(q: string, overrides: Record<string, Override>): Hit[] {
+  const pyqs = searchPyqs(q)
+  const ids = pyqs.filter((h) => h.kind === 'pyq')
+  return [...ids, ...searchSubjects(q), ...withRelated(search(q, overrides)), ...pyqs.filter((h) => h.kind === 'tag')]
 }
 
 /** Briefly mark the first occurrence of `q` inside `root` and scroll to it. */

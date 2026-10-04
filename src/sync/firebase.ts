@@ -4,6 +4,7 @@
 //   users/{uid}/studyRuntime/active         the one active timer
 //   users/{uid}/studyGoals/default          study goals
 //   users/{uid}/studyQueue/{itemId}         study-queue items
+//   users/{uid}/pyqState/{pyqId}            the learner's flags on a PYQ (never the PYQ itself)
 // Loaded lazily — only after the user chooses to sign in.
 import { initializeApp } from 'firebase/app'
 import { GoogleAuthProvider, getAuth, getRedirectResult, onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from 'firebase/auth'
@@ -18,7 +19,7 @@ const env = import.meta.env
 const enc = (id: string) => id.replace(/\//g, '|')
 // Firestore rejects `undefined`; a JSON round-trip drops it.
 const plain = <T>(v: T): T => JSON.parse(JSON.stringify(v))
-const STUDY: Record<string, string> = { ses: 'studySessions', run: 'studyRuntime', goal: 'studyGoals', q: 'studyQueue' }
+const STUDY: Record<string, string> = { ses: 'studySessions', run: 'studyRuntime', goal: 'studyGoals', q: 'studyQueue', pyq: 'pyqState' }
 /** Commit times of concurrent writers can land slightly out of order; re-read a short window. */
 const OVERLAP_MS = 5000
 

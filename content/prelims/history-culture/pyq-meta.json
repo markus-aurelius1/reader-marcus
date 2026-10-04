@@ -1,0 +1,126 @@
+{
+  "status": {
+    "UPSC-CSE-2012-GS1-Q072": { "status": "review-required", "note": "review-required · SOURCE_UNCLEAR" },
+    "UPSC-CSE-2014-GS1-Q085": { "status": "review-required", "note": "review-required · SOURCE_UNCLEAR" },
+    "UPSC-CSE-2018-GS1-Q076": { "status": "review-required", "note": "Malformed canonical record" },
+    "UPSC-CSE-2019-GS1-Q009": { "status": "review-required", "note": "review-required · SOURCE_UNCLEAR" },
+    "UPSC-CSE-2024-GS1-Q062": { "status": "review-required", "note": "Malformed canonical record" },
+    "UPSC-CSE-2024-GS1-Q065": { "status": "review-required", "note": "review-required · EMPTY_STATEMENT" },
+    "UPPCS-2019-GS1-Q012": { "status": "review-required", "note": "EDITABLE_REVIEW · OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2019-GS1-Q016": { "status": "review-required", "note": "EDITABLE_REVIEW · TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2019-GS1-Q019": { "status": "review-required", "note": "EDITABLE_REVIEW · TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2019-GS1-Q090": { "status": "review-required", "note": "EDITABLE_REVIEW · OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2020-GS1-Q020": { "status": "review-required", "note": "Table malformed in the canonical record" },
+    "UPPCS-2020-GS1-Q021": { "status": "review-required", "note": "EDITABLE_REVIEW · TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2020-GS1-Q038": { "status": "review-required", "note": "EDITABLE_REVIEW · TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2021-GS1-Q057": { "status": "review-required", "note": "review-required · TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2021-GS1-Q143": { "status": "review-required", "note": "TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2022-GS1-Q066": { "status": "review-required", "note": "review-required" },
+    "UPPCS-2022-GS1-Q144": { "status": "review-required", "note": "EDITABLE_REVIEW · TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2023-GS1-Q033": { "status": "review-required", "note": "EDITABLE_REVIEW · TABLE_STRUCTURE_UNCLEAR" },
+    "UPPCS-2025-GS1-Q086": { "status": "review-required", "note": "OPTION_BOUNDARY_UNCLEAR" },
+    "UPPCS-2019-GS1-Q087": { "status": "demand-only", "note": "Parse-suspicious record" },
+    "UPPCS-2020-GS1-Q040": { "status": "demand-only", "note": "Option text malformed / truncated" },
+    "UPPCS-2022-GS1-Q070": { "status": "demand-only", "note": "Defective question wording" },
+    "UPPCS-2022-GS1-Q125": { "status": "demand-only", "note": "Canonical option mapping corrupted" },
+    "UPPCS-2023-GS1-Q042": { "status": "demand-only", "note": "Unresolved VERIFY — attribution too coarse" },
+    "UPPCS-2025-GS1-Q097": { "status": "demand-only", "dynamic": true, "note": "Malformed text · current-year question" },
+    "UPPCS-2018-GS1-Q109": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2019-GS1-Q113": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2019-GS1-Q118": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2021-GS1-Q129": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2023-GS1-Q076": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2023-GS1-Q079": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2024-GS1-Q056": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2024-GS1-Q140": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2025-GS1-Q020": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2025-GS1-Q052": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2025-GS1-Q081": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2025-GS1-Q096": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2025-GS1-Q107": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" },
+    "UPPCS-2025-GS1-Q148": { "dynamic": true, "note": "CURRENT_DYNAMIC prize / recipient" }
+  },
+  "sections": {
+    "buddhism-jainism": {
+      "Doctrine / core concepts": ["buddhist-doctrine", "jain-doctrine"],
+      "Sects / schools / scholars / texts": ["buddhist-schools", "buddhist-texts", "jain-sects", "jain-texts"],
+      "Sites / regions / sacred landscape": ["buddha-life-sites", "jain-sites"]
+    },
+    "architecture-sculpture": {
+      "Temple architecture: styles + structural vocabulary": ["temple-styles", "vocabulary"],
+      "Rock-cut architecture / chaitya-vihara / cave-site religion": ["rock-cut"],
+      "Stupa form and historical development": ["stupa"],
+      "Sculpture + chronology": ["sculpture"],
+      "Indo-Islamic / Mughal cultural architecture": ["indo-islamic", "mughal-architecture"]
+    },
+    "painting-crafts-textiles": {
+      "Murals / cave paintings": ["murals"],
+      "Painting schools": ["miniatures", "rajput-pahari-deccani"],
+      "Craft/textile–place pairing": ["crafts-textiles"],
+      "GI mechanism + examples": ["gi"],
+      "Craft terminology": ["crafts-textiles"],
+      "Prehistoric painting": ["murals"]
+    },
+    "performing-arts": {
+      "Dance-form markers": ["classical-dances"],
+      "Martial/folk/community traditions": ["folk-martial"],
+      "Music genres and composers": ["hindustani-forms", "carnatic"],
+      "Treatise–author": ["treatises-institutions"]
+    },
+    "literature-travellers": {
+      "Sanskrit drama/authors": ["sanskrit-authors"],
+      "Foreign travellers": ["foreign-travellers"],
+      "Persian chronicle matrix": ["persian-chronicles"],
+      "Traveller chronology": ["foreign-travellers"],
+      "Classical author elimination": ["sanskrit-authors"]
+    },
+    "festivals-calendars-heritage": {
+      "National calendar": ["calendars"],
+      "Community/tradition pairing": ["festivals"],
+      "UNESCO ICH recency": ["unesco"],
+      "UNESCO WHS listing-year question": ["unesco"],
+      "National calendar misconceptions": ["calendars"],
+      "UNESCO session/listing": ["unesco"],
+      "Kumbh location/current-year hook": ["kumbh"]
+    },
+    "awards-institutions": {
+      "Civilian awards + Article 18 + rules": ["civilian-awards", "article-18"],
+      "Sports award purpose": ["sports-awards"],
+      "Gandhi Peace Prize jury": ["gandhi-peace-prize"]
+    },
+    "british-administration-economy": {
+      "Land revenue": ["land-revenue"],
+      "Drain/economic critique": ["drain-of-wealth"],
+      "Colonial economic effects": ["economic-impact"],
+      "Education": ["education"],
+      "Civil service chronology": ["civil-services"]
+    },
+    "socio-religious-reform": {
+      "Brahmo/Rammohan": ["brahmo"],
+      "Anti-caste": ["anti-caste"],
+      "Women/social law": ["women-reform"]
+    },
+    "tribal-peasant-uprisings": {
+      "1857 extension": ["revolt-1857"]
+    },
+    "constitutional-development": {
+      "Early Company/Charter Acts": ["company-to-crown"],
+      "Government of India Act 1919 / Montagu–Chelmsford": ["act-1919"],
+      "Simon + Nehru Report": ["simon-nehru"],
+      "Government of India Act 1935": ["act-1935"],
+      "Cripps/Cabinet Mission": ["wartime-proposals", "cabinet-mission"],
+      "Constituent Assembly": ["constituent-assembly"],
+      "Constituent Assembly chronology/symbols/committees": ["constituent-assembly", "ca-committees"],
+      "1919 institutional extension": ["act-1919"],
+      "Simon/Nehru chronology": ["simon-nehru"],
+      "1940s proposal chronology": ["wartime-proposals", "cabinet-mission"]
+    },
+    "gandhian-mass-movements": {
+      "Early Gandhian experiments / transition to mass politics": ["first-satyagrahas", "rowlatt-jallianwala"],
+      "Non-Cooperation / programme detail": ["non-cooperation"],
+      "Lahore → CDM → pact → RTC": ["civil-disobedience", "gandhi-irwin-rtc"],
+      "Quit India": ["quit-india"],
+      "Context/chronology support": ["chronology"]
+    }
+  }
+}

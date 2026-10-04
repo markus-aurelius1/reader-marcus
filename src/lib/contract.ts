@@ -214,3 +214,50 @@ export interface DashboardViewModel {
   recentTargets: RecentDestination[]
   queue: StudyQueueItem[]
 }
+
+// ---- cross-links: static content metadata, never synced -----------------------------------
+
+export type CrossLinkRelation = 'related' | 'compare' | 'prerequisite' | 'see-also' | 'prelims-mains' | 'inter-subject' | 'pyq-note'
+
+export interface CrossLink {
+  id: string
+  from: ContentRef
+  to: ContentRef
+  relation: CrossLinkRelation
+  label?: string
+  /** Short human-readable reason: "Finance Commission → Fiscal Federalism". */
+  reason?: string
+  weight?: number
+  source: 'content' | 'manual' | 'derived'
+}
+
+// ---- PYQ hub ---------------------------------------------------------------------------
+
+export type PyqExam = 'UPSC-CSE' | 'UPPCS'
+export type PyqStatus = 'validated' | 'review-required' | 'demand-only'
+
+/** Static, built from each subject's PYQ files (lib/pyq.ts). Never synced. */
+export interface PyqHubRecord {
+  pyqId: string
+  exam: PyqExam
+  year: number
+  stage: ExamStage
+  /** Question text is never fabricated: false until a subject actually carries it. */
+  questionAvailable: boolean
+  oneLiner?: string
+  demandTags?: string[]
+  linkedContent: ContentRef[]
+  subjectIds: string[]
+  topicIds: string[]
+  status: PyqStatus
+  dynamic?: boolean
+}
+
+/** The learner's own flags on a question: the only PYQ data that is stored and synced. */
+export interface PyqUserState {
+  pyqId: string
+  seen?: boolean
+  revised?: boolean
+  difficult?: boolean
+  updatedAt: string
+}

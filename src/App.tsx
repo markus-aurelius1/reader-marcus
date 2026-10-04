@@ -3,12 +3,13 @@ import {
   ChevronLeft, ChevronRight, Cloud, Download, Eye, EyeOff, FileText, Highlighter, Keyboard, ListTree, Maximize2,
   Minimize2, MonitorDown, Moon, MoreHorizontal, PencilLine, Printer, RotateCcw, RotateCw, Search, Sun, Waypoints,
 } from 'lucide-react'
-import { allSubjects, linkGraph } from './lib/content'
+import { allSubjects, linkIndex } from './lib/content'
 import { flushOverrides, secTitle, useStore } from './lib/store'
 import { go, href, useRoute } from './lib/router'
 import { exportHTML, exportMarkdown } from './lib/export'
 import { Reader, useSpy } from './views/Reader'
-import { Highlights, PyqHub, StudyHome, SubjectView } from './views/Pages'
+import { Highlights, StudyHome, SubjectView } from './views/Pages'
+import { PyqHub } from './views/PyqHub'
 import { Home } from './views/Home'
 import { InsightsPage, TAB_LABEL } from './views/Insights'
 import { Palette } from './components/Palette'
@@ -16,7 +17,8 @@ import { Explorer, SubjectSwitcher } from './components/Explorer'
 import { Rail, TabBar, areaOf } from './components/Nav'
 import { Related } from './components/Related'
 import { navPath, refHref, studyContext } from './lib/nav'
-import { neighbours, placeKey } from './lib/links'
+import { related as relatedTo, relatedPyqs } from './lib/links'
+import { initPyqState } from './lib/pyqState'
 import { AccountButton, AccountPanel } from './components/Account'
 import { initSync, statusLabel, useSync } from './sync'
 import { promptInstall, useInstall } from './lib/install'
@@ -69,7 +71,7 @@ export function App() {
   const toggleSide = () => (matchMedia('(min-width: 1024px)').matches ? setPref({ sidebar: !useStore.getState().prefs.sidebar }) : setDrawer((d) => !d))
 
   useEffect(() => {
-    useStore.getState().init().then(initStudy).then(initPlan).then(initSync)
+    useStore.getState().init().then(initStudy).then(initPlan).then(initPyqState).then(initSync)
   }, [])
 
   // Theme
@@ -214,9 +216,11 @@ export function App() {
   const at = subject && chapter ? subject.chapters.indexOf(chapter) : -1
   const prevCh = subject?.chapters[at - 1]
   const nextCh = at >= 0 ? subject?.chapters[at + 1] : undefined
-  // Related: everything cross-linked with this chapter — the section in view first, then the rest.
-  const graph = chapter ? linkGraph() : null
-  const related = graph && chapter ? [section?.key, chapter.key, ...chapter.sections.map((x) => x.key)].flatMap((k) => (k ? neighbours(graph, k) : [])).filter((p, i, all) => all.findIndex((x) => placeKey(x) === placeKey(p)) === i) : []
+  // Related: everything cross-linked with this chapter — the section in view first, then the rest —
+  // and the PYQs recorded against it. Read from the static index; nothing is scanned here.
+  const relKeys = chapter ? [...(section ? [section.key] : []), chapter.key, ...chapter.sections.map((x) => x.key)] : []
+  const related = chapter ? relatedTo(linkIndex(), relKeys) : []
+  const relatedPyqCount = chapter ? relatedPyqs(linkIndex(), relKeys).length : 0
   const cls = ['app', sideOpen && !focus ? 'side-open' : '', focus ? 'focus' : '', prefs.recall ? 'recall' : '', editMode ? 'editing' : ''].join(' ')
 
   return (
@@ -241,7 +245,7 @@ export function App() {
             <button className="ib" disabled={!nextCh} onClick={() => stepChapter(1)} title={nextCh ? `Next: ${nextCh.title} (])` : 'Last chapter'} aria-label="Next chapter"><ChevronRight /></button>
           </span>
         )}
-        {related.length > 0 && (
+        {related.length + relatedPyqCount > 0 && (
           <button className={'ib hide-sm' + (rel ? ' on' : '')} onClick={() => { setMenu(false); setRel(!rel) }} title="Related" aria-label={`Related (${related.length})`} aria-expanded={rel}>
             <Waypoints /><span className="hide-md">Related</span>
           </button>
@@ -274,6 +278,7 @@ export function App() {
           <div className="menu more" role="menu">
             <a className="only-sm" href={href.highlights()}><Highlighter />Highlights</a>
             <a href={href.revision()}><RotateCw />Revision queue</a>
+            {chapter && related.length + relatedPyqCount > 0 && <button className="only-sm" onClick={() => { setMenu(false); setRel(true) }}><Waypoints />Related notes &amp; PYQs</button>}
             <hr />
             {subject && (
               <>
@@ -310,7 +315,7 @@ export function App() {
         <>
           <div className="backdrop" onClick={() => setRel(false)} />
           <div className="menu relmenu" role="dialog" aria-label="Related">
-            <Related places={related} from={subject.key} label="Related" max={12} />
+            <Related items={related} from={subject.key} label="Related" max={8} grouped pyqs={relatedPyqCount} pyqFilter={{ stage: subject.stage === 'prelims' ? undefined : subject.stage, subject: subject.id, chapter: chapter?.id }} />
           </div>
         </>
       )}
@@ -330,7 +335,7 @@ export function App() {
         ) : route.name === 'study' ? (
           <StudyHome stage={route.stage} />
         ) : route.name === 'pyqs' ? (
-          <PyqHub subjects={subjects} />
+          <PyqHub subjects={subjects} filter={route.filter} />
         ) : route.name === 'insights' ? (
           <InsightsPage subjects={subjects} tab={route.tab} />
         ) : route.name === 'highlights' ? (
@@ -354,7 +359,7 @@ export function App() {
             <table style={{ marginTop: 10, borderSpacing: '0 5px' }}>
               <tbody>
                 {[
-                  ['Ctrl/Cmd + K  or  /', 'Search and quick-jump'],
+                  ['Ctrl/Cmd + K  or  /', 'Search notes and PYQs, quick-jump'],
                   ['j / k', 'Next / previous section'],
                   ['] / [  (n / p)', 'Next / previous chapter'],
                   ['r', 'Recall Mode'],

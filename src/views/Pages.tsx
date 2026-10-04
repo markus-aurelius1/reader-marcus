@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Star, X } from 'lucide-react'
-import { getLoaded, stageTitle, stages, type Chapter, type PyqCluster, type Subject } from '../lib/content'
+import { getLoaded, pyqIndex, stageTitle, stages, type Chapter, type PyqCluster, type Subject } from '../lib/content'
+import { STATUS_TEXT, parsePyqId } from '../lib/pyq'
 import { STATUS_LABEL, chapterProgress, secHtml, secTitle, subjectProgress, useStore } from '../lib/store'
 import { href } from '../lib/router'
 import { COLORS, anchor, textStream, type Color, type Highlight } from '../lib/highlight'
@@ -49,34 +50,6 @@ export function DestRows({ items }: { items: (Destination & { note?: string })[]
   )
 }
 
-// ---- PYQ Hub (structural shell) ----------------------------------------------
-export function PyqHub({ subjects }: { subjects: Subject[] }) {
-  const withPyq = subjects.filter((s) => s.pyq)
-  return (
-    <div className="page">
-      <div className="eyebrow">Previous year questions</div>
-      <h1 className="title">PYQ Hub</h1>
-      <p className="shell-note">One place to explore questions across subjects and years is being built here. Until then, each subject keeps its own question references.</p>
-      {withPyq.length > 0 && (
-        <>
-          <h3 className="gh">By subject</h3>
-          <div className="rows">
-            {withPyq.map((s) => {
-              const n = new Set(Object.values(s.pyq!.chapters).flatMap((c) => [...uniq(c.upsc), ...uniq(c.uppcs)])).size
-              return (
-                <a key={s.key} className="row" href={href.subject(s.key, 'pyq')}>
-                  <span className="t"><b>{s.title}</b><small>{stageTitle(s.stage)}</small></span>
-                  <span className="num" style={{ width: 'auto' }}>{n} references</span>
-                </a>
-              )
-            })}
-          </div>
-        </>
-      )}
-    </div>
-  )
-}
-
 // ---- Study (library): stage → paper → subject --------------------------------
 export function StudyHome({ stage }: { stage?: string }) {
   const progress = useStore((s) => s.progress)
@@ -116,8 +89,8 @@ export function StudyHome({ stage }: { stage?: string }) {
 
 // ---- Subject overview / PYQs / Insights ------------------------------------
 const pid = (id: string) => {
-  const m = id.match(/^(UPSC-CSE|UPPCS)-(\d{4})-GS\d-Q(\d+)/)
-  return m ? { exam: m[1] === 'UPPCS' ? 'uppcs' : 'upsc', year: +m[2], q: +m[3] } : null
+  const p = parsePyqId(id)
+  return p ? { exam: p.exam === 'UPPCS' ? 'uppcs' : 'upsc', year: p.year, q: p.q } : null
 }
 const uniq = (cl: PyqCluster[]) => [...new Set(cl.flatMap((c) => c.ids))]
 
@@ -188,17 +161,22 @@ function yearCounts(subject: Subject) {
 }
 
 function Pyqs({ subject }: { subject: Subject }) {
+  const byId = pyqIndex().byId
+  const stage = subject.stage === 'prelims' ? undefined : subject.stage
+  // each reference opens its record in the PYQ Hub; flagged records stay marked here too
   const Chips = ({ ids, u }: { ids: string[]; u?: boolean }) => (
     <div className="chips">
       {ids.map((id) => {
         const p = pid(id)
-        return <span key={id} className={'chip' + (u ? ' u' : '')} title={id}>{p ? `${p.year} · Q${p.q}` : id}</span>
+        const status = byId.get(id)?.status ?? 'validated'
+        const flagged = status !== 'validated'
+        return <a key={id} href={href.pyqs({ stage, id })} className={'chip' + (u ? ' u' : '') + (flagged ? ' warn' : '')} title={flagged ? `${id} — ${STATUS_TEXT[status]}` : id}>{p ? `${p.year} · Q${p.q}` : id}{flagged ? ' ⚠' : ''}</a>
       })}
     </div>
   )
   return (
     <>
-      <p className="lead">Question references recorded in the Source Pack's PYQ Demand Map, grouped by the theme they test. Only IDs are available in the source — question text is not reproduced.</p>
+      <p className="lead">Question references recorded in the Source Pack's PYQ Demand Map, grouped by the theme they test. Only IDs are available in the source — question text is not reproduced. <a className="linkbtn" style={{ color: 'var(--accent)' }} href={href.pyqs({ stage, subject: subject.id })}>Open in the PYQ Hub →</a></p>
       {subject.chapters.map((c) => {
         const d = subject.pyq!.chapters[c.id]
         if (!d) return null

@@ -2,7 +2,8 @@
 // never imports a subject by name, so adding a subject needs no application code.
 import library from '../../content/library.json'
 import { parseChapter } from './md'
-import { buildGraph, setInstalled, type LinkGraph } from './links'
+import { buildLinks, setInstalled, type LinkIndex } from './links'
+import { buildPyqIndex, type PyqIndex, type PyqMeta } from './pyq'
 
 export interface Section {
   id: string
@@ -32,6 +33,10 @@ export interface Subject extends SubjectMeta {
   key: string // stage/subject
   chapters: Chapter[] // reading order
   pyq: PyqData | null
+  /** Curated PYQ flags and section links (pyq-meta.json). */
+  pyqMeta?: PyqMeta | null
+  /** Optional one-liners by question ID (pyq-oneliners.json). */
+  pyqOneLiners?: Record<string, string> | null
 }
 export interface PyqCluster {
   label: string
@@ -67,6 +72,8 @@ export interface LibStage {
 const metaFiles = import.meta.glob<SubjectMeta>('/content/*/*/subject.json', { eager: true, import: 'default' })
 const chapterFiles = import.meta.glob<string>('/content/*/*/chapters/*.md', { query: '?raw', import: 'default', eager: true })
 const pyqFiles = import.meta.glob<PyqData>('/content/*/*/pyq.json', { eager: true, import: 'default' })
+const pyqMetaFiles = import.meta.glob<PyqMeta>('/content/*/*/pyq-meta.json', { eager: true, import: 'default' })
+const oneLinerFiles = import.meta.glob<Record<string, string>>('/content/*/*/pyq-oneliners.json', { eager: true, import: 'default' })
 
 const metas = new Map<string, SubjectMeta>()
 for (const [path, meta] of Object.entries(metaFiles)) {
@@ -145,7 +152,14 @@ function build(key: string): Subject {
       })
     }
   }
-  return { ...meta, key, chapters, pyq: pyqFiles[`/content/${key}/pyq.json`] ?? null }
+  return {
+    ...meta,
+    key,
+    chapters,
+    pyq: pyqFiles[`/content/${key}/pyq.json`] ?? null,
+    pyqMeta: pyqMetaFiles[`/content/${key}/pyq-meta.json`] ?? null,
+    pyqOneLiners: oneLinerFiles[`/content/${key}/pyq-oneliners.json`] ?? null,
+  }
 }
 
 /** Canonical (unedited) section for a stage/subject/chapter/section key. */
@@ -156,6 +170,11 @@ export function sectionByKey(key: string): Section | undefined {
     ?.sections.find((s) => s.key === key)
 }
 
-let graph: LinkGraph | null = null
-/** Cross-links between every section and chapter in the library (built once; the notes are static). */
-export const linkGraph = () => (graph ??= buildGraph(allSubjects()))
+// Both indices are built once, on first use: the notes and the PYQ files are static.
+let pyqs: PyqIndex | null = null
+/** Every previous-year question the library records, by canonical ID. */
+export const pyqIndex = () => (pyqs ??= buildPyqIndex(allSubjects()))
+
+let links: LinkIndex | null = null
+/** Every cross-link: note ↔ note in any subject or stage, and note ↔ PYQ. */
+export const linkIndex = () => (links ??= buildLinks(allSubjects(), pyqIndex().records))
