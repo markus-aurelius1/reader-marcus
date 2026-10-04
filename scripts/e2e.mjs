@@ -1237,6 +1237,107 @@ try {
     await RV.page.screenshot({ path: join(OUT, 'desktop-revision.png'), fullPage: true })
   }
 
+  section('Revision: Recall and Review Notes')
+  {
+    // a profile of its own: one revision seen through both of its views
+    const RN = await device(P.local, 'revision-notes')
+    const PO = RU('presiding-officers')
+    const NOTES = PARL + '/presiding-officers'
+    const rbar = () => RN.ev(() => { const b = document.querySelector('.rbar'); return b ? { mode: b.dataset.mode, unit: b.dataset.unit, title: b.querySelector('.rbar-t').textContent, tabs: [...b.querySelectorAll('.rbar-seg a')].map((a) => a.textContent).join(), on: b.querySelector('.rbar-seg a.on')?.textContent, to: [...b.querySelectorAll('.rbar-seg a')].map((a) => a.getAttribute('href')), finish: [...b.querySelectorAll('button')].some((x) => x.textContent === 'Finish Revision') } : null })
+    const stored = () => RN.ev(() => JSON.parse(localStorage.getItem('upsc-revision-run') ?? 'null'))
+    const toNotes = async () => { await RN.click('.rbar-seg a:nth-child(2)'); await sleep(700) }
+    await RN.go(PARL)
+    for (const id of ['presiding-officers', 'sessions-and-devices']) await RN.click(`#s-${id} .tg.done`)
+    await sleep(300)
+    check('with no revision in progress the reader carries no revision bar', (await rbar()) === null && !/revising/.test(await RN.ev(() => document.querySelector('.app').className)))
+
+    // R1, through Recall alone: the existing flow, ended from the bar
+    await RN.hash('#/revise/' + PO); await sleep(900)
+    const rb1 = await rbar()
+    check('Recall carries the bar: Revision R1 · Recall | Review Notes | Finish Revision', rb1?.mode === 'recall' && rb1.unit === PO && /^Revision R1 · \S/.test(rb1.title) && rb1.tabs === 'Recall,Review Notes' && rb1.on === 'Recall' && rb1.finish && rb1.to[0] === '#/revise/' + PO && rb1.to[1] === NOTES, rb1)
+    await tapBtn(RN, 'Finish Revision', '.rbar'); await sleep(300)
+    const gr1 = await RN.ev(() => ({ phase: document.querySelector('.revise').dataset.phase, grades: [...document.querySelectorAll('.grade-b b')].map((b) => b.textContent).join() }))
+    await sleep(1100)
+    await RN.click('.grade-b[data-grade="good"]'); await sleep(900)
+    const done1 = await RN.ev(() => ({ phase: document.querySelector('.revise').dataset.phase, bar: !!document.querySelector('.rbar') }))
+    check('Finish Revision in Recall is the existing Again / Hard / Good / Easy question; the grade ends the revision and the bar', gr1.phase === 'grade' && gr1.grades === 'Again,Hard,Good,Easy' && done1.phase === 'done' && !done1.bar && (await RN.idb('revisionEvents')).length === 1 && (await RN.idb('studySessions')).length === 1 && (await stored()) === null, [gr1, done1])
+
+    // R2: Recall → Notes → on through the notes → reload → Back → Recall → Notes → Finish
+    await RN.hash('#/revision/upcoming')
+    await tapBtn(RN, 'Revise early', '.runit[data-unit$="presiding-officers"]'); await sleep(900)
+    const ra0 = await activeRow(RN)
+    const EV = ra0.currentActivity?.revisionEventId
+    if ((await RN.ev(() => document.querySelector('.revise').dataset.phase)) === 'prompt') { await tapBtn(RN, 'Reveal', '.rcard'); await sleep(200); await tapBtn(RN, 'Knew', '.rcard'); await sleep(250) }
+    const at0 = await RN.ev(() => ({ phase: document.querySelector('.revise').dataset.phase, prog: document.querySelector('.rprog span')?.textContent ?? null }))
+    const answers0 = (await RN.idb('recallAttempts')).length
+    await toNotes()
+    const n1 = await RN.ev(() => ({ hash: location.hash, secs: document.querySelectorAll('.sec').length, app: document.querySelector('.app').className, top: document.querySelector('#s-presiding-officers').getBoundingClientRect().top, under: document.querySelector('.rbar').getBoundingClientRect().bottom, tools: !!document.querySelector('#s-presiding-officers .tg.done') && !!document.querySelector('button[title^="Edit"]') && !!document.querySelector('.chap-meta select') }))
+    const rb2 = await rbar()
+    const ra1 = await activeRow(RN)
+    check('Review Notes opens the whole chapter at the unit’s section, in the ordinary reader, with the revision still in progress', n1.hash === NOTES && n1.secs === 9 && /revising/.test(n1.app) && n1.tools && n1.top >= n1.under - 1 && rb2?.mode === 'notes' && rb2.on === 'Review Notes' && /^Revision R2 · /.test(rb2.title), [n1, rb2])
+    check('the switch touches nothing: the same timer session and the same open revision span, still R2 of that unit', ra0.state === 'running' && ra0.currentActivity?.revisionOrdinal === 2 && ra1.sessionId === ra0.sessionId && ra1.state === 'running' && ra1.currentSpanStartedAt === ra0.currentSpanStartedAt && ra1.completedSpans.length === 0 && ra1.currentActivity.activity === 'revision' && ra1.currentActivity.revisionEventId === EV && ra1.currentActivity.revisionOrdinal === 2 && ra1.currentActivity.revisionUnitId === PO && (await stored()).current.eventId === EV, [ra0.currentActivity, ra1.currentActivity])
+    await RN.page.screenshot({ path: join(OUT, 'desktop-revision-notes.png') })
+    const hl = await RN.highlight('bills-types-and-procedure', 'All Money Bills are Financial Bills', 'green')
+    await RN.editMode(true)
+    const tb = await RN.ev(() => ({ top: document.querySelector('.toolbar').getBoundingClientRect().top, under: document.querySelector('.rbar').getBoundingClientRect().bottom }))
+    await RN.edit('bills-types-and-procedure', '<p>RN-E2E edit</p>'); await RN.saved(); await RN.editMode(false)
+    await RN.key('/')
+    const pal = await RN.count('.palette input')
+    await RN.page.keyboard.press('Escape'); await sleep(200)
+    await RN.key(']'); await sleep(1300) // on to the next chapter, as a link or the pager would
+    const n2 = await RN.ev(() => ({ hash: location.hash, marks: document.querySelectorAll('mark[data-hid]').length }))
+    const ra2 = await activeRow(RN)
+    const rb3 = await rbar()
+    check('highlights, editing, search and navigation work as usual in the notes', hl && tb.top >= tb.under - 1 && pal === 1 && (await RN.idb('highlights')).length === 1 && (await RN.idb('overrides')).filter((o) => !o.deleted).length === 1 && n2.hash.startsWith('#/study/prelims/polity/') && !n2.hash.includes('/parliament'), [hl, tb, pal, n2])
+    check('moving on through the notes never turns the revision into initial study: same span, same unit, R2', rb3?.mode === 'notes' && rb3.unit === PO && ra2.sessionId === ra0.sessionId && ra2.completedSpans.length === 0 && ra2.currentSpanStartedAt === ra0.currentSpanStartedAt && ra2.currentActivity?.revisionEventId === EV && ra2.currentActivity.revisionOrdinal === 2 && ra2.currentContext.ref.chapterId === 'parliament', [rb3, ra2.currentActivity, ra2.currentContext.ref])
+    await RN.reload(); await sleep(700)
+    const ra3 = await activeRow(RN)
+    const rb4 = await rbar()
+    check('a reload while reading the notes keeps the revision: the bar, the event id, the round and the running span', (await RN.ev(() => location.hash)) === n2.hash && rb4?.mode === 'notes' && /^Revision R2 · /.test(rb4.title) && ra3.sessionId === ra0.sessionId && ra3.state === 'running' && ra3.completedSpans.length === 0 && ra3.currentActivity?.revisionEventId === EV && ra3.currentActivity.revisionOrdinal === 2 && (await stored()).current.eventId === EV && (await RN.idb('revisionEvents')).length === 1 && (await RN.idb('activeStudySession')).length === 1, [rb4, ra3.currentActivity])
+    await RN.page.goBack(); await sleep(700)
+    const bk1 = { hash: await RN.ev(() => location.hash), bar: await rbar() }
+    await RN.page.goBack(); await sleep(900)
+    const bk2 = await RN.ev(() => ({ hash: location.hash, phase: document.querySelector('.revise')?.dataset.phase, prog: document.querySelector('.rprog span')?.textContent ?? null }))
+    const ra4 = await activeRow(RN)
+    const rb5 = await rbar()
+    check('browser Back goes back through the notes to Recall: the same revision at the same prompt — no new answer, event, span or session', bk1.hash.startsWith(PARL) && bk1.bar?.mode === 'notes' && bk2.hash === '#/revise/' + PO && bk2.phase === at0.phase && bk2.prog === at0.prog && rb5?.mode === 'recall' && (await RN.idb('recallAttempts')).length === answers0 && ra4.sessionId === ra0.sessionId && ra4.completedSpans.length === 0 && ra4.currentActivity?.revisionEventId === EV && (await stored()).current.eventId === EV && (await RN.idb('revisionEvents')).length === 1 && (await RN.idb('studySessions')).length === 1, [bk1, bk2, at0])
+    await toNotes(); await sleep(500)
+    await tapBtn(RN, 'Finish Revision', '.rbar'); await sleep(300)
+    const gb = await RN.ev(() => ({ hash: location.hash, q: document.querySelector('.rbar-grade span')?.textContent, grades: [...document.querySelectorAll('.rbar-grade [data-grade]')].map((b) => b.textContent).join(), pressed: [...document.querySelectorAll('.rbar button')].find((x) => x.textContent === 'Finish Revision').getAttribute('aria-pressed') }))
+    check('Finish Revision from the notes asks the same question there: Again / Hard / Good / Easy', gb.hash === NOTES && gb.q === 'How well did you remember this?' && gb.grades === 'Again,Hard,Good,Easy' && gb.pressed === 'true', gb)
+    await RN.click('.rbar-grade [data-grade="good"]'); await sleep(900)
+    const evs2 = await RN.idb('revisionEvents')
+    const ev2 = evs2.find((e) => e.id === EV)
+    const un2 = (await RN.idb('revisionUnits')).find((u) => u.id === PO)
+    const ses2n = await RN.idb('studySessions')
+    const own2 = ses2n.find((s) => s.id === ra0.sessionId)
+    const end2 = await RN.ev(() => ({ hash: location.hash, bar: !!document.querySelector('.rbar'), toast: document.querySelector('.toast')?.textContent ?? '', timer: !!document.querySelector('.tchip'), secs: document.querySelectorAll('.sec').length, app: document.querySelector('.app').className }))
+    check('the grade writes the one R2 event and reschedules the unit, and the reader stays on the notes', evs2.length === 2 && ev2?.ordinal === 2 && ev2.grade === 'good' && ev2.revisionUnitId === PO && ev2.studySessionId === ra0.sessionId && ev2.durationMs >= 3000 && (ev2.recallAttemptCount ?? 0) === (await RN.idb('recallAttempts')).filter((a) => a.revisionEventId === EV).length && un2.revisionCount === 2 && un2.dueDate === ev2.nextDueDate && ev2.schedulerAfter.stability === un2.scheduler.stability && end2.hash === NOTES && end2.secs === 9 && !end2.bar && !/revising/.test(end2.app) && /^R2 recorded · next /.test(end2.toast) && (await stored()) === null, [ev2, end2])
+    check('one timer session and one span for the whole revision, attributed to R2 — no duplicate event or session', !end2.timer && (await activeRow(RN)).state === undefined && ses2n.length === 2 && own2?.spans.length === 1 && own2.spans[0].activity === 'revision' && own2.spans[0].revisionEventId === EV && own2.spans[0].revisionUnitId === PO && own2.spans[0].revisionOrdinal === 2 && Math.abs(own2.spans[0].durationMs - ev2.durationMs) < 50 && ses2n.find((s) => s.id !== ra0.sessionId).spans.every((s) => s.activity === 'revision' && s.revisionOrdinal === 1) && evs2.filter((e) => e.ordinal === 2).length === 1, ses2n.map((s) => s.spans.map((x) => [x.activity, x.revisionOrdinal, x.durationMs])))
+    await RN.hash('#/insights/revision')
+    check('Insights attributes the rounds apart: R1 1 · R2 1', /R1 1 · R2 1/.test(await flat(RN, '.page')))
+
+    // leaving a revision without a grade, from the notes
+    await RN.hash('#/revision/upcoming')
+    await tapBtn(RN, 'Revise early', '.runit[data-unit$="sessions-and-devices"]'); await sleep(900)
+    await toNotes(); await sleep(600)
+    await RN.page.setViewport({ width: 375, height: 812 }); await sleep(300)
+    const ph = await RN.ev(() => ({ wide: document.documentElement.scrollWidth > innerWidth + 1, h: document.querySelector('.rbar').getBoundingClientRect().height, finish: document.querySelector('.rbar .x').getBoundingClientRect().right <= innerWidth && document.querySelector('.rbar-t').getBoundingClientRect().width >= 16 }))
+    await RN.page.screenshot({ path: join(OUT, 'phone-revision-notes.png') })
+    await RN.hash('#/revise/' + RU('sessions-and-devices')); await sleep(600)
+    const phRecall = await RN.ev(() => document.documentElement.scrollWidth > innerWidth + 1)
+    await RN.page.goBack(); await sleep(600)
+    check('phone: the bar stays one compact row in both views and nothing overflows', !ph.wide && !phRecall && ph.h <= 52 && ph.finish, ph)
+    await RN.page.setViewport({ width: 1280, height: 860 }); await sleep(300)
+    await RN.click('.rbar .x'); await sleep(700)
+    const left = await RN.ev(() => ({ bar: !!document.querySelector('.rbar'), hash: location.hash, toast: document.querySelector('.toast')?.textContent ?? '', timer: !!document.querySelector('.tchip') }))
+    check('leaving without a grade records nothing: no event, the unit as it was, the time kept as its revision span', !left.bar && left.hash === PARL + '/sessions-and-devices' && /left without a grade/.test(left.toast) && !left.timer && (await RN.idb('revisionEvents')).length === 2 && (await RN.idb('revisionUnits')).find((u) => u.id === RU('sessions-and-devices')).revisionCount === 0 && (await stored()) === null && (await RN.idb('studySessions')).length === 3 && (await RN.idb('studySessions')).every((s) => s.spans.every((x) => x.activity === 'revision')), left)
+    await RN.click('.ib.timer'); await sleep(1200)
+    const ra5 = await activeRow(RN)
+    check('with the revision over, reading is initial study again', ra5.state === 'running' && !ra5.currentActivity && ra5.currentContext.ref.chapterId === 'parliament', ra5.currentActivity)
+    await stopTimerOf(RN)
+  }
+
   section('Recall v2')
   {
     const attempts0 = (await RV.idb('recallAttempts')).length

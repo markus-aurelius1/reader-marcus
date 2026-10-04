@@ -2,20 +2,21 @@
 // Everything listed here is lib/revisionModel.ts's view of the RevisionUnits and RevisionEvents,
 // built on each render. The page stores nothing of its own and never changes a due date except
 // through the two deliberate actions: completing a revision, and "Defer today".
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowRight, Check, ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Play, X } from 'lucide-react'
 import { linkIndex, stageTitle, type Subject } from '../lib/content'
 import { relatedPyqs } from '../lib/links'
 import { secHtml, secTitle, useStore } from '../lib/store'
-import { REVISION_TABS, go, href, type RevisionTab } from '../lib/router'
+import { REVISION_TABS, go, href, type RevisionTab, type Route } from '../lib/router'
 import { navNode, studyContext } from '../lib/nav'
 import { civil, dateKey, dayNo, dayOf, dayText } from '../lib/analytics'
-import type { RecallOutcome, RevisionEvent, RevisionGrade, SpanActivity, StudyContext } from '../lib/contract'
+import type { RecallOutcome, RevisionEvent, RevisionGrade, StudyContext } from '../lib/contract'
 import { GRADES, parseDay } from '../lib/scheduler'
 import { byChapter, calendarMonth, daySummary, examDateText, horizonOf, liveExams, monthOf, primaryExam, workloadMs, buildQueue, type CalendarDay, type Queue, type QueueItem } from '../lib/revisionModel'
-import { clock, completeRevision, deferUnit, newRevisionEventId, prefsOf, recordAttempt, useRevision } from '../lib/revision'
+import { deferUnit, prefsOf, recordAttempt, revisionToday, useRevision } from '../lib/revision'
+import { activityOf, finishRevision, forgetBegun, leaveRevision, openRevision, ordinalOf, readRun, setFinishing, trackRevision, useRevising, useRun, watchRevision, writeRun, type RunCurrent } from '../lib/revisionRun'
 import { TARGET_BLANK, annotate, promptOf, selectPrompts, type RecallItem } from '../lib/recall'
-import { activeTimer, beginRevisionSpan, continueHere, ownsTimer, pauseTimer, revisionSpanMs, stopTimer, useStudy } from '../lib/study'
+import { activeTimer, continueHere, ownsTimer, useStudy } from '../lib/study'
 import { durationText } from '../lib/timer'
 import { linked } from '../sync'
 import { ManualRevision, plural, useData } from './Insights'
@@ -84,30 +85,7 @@ export function useRevisionQueue() {
 }
 
 // ---- a run of revisions ("Start Revision") ---------------------------------------------------
-// Which units are still to come, and the one in progress — so that a reload returns to it.
-// A convenience of this browser only; nothing here is study data.
-const RUN = 'upsc-revision-run'
-interface Run {
-  queue: string[]
-  /** The timer was started by this run, so the run stops it when it ends. */
-  ownTimer?: boolean
-  current?: { unitId: string; eventId: string; startedAt: string }
-}
-const readRun = (): Run => {
-  try {
-    return { queue: [], ...JSON.parse(localStorage.getItem(RUN) || '{}') }
-  } catch {
-    return { queue: [] }
-  }
-}
-const writeRun = (r: Run | null) => {
-  try {
-    if (r) localStorage.setItem(RUN, JSON.stringify(r))
-    else localStorage.removeItem(RUN)
-  } catch {
-    /* storage unavailable: no resume after a reload */
-  }
-}
+// Which units are still to come, and the one in progress, are kept by lib/revisionRun.ts.
 export function startRun(ids: string[]) {
   if (!ids.length) return
   const prev = readRun()
@@ -366,6 +344,62 @@ function DayDetail({ day, queue }: { day: CalendarDay; queue: Queue }) {
   )
 }
 
+// ---- the revision in progress: Recall | Review Notes | Finish Revision --------------------------
+/** The views of a revision: its Recall prompts, and the reader or a Current Affairs note (its notes). */
+const revisionSurface = (r: Route) => r.name === 'revise' || r.name === 'reader' || (r.name === 'current-affairs' && r.view === 'note')
+
+/**
+ * Revision R2 · [Recall] [Review Notes] [Finish Revision] — shown on both views of the revision in
+ * progress. Moving between them changes neither the revision (its event id, round and timer span)
+ * nor what is recorded; the grade is asked for once, from whichever view is open.
+ */
+export function RevisionBar({ route, say }: { route: Route; say: (m: string, ms?: number) => void }) {
+  const cur = useRevising()
+  const stored = useRevision((s) => (cur ? s.units[cur.unitId]?.title : '')) ?? ''
+  const finishing = useRun((s) => !!cur && s.finishing === cur.eventId)
+  const on = revisionSurface(route)
+  const id = cur && on ? cur.eventId : ''
+  // time a view of this revision was on screen: what it took when no timer of this device recorded it
+  useEffect(() => {
+    if (!id) return
+    const flip = () => watchRevision(id, document.visibilityState !== 'hidden')
+    flip()
+    document.addEventListener('visibilitychange', flip)
+    return () => {
+      document.removeEventListener('visibilitychange', flip)
+      watchRevision(id, false)
+    }
+  }, [id])
+  useEffect(() => {
+    if (!on) forgetBegun()
+  }, [on])
+  if (!cur || !on) return null
+  const recall = route.name === 'revise' && route.unitId === cur.unitId
+  const name = titleOf(cur.unitId, stored)
+  const leave = () => {
+    const end = leaveRevision()
+    say('Revision left without a grade' + (end.timer === 'stopped' && end.session ? ` · ${durationText(end.session.durationMs)} saved` : end.timer === 'paused' ? ' · study timer paused' : ''))
+    if (recall) go(href.revision())
+  }
+  return (
+    <div className="rbar no-print" role="region" aria-label="Revision in progress" data-mode={recall ? 'recall' : 'notes'} data-unit={cur.unitId}>
+      <span className="rbar-t" title={name}><b><span className="hide-sm">Revision </span>R{ordinalOf(cur)}</b><span className="hide-sm"> · {name}</span></span>
+      <span className="rbar-seg" role="group" aria-label="View">
+        <a className={recall ? 'on' : ''} aria-current={recall ? 'page' : undefined} href={href.revise(cur.unitId)}>Recall</a>
+        <a className={recall ? '' : 'on'} aria-current={recall ? undefined : 'page'} href={notesHref(cur.unitId)}>Review Notes</a>
+      </span>
+      <button className="btn sm primary" aria-pressed={finishing} onClick={() => setFinishing(finishing ? null : cur.eventId)}>Finish Revision</button>
+      <button className="x" onClick={leave} title="Leave this revision without a grade — nothing is recorded" aria-label="Leave revision without a grade"><X /></button>
+      {finishing && !recall && (
+        <div className="rbar-grade" role="group" aria-label="How well did you remember this?">
+          <span>How well did you remember this?</span>
+          {GRADES.map((g) => <button key={g} className="btn sm" data-grade={g} onClick={() => conclude(g, cur, say, true)} title={GRADE_HINT[g]}>{GRADE_LABEL[g]}</button>)}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ---- Guided Revision ---------------------------------------------------------------------------------
 /** What is revised: a section of the library, or a Current Affairs note the learner added to revision. */
 interface Src {
@@ -409,43 +443,41 @@ export function ReviseView({ subjects, unitId, say }: { subjects: Subject[]; uni
 }
 
 function Revise({ unitId, src, say }: { unitId: string; src: Src; say: (m: string, ms?: number) => void }) {
-  const unit = useRevision((s) => s.units[unitId])
+  // the revision in progress: the same one after a reload, and when coming back from its notes
+  const [cur, setCur] = useState<RunCurrent | null>(null)
+  useEffect(() => {
+    const c = openRevision(unitId, src.context)
+    setCur(c)
+    // The one timer moves into a revision span. Another device's timer is left alone.
+    if (c) trackRevision(c, linked() && !navigator.onLine)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unitId])
+  return cur ? <Guided key={cur.eventId} cur={cur} unitId={unitId} src={src} say={say} /> : null
+}
+
+/** Finish Revision, from Recall or from the notes: the grade, then the next unit of the run or its end. */
+function conclude(grade: RevisionGrade, cur: RunCurrent, say: (m: string, ms?: number) => void, fromNotes = false) {
+  const f = finishRevision(grade, cur)
+  if (!f) return
+  const recorded = `R${f.event.ordinal} recorded · next ${whenText(parseDay(f.event.nextDueDate), revisionToday()).toLowerCase()}`
+  if (f.next) {
+    say(recorded)
+    go(href.revise(f.next))
+  } else if (fromNotes) say(recorded + (f.timer === 'stopped' && f.session ? ` · ${durationText(f.session.durationMs)} saved` : f.timer === 'paused' ? ' · study timer paused' : ''))
+  else if (f.timer === 'stopped') say(f.session ? `Revision recorded · ${durationText(f.session.durationMs)} saved` : 'Revision recorded')
+  else say(f.timer === 'paused' ? 'Revision recorded · study timer paused' : recorded)
+}
+
+function Guided({ cur, unitId, src, say }: { cur: RunCurrent; unitId: string; src: Src; say: (m: string, ms?: number) => void }) {
   const row = useRevision((s) => s.prefs)
   const attempts = useRevision((s) => s.attempts)
   const prefs = useMemo(() => prefsOf(row), [row])
   const { title, html, context } = src
-
-  // the revision in progress: the same one after a reload
-  const [cur] = useState(() => {
-    const run = readRun()
-    if (run.current?.unitId === unitId) return run.current
-    const current = { unitId, eventId: newRevisionEventId(), startedAt: new Date(clock.now()).toISOString() }
-    writeRun({ queue: run.queue.includes(unitId) ? run.queue : [unitId], ownTimer: run.queue.includes(unitId) ? run.ownTimer : undefined, current })
-    return current
-  })
-  const [ordinal] = useState(() => unit.revisionCount + 1)
+  const ordinal = ordinalOf(cur)
   const event = useRevision((s) => s.events[cur.eventId])
-  const activity: SpanActivity = useMemo(() => ({ activity: 'revision', revisionUnitId: unitId, revisionEventId: cur.eventId, revisionOrdinal: ordinal }), [unitId, cur.eventId, ordinal])
-
-  // The one timer moves into a revision span. Another device's timer is left alone.
+  const activity = useMemo(() => activityOf(cur), [cur])
   const timer = useStudy(activeTimer)
   const remote = !!timer && !ownsTimer(timer)
-  useEffect(() => {
-    if (event) return
-    if (beginRevisionSpan(context, activity, linked() && !navigator.onLine) === 'started') writeRun({ ...readRun(), ownTimer: true })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cur.eventId])
-  // time this page was in view: what the revision took when no timer of this device recorded it
-  const seen = useRef({ ms: 0, since: performance.now() })
-  useEffect(() => {
-    const flip = () => {
-      const s = seen.current
-      if (document.visibilityState === 'hidden') s.ms += performance.now() - s.since
-      else s.since = performance.now()
-    }
-    document.addEventListener('visibilitychange', flip)
-    return () => document.removeEventListener('visibilitychange', flip)
-  }, [])
 
   // the prompts are chosen once, from earlier revisions; answers given now do not reshuffle them
   const pyq = hasPyq(unitId)
@@ -453,14 +485,14 @@ function Revise({ unitId, src, say }: { unitId: string; src: Src; say: (m: strin
     prefs.guidedRevisionEnabled ? selectPrompts(annotate(html, unitId, { pyq }).items, Object.values(attempts).filter((a) => a.revisionUnitId === unitId && a.revisionEventId !== cur.eventId), prefs.recallIntensity) : [],
   )
   const answered = useMemo(() => new Map(Object.values(attempts).filter((a) => a.revisionEventId === cur.eventId).map((a) => [a.recallUnitId, a.outcome])), [attempts, cur.eventId])
-  const [skipAhead, setSkipAhead] = useState(false)
+  // "Finish now", "Done reading" and the bar's "Finish Revision" all ask for the grade
+  const skipAhead = useRun((s) => s.finishing === cur.eventId)
   const [revealed, setRevealed] = useState(false)
   const [notes, setNotes] = useState(false)
   const index = prompts.findIndex((p) => !answered.has(p.id))
   const prompt = !skipAhead && index >= 0 ? prompts[index] : null
   const readThrough = prompts.length === 0
-  const [read, setRead] = useState(false)
-  const grading = !event && !prompt && (!readThrough || read)
+  const grading = !event && !prompt && (!readThrough || skipAhead)
 
   const answer = (outcome: RecallOutcome) => {
     if (!prompt) return
@@ -468,36 +500,7 @@ function Revise({ unitId, src, say }: { unitId: string; src: Src; say: (m: strin
     setRevealed(false)
   }
 
-  const finish = (grade: RevisionGrade) => {
-    const a = activeTimer(useStudy.getState())
-    const mine = ownsTimer(a) && a?.currentActivity?.revisionEventId === cur.eventId
-    const timed = mine ? revisionSpanMs(cur.eventId) : 0
-    const s = seen.current
-    const e = completeRevision({ unitId, grade, eventId: cur.eventId, startedAt: cur.startedAt, durationMs: timed || s.ms + (document.visibilityState === 'hidden' ? 0 : performance.now() - s.since), studySessionId: mine ? a!.sessionId : undefined })
-    if (!e) return
-    const run = readRun()
-    const rest = run.queue.filter((id) => id !== unitId && !!useRevision.getState().units[id])
-    const when = whenText(parseDay(e.nextDueDate), dayOf(clock.now(), prefs.schedulerTimeZone))
-    if (rest.length) {
-      // the next unit's own revision span begins when it opens
-      writeRun({ queue: rest, ownTimer: run.ownTimer })
-      say(`R${e.ordinal} recorded · next ${when.toLowerCase()}`)
-      go(href.revise(rest[0]))
-      return
-    }
-    writeRun(null)
-    if (mine) {
-      // the revision's time ends here: a timer this run started is stopped and saved; one that was
-      // already running for study is paused rather than left counting as revision
-      if (run.ownTimer) {
-        const ses = stopTimer()
-        say(ses ? `Revision recorded · ${durationText(ses.durationMs)} saved` : 'Revision recorded')
-      } else {
-        pauseTimer()
-        say('Revision recorded · study timer paused')
-      }
-    } else say(`R${e.ordinal} recorded · next ${when.toLowerCase()}`)
-  }
+  const finish = (grade: RevisionGrade) => conclude(grade, cur, say)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -560,7 +563,7 @@ function Revise({ unitId, src, say }: { unitId: string; src: Src; say: (m: strin
                 <button className="btn" onClick={() => answer('skipped')}>Skip</button>
               </>
             )}
-            <button className="linkbtn" onClick={() => setSkipAhead(true)}>Finish now</button>
+            <button className="linkbtn" onClick={() => setFinishing(cur.eventId)}>Finish now</button>
           </div>
         </section>
       ) : grading ? (
@@ -581,7 +584,7 @@ function Revise({ unitId, src, say }: { unitId: string; src: Src; say: (m: strin
         <section className={`rcard read recall ri-${prefs.recallIntensity}`}>
           <p className="fine" style={{ margin: '0 0 10px' }}>{prefs.guidedRevisionEnabled ? 'This section has no recall prompts.' : 'Guided prompts are off.'} Recall each concealed answer, tap to check it, then say how it went.</p>
           <div className="sec-body prose" onClick={toggle} dangerouslySetInnerHTML={{ __html: body }} />
-          <div className="acts"><button className="btn primary" onClick={() => setRead(true)}>Done reading</button></div>
+          <div className="acts"><button className="btn primary" onClick={() => setFinishing(cur.eventId)}>Done reading</button></div>
         </section>
       )}
     </div>

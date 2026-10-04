@@ -23,13 +23,14 @@ import { AccountButton, AccountPanel } from './components/Account'
 import { initSync, statusLabel, useSync } from './sync'
 import { promptInstall, useInstall } from './lib/install'
 import { TimerBanner, TimerControl } from './components/Timer'
-import { clearNotice, followContext, initStudy, useStudy } from './lib/study'
+import { activeTimer, clearNotice, initStudy, ownsTimer, useStudy } from './lib/study'
+import { followReading, useRevising } from './lib/revisionRun'
 import { contextKey } from './lib/timer'
 import { initPlan } from './lib/plan'
 import { initRevision, prefsOf, setRevisionPrefs, titles, useRevision } from './lib/revision'
 import { initReset } from './lib/reset'
 import { INTENSITIES, INTENSITY_LABEL } from './lib/recall'
-import { REVISION_TAB_LABEL, RevisionPage, ReviseView } from './views/Revision'
+import { REVISION_TAB_LABEL, RevisionBar, RevisionPage, ReviseView } from './views/Revision'
 import { SettingsPage } from './views/Settings'
 import { CA_TAB_LABEL, CurrentAffairsPage } from './views/CurrentAffairs'
 import { initCurrentAffairs, useCA } from './lib/currentAffairs'
@@ -112,11 +113,16 @@ export function App() {
   const timerKey = timerCtx ? contextKey(timerCtx) : ''
   const studyReady = useStudy((s) => s.ready)
   const timerAway = useStudy((s) => s.away)
+  const timerMine = useStudy((s) => ownsTimer(activeTimer(s)))
+  const revisionReady = useRevision((s) => s.ready)
+  const revising = useRevising()
+  const onRevision = !!revising && (route.name === 'reader' || route.name === 'revise' || (route.name === 'current-affairs' && route.view === 'note'))
   // A running timer follows the reader: the span for the previous chapter ends, the next begins.
+  // While a revision is in progress the reader is showing its notes, and the timer stays in its span.
   useEffect(() => {
-    if (studyReady && timerCtx && prefs.timer.followNavigation) followContext(timerCtx)
+    if (studyReady && timerCtx && prefs.timer.followNavigation) followReading(timerCtx)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timerKey, studyReady, timerAway, prefs.timer.followNavigation])
+  }, [timerKey, studyReady, timerAway, prefs.timer.followNavigation, timerMine, revisionReady, revising?.eventId])
   const timerNotice = useStudy((s) => s.notice)
   useEffect(() => {
     if (!timerNotice) return
@@ -251,7 +257,7 @@ export function App() {
   const relatedPyqCount = chapter ? relatedPyqs(linkIndex(), relKeys).length : 0
   // Current Affairs notes the learner linked to this chapter or its sections (derived backlinks)
   const caNotes = chapter ? notesLinking(caEntries, relKeys) : []
-  const cls = ['app', sideOpen && !focus ? 'side-open' : '', focus ? 'focus' : '', prefs.recall ? 'recall' : '', `ri-${intensity}`, editMode ? 'editing' : ''].join(' ')
+  const cls = ['app', sideOpen && !focus ? 'side-open' : '', focus ? 'focus' : '', prefs.recall ? 'recall' : '', `ri-${intensity}`, editMode ? 'editing' : '', onRevision ? 'revising' : ''].join(' ')
 
   return (
     <div className={cls}>
@@ -359,6 +365,7 @@ export function App() {
         {inStudy && <Explorer route={route} subjects={subjects} subject={subject} chapter={chapter} />}
       </aside>
 
+      <RevisionBar route={route} say={say} />
       <main className="main">
         {route.name === 'reader' && subject && chapter ? (
           <Reader subject={subject} chapter={chapter} route={route} n={n} />

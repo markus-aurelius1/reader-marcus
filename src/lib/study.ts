@@ -153,6 +153,18 @@ export function beginActivitySpan(context: StudyContext, activity: SpanActivity,
 export const beginRevisionSpan = beginActivitySpan
 
 /**
+ * A timer of this device stays in — or returns to — the span of an activity already begun (the
+ * revision in progress, while its notes are read). Never starts a timer and never resumes one.
+ */
+export function keepActivity(context: StudyContext, activity: SpanActivity) {
+  if (useStudy.getState().away !== null) return // not until the unattended stretch is settled
+  const a = mine()
+  if (!a) return
+  const next = switchContext(a, context, clock.now(), activity)
+  if (next !== a) commit(next)
+}
+
+/**
  * Active time the timer has recorded so far for one news day (closed spans and the open one).
  * Shown beside the day's completed sessions while the timer is still running; never stored.
  */

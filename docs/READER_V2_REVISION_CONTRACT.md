@@ -443,6 +443,30 @@ no prompts   guided revision off, or a section with no recall units: the section
              its answers concealed, then the same question.
 ```
 
+## Recall and Review Notes
+
+A revision in progress has two views, and it is the same revision in both.
+
+```text
+Recall         #/revise/{unit} — the guided prompts above.
+Review Notes   the unit's own notes in the ordinary reader (the whole chapter, opened at the
+               section; a Current Affairs note on its own page) — editing, highlights,
+               cross-links, search and navigation exactly as when studying.
+bar            on both views while the revision is in progress:
+                   Revision R2 · [Recall] [Review Notes] [Finish Revision]   ×
+               Finish Revision   asks the one question — in Recall on its card, in the notes
+                                 on the bar — and the grade writes the one RevisionEvent.
+               ×                 leaves without a grade: no event, no change to the unit.
+the same       unit id, event id, ordinal (fixed when the revision began), start time and
+revision       recall answers. Switching views, browser Back and a reload change none of
+               them; a second event is never written for one revision (the event id is the
+               key, and a grade given twice returns the first event).
+```
+
+The revision in progress is kept by `lib/revisionRun.ts` (localStorage `upsc-revision-run`: unit,
+event id, start, ordinal, timer context). It ends when it is graded, left with ×, replaced by
+opening another unit's revision, or removed by a reset.
+
 ---
 
 # TIMER
@@ -456,9 +480,18 @@ Start a revision     no timer            → the one timer starts, in a revision
 Next unit in a run   the span closes, the next unit's revision span opens
 End of a run         a timer the run started is stopped and saved
                      a timer that was already running is paused (it does not go on counting)
-Left without a grade no event, no change to the unit; the time already spent stays in its span
-Reload               the revision in progress (unit, event id, start) is kept in localStorage
-                     "upsc-revision-run" — a convenience of that browser, not study data
+Left without a grade no event, no change to the unit; the time already spent stays in its span;
+                     the timer ends as at the end of a run (stopped and saved, or paused)
+Reload               the revision in progress (unit, event id, start, ordinal, timer context) is
+                     kept in localStorage "upsc-revision-run" — a convenience of that browser,
+                     not study data
+Review Notes         reading in the reader while a revision is in progress — its own notes, and
+                     any chapter a link, search or the pager leads to — stays in the revision's
+                     span: same unit, event id and ordinal. The timer does not follow the reader
+                     back to initial study until the revision is graded or left.
+Recall ⇄ Notes       never closes or opens a span, and never starts or resumes a timer: one that
+                     was paused or stopped while reading the notes stays so. A timer started
+                     from the reader during the revision times the revision.
 ```
 
 `RevisionEvent.durationMs` is the active time of its revision spans when this device timed it,
@@ -501,7 +534,8 @@ Revision                              #/revision
 ├── Manual                            #/revision/manual      ★ / ↻ sections (unchanged pipeline)
 └── Analytics → Insights              #/insights/revision
 
-Guided revision of one unit           #/revise/{stage}/{subject}/{chapter}/{section}
+Guided revision of one unit           #/revise/{stage}/{subject}/{chapter}/{section}     (Recall)
+Its notes, while it is in progress    #/study/{stage}/{subject}/{chapter}/{section}      (Review Notes)
 Settings                              #/settings             exam targets, revision, reset
 ```
 
@@ -636,3 +670,4 @@ Nothing is enrolled by the upgrade. Sections marked Done before this feature sta
 | 2026-10-04 | `RevisionUnit.target`, `RevisionEvent.target`, `RecallAttempt.target` are `ContentRef | CurrentAffairsRef`; a unit may be `ca/<entryId>`, revised at `#/revise/ca/<entryId>` and listed under "Current Affairs" | Job 5.6: a Current Affairs note enters revision only by "Add to Revision", in this scheduler — never a second one |
 | 2026-10-04 | A unit can be set aside (`suspended`) after reviews, when its note is deleted | The note is gone; its completed revisions stay as history |
 | 2026-10-04 | Reset groups: `cad` (Current Affairs day records) in `study`; `cae` (Current Affairs notes) in `notes` | Study History reset clears the day record and keeps the learner's notes; Full reset removes both |
+| 2026-10-04 | A revision has two views, Recall and Review Notes, under one bar (`Revision Rn · Recall · Review Notes · Finish Revision · ×`); while it is in progress the timer stays in its revision span wherever the reader goes; it can be left without a grade explicitly; `lib/revisionRun.ts` holds the revision in progress | A scheduled revision was limited to the recall cards, which test only part of a topic; rereading the notes used to turn the time back into initial study |

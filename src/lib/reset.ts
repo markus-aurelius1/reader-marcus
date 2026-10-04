@@ -12,6 +12,7 @@ import { db } from './db'
 import { deviceId, dropQueued, kindAdapters, storeHooks, syncLocal, useStore, wipeStore } from './store'
 import type { ResetScope } from './contract'
 import { emptyEpoch, groupOf, kindsOf, resetGroups, type EpochDoc, type Group, type PendingReset, type ResetOptions } from './epoch'
+import { writeRun } from './revisionRun'
 
 interface EpochState {
   doc: EpochDoc
@@ -43,13 +44,7 @@ async function purge(groups: Group[]) {
   await dropQueued(kindsOf(groups))
   for (const [kind, adapter] of kindAdapters()) if (groups.includes(groupOf(kind)!)) await adapter.wipe?.()
   await wipeStore(groups)
-  if (groups.includes('study')) {
-    try {
-      localStorage.removeItem('upsc-revision-run')
-    } catch {
-      /* storage unavailable */
-    }
-  }
+  if (groups.includes('study')) writeRun(null)
 }
 
 syncLocal.epoch = {

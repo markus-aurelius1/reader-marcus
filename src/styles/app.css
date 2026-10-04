@@ -643,6 +643,7 @@ a.chip:hover { text-decoration: underline; }
   :root { --rail: 64px; }
   .rail kbd { display: none; }
   .app.side-open .main { padding-left: var(--rail); }
+  .app.side-open .rbar { left: var(--rail); }
   .sidebar { z-index: 50; top: 0; width: min(84vw, 320px); box-shadow: var(--shadow); padding-top: 12px; }
   .app.side-open .scrim { display: block; position: fixed; inset: 0 0 0 var(--rail); z-index: 45; background: rgba(20, 18, 14, 0.4); animation: fadein var(--t) both; }
   .hero { grid-template-columns: 1fr 1fr; }
@@ -812,6 +813,25 @@ h2.sh small { font: 400 13px var(--sans); color: var(--ink-3); margin-left: 6px;
 .grade-b[data-grade='again']:hover { border-color: var(--red); color: var(--red); }
 .grade-b[data-grade='easy']:hover, .grade-b[data-grade='good']:hover { border-color: var(--ok); color: var(--ok); }
 .rnotes { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-2); }
+/* the revision in progress: Recall | Review Notes | Finish Revision, under the top bar on both of its views */
+.rbar { position: fixed; top: var(--top); left: var(--rail); right: 0; z-index: 28; display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 12px; background: var(--paper); border-bottom: 1px solid var(--line); font-size: 13px; transition: left var(--t) ease; }
+.app.side-open .rbar { left: calc(var(--rail) + var(--sidew)); }
+.app.revising .main { --top: 98px; }
+.rbar-t { flex: 1 1 110px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
+.rbar-t b { color: var(--accent); font-weight: 600; }
+.rbar-seg { display: inline-flex; flex-shrink: 0; padding: 2px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); }
+.rbar-seg a { padding: 4px 11px; border-radius: 7px; font-weight: 550; color: var(--ink-2); white-space: nowrap; }
+.rbar-seg a:hover { color: var(--accent); }
+.rbar-seg a.on { background: var(--accent-soft); color: var(--accent); }
+.rbar .x { width: 26px; height: 26px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--ink-3); }
+.rbar .x:hover { background: var(--line-2); color: var(--ink); }
+.rbar .x svg { width: 14px; height: 14px; }
+.rbar-grade { position: absolute; top: 100%; left: 0; right: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; padding: 8px 12px; background: var(--paper); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); animation: fadein 160ms ease both; }
+.rbar-grade > span { margin-right: 4px; color: var(--ink-2); }
+.rbar-grade [data-grade='again']:hover { border-color: var(--red); color: var(--red); }
+.rbar-grade [data-grade='easy']:hover, .rbar-grade [data-grade='good']:hover { border-color: var(--ok); color: var(--ok); }
+.app.focus .rbar { top: 0; left: 0; padding-right: 56px; }
+.app.focus.revising .main { padding-top: 60px; }
 
 .home-h { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; }
 .examcd { display: flex; flex-direction: column; align-items: flex-end; margin-bottom: 14px; padding: 7px 13px; border: 1px solid var(--line); border-radius: 11px; background: var(--paper); text-align: right; transition: border-color var(--t); }
@@ -873,10 +893,15 @@ table.ord thead th { font: 600 10.5px var(--sans); letter-spacing: 0.07em; text-
   .home-h { align-items: flex-start; }
   .examcd b { font-size: 17px; }
   .rcard { padding: 14px 14px 16px; }
+  .rbar { padding: 0 6px; gap: 5px; }
+  .rbar-seg a { padding: 5px 7px; }
+  .rbar .btn.sm { padding: 0 8px; }
+  .rbar .x { width: 22px; }
+  .rbar-grade { justify-content: flex-start; padding: 8px; }
   .tabs .tab-out { margin-left: 6px; padding: 8px 13px; white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .rans { animation: none; }
+  .rans, .rbar-grade { animation: none; }
 }
 @media print {
   .rcard .acts, .rtoday .btn, .cal-nav { display: none !important; }
