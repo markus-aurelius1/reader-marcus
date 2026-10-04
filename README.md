@@ -252,6 +252,7 @@ Local development without Firebase: `node scripts/mock-cloud.mjs` and build/run 
 
 Live at **https://reader-marcus.vercel.app** — Vercel project `reader-marcus`, Firebase project `reader-marcus` (Firestore in `asia-south1`).
 
+- Status (2026-10-04): `firestore.rules` and the app are deployed from commit `73a53bd` (Reader v2 through Job 5.6: revision, exam targets, reset epoch, Current Affairs). The local pipeline (`npm run verify`) passed on that commit before the deploy. Signed-in testing against the live Firebase project is done by hand: the automated two-device suite runs against the mock cloud only. Vercel Authentication is on for all deployments, so the public URL asks for a Vercel login first; PWA install from the public URL needs it restricted to preview deployments.
 - Deploy: `vercel deploy --prod` (builds with `npm run build`, serves `dist/`; settings in [`vercel.json`](vercel.json)). Routing is hash-based, so no SPA rewrite is needed.
 - Environment: the four `VITE_FIREBASE_*` values live in Vercel → Project → Settings → Environment Variables. They are read at build time, so redeploy after changing them.
 - Sign-in domain: in production `VITE_FIREBASE_AUTH_DOMAIN` is the site's own hostname, and `vercel.json` proxies `/__/auth/*` to `<project>.firebaseapp.com`. Sign-in then stays first-party, which is what makes the redirect fallback work in browsers that block third-party storage. Locally (`.env.local`) the auth domain stays `<project>.firebaseapp.com`.
