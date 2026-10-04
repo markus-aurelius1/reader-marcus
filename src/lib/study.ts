@@ -7,7 +7,7 @@ import { create } from 'zustand'
 import { db } from './db'
 import { deviceId, markDirty, registerKind, syncLocal, type KindAdapter } from './store'
 import { keyOf, kindOf } from '../sync/merge'
-import type { ActiveStudySession, StudyContext, StudySession } from './contract'
+import type { ActiveStudySession, SpanActivity, StudyContext, StudySession } from './contract'
 import { RUN_ID, durationText, finish, isActive, pause, resume, runRec, sesRec, start, switchContext, takeOver, timeZone, type Env, type Runtime } from './timer'
 
 interface StudyState {
@@ -101,9 +101,9 @@ export function initStudy(): Promise<void> {
 
 // ---- actions ------------------------------------------------------------------
 /** Start a timer on `context`. Does nothing while a timer exists — there is only ever one. */
-export function startTimer(context: StudyContext, offlineProvisional = false) {
+export function startTimer(context: StudyContext, offlineProvisional = false, activity?: SpanActivity) {
   if (activeTimer(useStudy.getState())) return
-  commit(start(context, clock.now(), deviceId, offlineProvisional))
+  commit(start(context, clock.now(), deviceId, offlineProvisional, activity))
 }
 
 function change(fn: (a: ActiveStudySession, now: number) => ActiveStudySession) {
@@ -122,8 +122,41 @@ export function followContext(context: StudyContext) {
   if (useStudy.getState().away !== null) return // not until the unattended stretch is settled
   const a = mine()
   if (!a) return
+  // reading the notes of the unit under revision is part of revising it
+  const r = a.currentActivity?.activity === 'revision' ? a.currentContext.ref : null
+  if (r && r.stage === context.ref.stage && r.subjectId === context.ref.subjectId && r.chapterId === context.ref.chapterId) return
   const next = switchContext(a, context, clock.now())
   if (next !== a) commit(next)
+}
+
+/**
+ * Scheduled revision of a unit begins: the one timer moves into a revision span. No second timer
+ * is ever created — a timer running here is switched (and resumed if paused); with none, one is
+ * started; one owned by another device is left alone.
+ */
+export function beginRevisionSpan(context: StudyContext, activity: SpanActivity, offlineProvisional = false): 'started' | 'switched' | 'remote' {
+  const any = activeTimer(useStudy.getState())
+  if (!any) {
+    commit(start(context, clock.now(), deviceId, offlineProvisional, activity))
+    return 'started'
+  }
+  if (!ownsTimer(any)) return 'remote'
+  const now = clock.now()
+  const next = switchContext(resume(any, now), context, now, activity)
+  if (next !== any) {
+    useStudy.setState({ away: null })
+    commit(next)
+  }
+  return 'switched'
+}
+
+/** Active time recorded so far for one revision (its closed spans and the open one). */
+export function revisionSpanMs(eventId: string): number {
+  const a = activeTimer(useStudy.getState())
+  if (!a) return 0
+  const closed = a.completedSpans.filter((s) => s.revisionEventId === eventId).reduce((n, s) => n + s.durationMs, 0)
+  const open = a.currentActivity?.revisionEventId === eventId && a.state === 'running' && a.currentSpanStartedAt ? Math.max(0, clock.now() - Date.parse(a.currentSpanStartedAt)) : 0
+  return closed + open
 }
 
 /** Stop and save. `at` ends the session earlier than now (the unattended stretch is left out). */
@@ -138,10 +171,10 @@ export function stopTimer(at?: number): StudySession | null {
 }
 
 /** Take over the timer another device is running: the same session continues here. */
-export function continueHere(context?: StudyContext) {
+export function continueHere(context?: StudyContext, activity?: SpanActivity) {
   const a = activeTimer(useStudy.getState())
   if (!a || ownsTimer(a)) return
-  commit(takeOver(a, deviceId, clock.now(), context))
+  commit(takeOver(a, deviceId, clock.now(), context, activity))
 }
 
 export const keepAwayTime = () => useStudy.setState({ away: null })
@@ -210,6 +243,19 @@ const adapter: KindAdapter = {
   rebind() {
     runSynced = null
     db.put('kv', null, 'runSynced').catch(() => {})
+  },
+
+  async wipe() {
+    runSynced = null
+    useStudy.setState({ runtime: null, sessions: {}, away: null, notice: '' })
+    try {
+      localStorage.removeItem(SEEN)
+    } catch {
+      /* storage unavailable */
+    }
+    await db.clear(['studySessions', 'activeStudySession'])
+    await db.put('kv', null, 'runSynced')
+    channel?.postMessage(1)
   },
 }
 registerKind('ses', adapter)

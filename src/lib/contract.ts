@@ -53,6 +53,12 @@ export interface StudySpan {
   endedAt: string
   /** Active study only; pause time excluded. */
   durationMs: number
+  /** Absent = initial study. */
+  activity?: StudyActivity
+  revisionUnitId?: string
+  revisionEventId?: string
+  /** R1 / R2 / R3 … */
+  revisionOrdinal?: number
 }
 
 /** Completed sessions are immutable and are the only source of study-time figures. */
@@ -75,6 +81,8 @@ export interface ActiveStudySession {
   state: StudyTimerState
   startedAt: string
   currentContext: StudyContext
+  /** What the open span is spent on; absent = initial study. */
+  currentActivity?: SpanActivity
   /** Set while running. */
   currentSpanStartedAt?: string
   /** Time accumulated before the current running span. */
@@ -259,5 +267,144 @@ export interface PyqUserState {
   seen?: boolean
   revised?: boolean
   difficult?: boolean
+  updatedAt: string
+}
+
+// ---- adaptive revision (docs/READER_V2_REVISION_CONTRACT.md) ---------------------------------
+
+export type RevisionGrade = 'again' | 'hard' | 'good' | 'easy'
+export type RevisionStatus = 'new' | 'active' | 'suspended' | 'completed-exam-cycle'
+
+export interface SchedulerSnapshot {
+  difficulty?: number
+  stability?: number
+  lastReviewAt?: string
+  scheduledDays?: number
+  schedulerVersion: string
+}
+
+/** The current scheduling state of one learning unit (a section marked Done). */
+export interface RevisionUnit {
+  id: string
+  target: ContentRef
+  title: string
+  status: RevisionStatus
+  enrolledAt: string
+  initialStudyCompletedAt: string
+  /** Calendar date in the scheduler timezone. Never moved because it was missed. */
+  dueDate: string // YYYY-MM-DD
+  /** Presentation only: hidden from Today until this date. */
+  deferredUntilDate?: string
+  revisionCount: number
+  lapseCount: number
+  scheduler: SchedulerSnapshot
+  desiredRetention: number
+  schedulerTimeZone: string
+  /** The exam whose horizon set dueDate, when one did. */
+  examTargetId?: string
+  createdAt: string
+  updatedAt: string
+}
+
+/** One completed review. Immutable. */
+export interface RevisionEvent {
+  id: string
+  revisionUnitId: string
+  target: ContentRef
+  /** R1 = 1, R2 = 2 … */
+  ordinal: number
+  scheduledDueDate: string
+  startedAt: string
+  completedAt: string
+  overdueDays: number
+  grade: RevisionGrade
+  schedulerBefore: SchedulerSnapshot
+  schedulerAfter: SchedulerSnapshot
+  nextDueDate: string
+  studySessionId?: string
+  durationMs: number
+  recallAttemptCount?: number
+  recallMissCount?: number
+  examTargetId?: string
+  deviceId: string
+  createdAt: string
+}
+
+export type RecallKind =
+  | 'term-definition' | 'entity-role' | 'date-event' | 'cause-effect' | 'comparison' | 'list'
+  | 'process' | 'law-provision' | 'location' | 'table-relation' | 'trap' | 'fact'
+export type RecallPriority = 'normal' | 'high' | 'pyq' | 'trap'
+export type RecallIntensity = 'light' | 'standard' | 'exam'
+
+/** Derived from the notes (lib/recall.ts). Static content metadata: never stored, never synced. */
+export interface RecallUnit {
+  id: string
+  target: ContentRef
+  structuralPath: string
+  kind: RecallKind
+  priority: RecallPriority
+  cueAnchorIds: string[]
+  answerAnchorIds: string[]
+  reversePromptAllowed: boolean
+  contentHash: string
+}
+
+export type RecallOutcome = 'knew' | 'missed' | 'skipped'
+
+/** One answer given in Guided Revision. Immutable. */
+export interface RecallAttempt {
+  id: string
+  recallUnitId: string
+  contentHash: string
+  target: ContentRef
+  revisionUnitId?: string
+  revisionEventId?: string
+  outcome: RecallOutcome
+  attemptedAt: string
+  deviceId: string
+}
+
+export type StudyActivity = 'initial-study' | 'revision'
+/** What a span was spent on. Absent on a span = initial study. */
+export interface SpanActivity {
+  activity: StudyActivity
+  revisionUnitId?: string
+  revisionEventId?: string
+  /** R1 / R2 / R3 … */
+  revisionOrdinal?: number
+}
+
+export interface ExamTarget {
+  id: string
+  name: string
+  shortName?: string
+  stage?: 'prelims' | 'mains' | 'other'
+  examDate: string // YYYY-MM-DD
+  timeZone: string
+  primary: boolean
+  active: boolean
+  finalRevisionWindowDays: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface RevisionPreferences {
+  id: 'default'
+  enabled: boolean
+  desiredRetention: number
+  recallIntensity: RecallIntensity
+  guidedRevisionEnabled: boolean
+  examAwareScheduling: boolean
+  finalRevisionWindowDays: number
+  schedulerTimeZone: string
+  updatedAt: string
+}
+
+export type ResetScope = 'study-history' | 'full-personal'
+
+export interface UserDataEpoch {
+  epoch: number
+  resetAt?: string
+  resetScope?: ResetScope
   updatedAt: string
 }

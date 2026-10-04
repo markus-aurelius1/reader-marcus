@@ -2,6 +2,7 @@
 // Only bundled when VITE_SYNC_MOCK is set at build time; never part of a normal build.
 import type { Backend, SyncUser } from './index'
 import type { Rec } from './merge'
+import { isStale } from '../lib/epoch'
 
 const USER = 'upsc-mock-user'
 
@@ -34,6 +35,10 @@ export function createMockBackend(base: string): Backend {
             if (!res.conflict) return
           }
           throw new Error('mock cloud: too much contention')
+        },
+        async wipe(epoch) {
+          const docs = (await call(`/dump?${q}`)) as { rec: Rec }[]
+          for (const d of docs) if (isStale(d.rec, epoch)) await call(`/doc?${q}&id=${encodeURIComponent(d.rec.id)}`, { method: 'DELETE' })
         },
       }
     },

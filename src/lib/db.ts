@@ -6,8 +6,11 @@
 //       studyGoals — added beside the existing stores; nothing existing is read or rewritten.
 //   v4: + studyQueue (one row per queue item), added the same way.
 //   v5: + pyqUserState (one row per question the learner has flagged), added the same way.
+//   v6: + revisionUnits, revisionEvents (immutable), recallAttempts (immutable), examTargets,
+//       revisionPreferences (one row, id "default"), userDataEpoch (one row, key "current"),
+//       added the same way. Nothing existing is read, rewritten or enrolled.
 export const DB_NAME = 'upsc-notes'
-export const DB_VERSION = 5
+export const DB_VERSION = 6
 let dbp: Promise<IDBDatabase> | null = null
 
 export function upgrade(db: IDBDatabase) {
@@ -24,6 +27,12 @@ export function upgrade(db: IDBDatabase) {
   need('studyGoals', { keyPath: 'id' })
   need('studyQueue', { keyPath: 'id' })
   need('pyqUserState', { keyPath: 'pyqId' })
+  need('revisionUnits', { keyPath: 'id' })
+  need('revisionEvents', { keyPath: 'id' })
+  need('recallAttempts', { keyPath: 'id' })
+  need('examTargets', { keyPath: 'id' })
+  need('revisionPreferences', { keyPath: 'id' })
+  need('userDataEpoch')
 }
 
 function open(): Promise<IDBDatabase> {
@@ -62,6 +71,20 @@ export const db = {
   putMany: (store: string, values: unknown[]) => tx(store, 'readwrite', (s) => values.forEach((v) => s.put(v))),
   del: (store: string, key: string) => tx(store, 'readwrite', (s) => void s.delete(key)),
   delMany: (store: string, keys: string[]) => tx(store, 'readwrite', (s) => keys.forEach((k) => s.delete(k))),
+  /** Empty whole stores in one transaction (personal data reset). */
+  clear: (stores: string[]) =>
+    open().then(
+      (db) =>
+        new Promise<void>((resolve, reject) => {
+          const names = stores.filter((s) => db.objectStoreNames.contains(s))
+          if (!names.length) return resolve()
+          const t = db.transaction(names, 'readwrite')
+          for (const s of names) t.objectStore(s).clear()
+          t.oncomplete = () => resolve()
+          t.onerror = () => reject(t.error)
+          t.onabort = () => reject(t.error)
+        }),
+    ),
   /** Several stores in one transaction: either every row is written or none is. */
   putAll: (rows: { store: string; value: unknown; key?: string }[]) =>
     open().then(

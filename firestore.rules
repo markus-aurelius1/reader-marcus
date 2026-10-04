@@ -12,7 +12,7 @@ service cloud.firestore {
     }
     // Completed study sessions: written once, never changed.
     match /users/{uid}/studySessions/{sessionId} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create: if request.auth != null
         && request.auth.uid == uid
         && request.resource.data.kind == 'ses'
@@ -21,7 +21,7 @@ service cloud.firestore {
     }
     // The one active study timer (or the marker left when it stopped).
     match /users/{uid}/studyRuntime/{docId} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null
         && request.auth.uid == uid
         && docId == 'active'
@@ -30,7 +30,7 @@ service cloud.firestore {
     }
     // Study goals (opt-in) and the personal study queue: small records merged field by field.
     match /users/{uid}/studyGoals/{docId} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null
         && request.auth.uid == uid
         && docId == 'default'
@@ -38,7 +38,7 @@ service cloud.firestore {
         && request.resource.data.st == request.time;
     }
     match /users/{uid}/studyQueue/{itemId} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null
         && request.auth.uid == uid
         && request.resource.data.kind == 'q'
@@ -48,11 +48,67 @@ service cloud.firestore {
     // The learner's own flags on a previous-year question. The questions themselves are static
     // content and are never uploaded.
     match /users/{uid}/pyqState/{pyqId} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null
         && request.auth.uid == uid
         && request.resource.data.kind == 'pyq'
         && request.resource.data.id == 'pyq~' + pyqId
+        && request.resource.data.st == request.time;
+    }
+    // Adaptive revision. Units hold the current schedule; events and recall attempts are history
+    // and are written once. Exam targets and revision preferences are merged field by field.
+    match /users/{uid}/revisionUnits/{unitId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.kind == 'ru'
+        && request.resource.data.st == request.time;
+    }
+    match /users/{uid}/revisionEvents/{eventId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.kind == 'rev'
+        && request.resource.data.id == 'rev~' + eventId
+        && request.resource.data.st == request.time;
+    }
+    match /users/{uid}/recallAttempts/{attemptId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.kind == 'ra'
+        && request.resource.data.id == 'ra~' + attemptId
+        && request.resource.data.st == request.time;
+    }
+    match /users/{uid}/examTargets/{examId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.kind == 'exam'
+        && request.resource.data.id == 'exam~' + examId
+        && request.resource.data.st == request.time;
+    }
+    match /users/{uid}/revisionPreferences/{docId} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && docId == 'default'
+        && request.resource.data.kind == 'rpref'
+        && request.resource.data.st == request.time;
+    }
+    // The reset epoch. It only ever goes up: a reset can be made, never unmade.
+    match /users/{uid}/meta/{docId} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && docId == 'dataEpoch'
+        && request.resource.data.kind == 'meta'
+        && request.resource.data.st == request.time;
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && docId == 'dataEpoch'
+        && request.resource.data.kind == 'meta'
+        && request.resource.data.data.epoch > resource.data.data.epoch
         && request.resource.data.st == request.time;
     }
     match /{document=**} {

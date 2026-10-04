@@ -180,5 +180,16 @@ const adapter: KindAdapter = {
     return [...Object.keys(s.queue).map((k) => `q~${k}`), ...(s.goal ? [GOAL_ID] : [])]
   },
 }
-registerKind('goal', adapter)
-registerKind('q', adapter)
+// a reset can take the queue and leave the goals, or take both
+const wipeQueue = async () => {
+  usePlan.setState({ queue: {} })
+  await db.clear(['studyQueue'])
+  channel?.postMessage(1)
+}
+const wipeGoal = async () => {
+  usePlan.setState({ goal: null })
+  await db.clear(['studyGoals'])
+  channel?.postMessage(1)
+}
+registerKind('goal', { ...adapter, wipe: wipeGoal })
+registerKind('q', { ...adapter, wipe: wipeQueue })

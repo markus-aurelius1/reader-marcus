@@ -7,6 +7,7 @@ import { keyOf, kindOf, type Field, type Kind, type Rec } from '../sync/merge'
 import { relink } from './links'
 import type { ContentRef, ProgressSummary, RecentDestination, StudyTimerPreferences } from './contract'
 import { timeZone, type Env } from './timer'
+import type { EpochLocal } from '../sync/engine'
 
 export type Override = V2Override
 export type { Highlight }
@@ -112,6 +113,8 @@ let seq = 0
 let cursor = 0
 /** Set by the sync module; called whenever something is queued. `lazy` = reading position only. */
 export const syncHooks = { onDirty: (_lazy: boolean) => {}, onConflicts: () => {} }
+/** Set by lib/revision.ts (a section was ticked or unticked here) and lib/reset.ts (another account). */
+export const storeHooks = { onSectionDone: (_key: string, _done: boolean) => {}, onRebind: () => {} }
 
 export function markDirty(id: string, lazy = false) {
   seq++
@@ -327,10 +330,12 @@ export const useStore = create<State>((set, get) => ({
 
   setSection(key, patch) {
     const p = get().progress
+    const was = !!p.sections[key]?.done
     set({ progress: { ...p, sections: { ...p.sections, [key]: { ...p.sections[key], ...patch } } } })
     stamp(`sec~${key}`, Object.keys(patch))
     markDirty(`sec~${key}`)
     flushProgress() // a deliberate tick is written at once; only scrolling is debounced
+    if ('done' in patch && !!patch.done !== was) storeHooks.onSectionDone(key, !!patch.done)
   },
 
   setChapter(key, patch, touch) {
@@ -401,7 +406,7 @@ if (typeof window !== 'undefined') {
 }
 
 // ---- sync adapter: the store seen as a set of independent records -------------
-/** Record kinds kept outside this store (study sessions and the timer: study.ts; goals and the queue: plan.ts; PYQ flags: pyqState.ts). */
+/** Record kinds kept outside this store (study sessions and the timer: study.ts; goals and the queue: plan.ts; PYQ flags: pyqState.ts; revision and exam targets: revision.ts). */
 export interface KindAdapter {
   get(id: string): Rec | null
   apply(rec: Rec): void
@@ -412,6 +417,8 @@ export interface KindAdapter {
   ids(): string[]
   /** A different account: forget what the previous cloud knew. */
   rebind?(): void
+  /** Personal data reset: drop every record of this kind, on screen and in IndexedDB. */
+  wipe?(): Promise<void>
 }
 const adapters: Partial<Record<Kind, KindAdapter>> = {}
 export const registerKind = (kind: Kind, adapter: KindAdapter) => {
@@ -431,13 +438,9 @@ export const syncLocal = {
   get(id: string): Rec | null {
     const s = useStore.getState()
     const key = keyOf(id)
+    const adapter = adapters[kindOf(id)]
+    if (adapter) return adapter.get(id)
     switch (kindOf(id)) {
-      case 'ses':
-      case 'run':
-      case 'goal':
-      case 'q':
-      case 'pyq':
-        return adapters[kindOf(id)]?.get(id) ?? null
       case 'edit': {
         const o = s.overrides[key]
         if (!o) return null
@@ -455,6 +458,8 @@ export const syncLocal = {
         return fieldRec(id, s.progress.chapters[key] as Record<string, unknown> | undefined)
       case 'pref':
         return fieldRec(id, s.prefs as unknown as Record<string, unknown>)
+      default:
+        return null
     }
   },
 
@@ -463,7 +468,7 @@ export const syncLocal = {
   apply(rec: Rec) {
     const s = useStore.getState()
     const key = keyOf(rec.id)
-    if (rec.kind === 'ses' || rec.kind === 'run' || rec.kind === 'goal' || rec.kind === 'q' || rec.kind === 'pyq') adapters[rec.kind]?.apply(rec)
+    if (adapters[rec.kind]) adapters[rec.kind]!.apply(rec)
     else if (rec.kind === 'edit') {
       const d = (rec.data ?? {}) as { title?: string | null; html?: string | null }
       const row: Override = rec.del
@@ -477,7 +482,7 @@ export const syncLocal = {
       const sk = h.sectionKey
       useStore.setState({ highlights: { ...s.highlights, [key]: h }, ext: { ...s.ext, [sk]: (s.ext[sk] ?? 0) + 1 } })
       db.put('highlights', h).catch(() => {})
-    } else {
+    } else if (rec.kind in FIELDS) {
       const values: Record<string, unknown> = {}
       const st: Record<string, [number, string]> = {}
       for (const [name, fld] of Object.entries(rec.f ?? {})) {
@@ -563,9 +568,77 @@ export const syncLocal = {
     }
     this.setCursor(0)
     await db.put('kv', uid, 'syncUid')
+    storeHooks.onRebind()
     return true
   },
   pending: () => outbox.size,
+  /** The reset epoch, attached by lib/reset.ts. */
+  epoch: undefined as EpochLocal | undefined,
+}
+
+// ---- personal data reset (lib/reset.ts) ------------------------------------------
+export const kindAdapters = () => Object.entries(adapters) as [Kind, KindAdapter][]
+
+/** Forget queued changes of these kinds: what was wiped must not be sent afterwards. */
+export function dropQueued(kinds: Kind[]) {
+  const ids = [...outbox.keys()].filter((id) => kinds.includes(kindOf(id)))
+  ids.forEach((id) => outbox.delete(id))
+  return db.delMany('outbox', ids)
+}
+
+/**
+ * Drop the groups of personal data this store holds. Notes, PYQs and every other piece of
+ * content are not in this store and are never touched.
+ */
+export async function wipeStore(groups: string[]) {
+  clearTimeout(flushTimer)
+  clearTimeout(progressTimer)
+  const s = useStore.getState()
+  const patch: Partial<State> = {}
+  const next: Stamps = { ...stamps }
+  const jobs: Promise<unknown>[] = []
+  const requeue: string[] = []
+  if (groups.includes('study')) {
+    // ★ Difficult and ↻ Revise are the learner's own marks on the notes: a study-history reset
+    // keeps them (with their timestamps) and takes only the record of what was studied.
+    const keepFlags = !groups.includes('flags')
+    const sections: Progress['sections'] = {}
+    for (const id of Object.keys(next)) {
+      if (id.startsWith('chap~')) delete next[id]
+      if (!id.startsWith('sec~')) continue
+      const kept = keepFlags ? Object.fromEntries(Object.entries(next[id]).filter(([f]) => f === 'difficult' || f === 'revise')) : {}
+      if (!Object.keys(kept).length) {
+        delete next[id]
+        continue
+      }
+      next[id] = kept
+      requeue.push(id) // sent again under the new epoch
+      const st = s.progress.sections[keyOf(id)]
+      if (st?.difficult || st?.revise) sections[keyOf(id)] = { ...(st.difficult ? { difficult: true } : {}), ...(st.revise ? { revise: true } : {}) }
+    }
+    patch.progress = { sections, chapters: {} }
+  }
+  if (groups.includes('notes')) {
+    dirtyRows.clear()
+    Object.assign(patch, { overrides: {}, highlights: {}, conflicts: {}, saveState: 'idle', ext: Object.fromEntries(Object.keys({ ...s.overrides, ...s.ext }).map((k) => [k, (s.ext[k] ?? 0) + 1])) })
+    jobs.push(db.clear(['overrides', 'highlights', 'conflicts']))
+  }
+  if (groups.includes('settings')) {
+    // favourites and recent destinations are their own groups; they keep their timestamps
+    patch.prefs = { ...defaultPrefs, favourites: s.prefs.favourites, recents: s.prefs.recents }
+    const kept = Object.fromEntries(Object.entries(next['pref~main'] ?? {}).filter(([f]) => f === 'favourites' || f === 'recents'))
+    if (Object.keys(kept).length) next['pref~main'] = kept
+    else delete next['pref~main']
+  }
+  stamps = next
+  useStore.setState(patch)
+  if (patch.prefs) localStorage.setItem(PREFS_KEY, JSON.stringify(patch.prefs))
+  jobs.push(db.put('kv', useStore.getState().progress, 'progress'), db.put('kv', stamps, 'stamps'))
+  await Promise.all(jobs)
+  requeue.forEach((id) => markDirty(id))
+  const { prefs, setPref } = useStore.getState()
+  if (groups.includes('study') && prefs.recents.length) setPref({ recents: [] })
+  if (groups.includes('favourites') && prefs.favourites.length) setPref({ favourites: [] })
 }
 
 // ---- derived helpers -------------------------------------------------------

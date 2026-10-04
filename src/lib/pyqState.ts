@@ -91,5 +91,11 @@ const adapter: KindAdapter = {
   },
 
   ids: () => Object.keys(usePyq.getState().rows).map((k) => `pyq~${k}`),
+
+  async wipe() {
+    usePyq.setState({ rows: {} })
+    await db.clear(['pyqUserState'])
+    channel?.postMessage(1)
+  },
 }
 registerKind('pyq', adapter)

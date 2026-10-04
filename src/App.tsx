@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ChevronLeft, ChevronRight, Cloud, Download, Eye, EyeOff, FileText, Highlighter, Keyboard, ListTree, Maximize2,
-  Minimize2, MonitorDown, Moon, MoreHorizontal, PencilLine, Printer, RotateCcw, RotateCw, Search, Sun, Waypoints,
+  Minimize2, MonitorDown, Moon, MoreHorizontal, PencilLine, Printer, RotateCcw, RotateCw, Search, Settings as SettingsIcon, Sun, Waypoints,
 } from 'lucide-react'
-import { allSubjects, linkIndex } from './lib/content'
+import { allSubjects, linkIndex, sectionByKey } from './lib/content'
 import { flushOverrides, secTitle, useStore } from './lib/store'
 import { go, href, useRoute } from './lib/router'
 import { exportHTML, exportMarkdown } from './lib/export'
@@ -26,13 +26,24 @@ import { TimerBanner, TimerControl } from './components/Timer'
 import { clearNotice, followContext, initStudy, useStudy } from './lib/study'
 import { contextKey } from './lib/timer'
 import { initPlan } from './lib/plan'
+import { initRevision, prefsOf, setRevisionPrefs, titles, useRevision } from './lib/revision'
+import { initReset } from './lib/reset'
+import { INTENSITIES, INTENSITY_LABEL } from './lib/recall'
+import { REVISION_TAB_LABEL, RevisionPage, ReviseView } from './views/Revision'
+import { SettingsPage } from './views/Settings'
+
+// a new revision unit is named by its section's current heading
+titles.of = (key) => {
+  const s = sectionByKey(key)
+  return s ? secTitle(useStore.getState().overrides, s) : key
+}
 
 const isTyping = (e: KeyboardEvent) => {
   const t = e.target as HTMLElement
   return t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)
 }
 
-const PAGE: Record<string, string> = { home: 'Home', study: 'Study', pyqs: 'PYQ Hub', insights: 'Insights', highlights: 'Highlights' }
+const PAGE: Record<string, string> = { home: 'Home', study: 'Study', pyqs: 'PYQ Hub', insights: 'Insights', highlights: 'Highlights', revision: 'Revision', revise: 'Revision', settings: 'Settings' }
 
 export function App() {
   const { route, n } = useRoute()
@@ -54,6 +65,7 @@ export function App() {
   const [installHelp, setInstallHelp] = useState(false)
   const sync = useSync()
   const conflictCount = useStore((s) => Object.keys(s.conflicts).length)
+  const intensity = useRevision((s) => prefsOf(s.prefs).recallIntensity)
   const [toast, setToast] = useState('')
   // The study explorer is a persistent column on wide screens, a drawer on tablets and a
   // bottom sheet on phones. It belongs to the Study area only.
@@ -71,7 +83,7 @@ export function App() {
   const toggleSide = () => (matchMedia('(min-width: 1024px)').matches ? setPref({ sidebar: !useStore.getState().prefs.sidebar }) : setDrawer((d) => !d))
 
   useEffect(() => {
-    useStore.getState().init().then(initStudy).then(initPlan).then(initPyqState).then(initSync)
+    useStore.getState().init().then(initStudy).then(initPlan).then(initPyqState).then(initRevision).then(initReset).then(initSync)
   }, [])
 
   // Theme
@@ -165,6 +177,12 @@ export function App() {
       const k = e.key
       if (k === '/') { e.preventDefault(); setPalette(true) }
       else if (k === 'r') setPref({ recall: !useStore.getState().prefs.recall })
+      else if (k === 'R') {
+        // Shift+R: the next recall intensity
+        const next = INTENSITIES[(INTENSITIES.indexOf(prefsOf(useRevision.getState().prefs).recallIntensity) + 1) % INTENSITIES.length]
+        setRevisionPrefs({ recallIntensity: next })
+        say(`Recall intensity: ${INTENSITY_LABEL[next]}`)
+      }
       else if (k === 'f') set({ focus: !useStore.getState().focus })
       else if (k === 't') setPref({ theme: document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark' })
       else if (k === 'e' && chapter) toggleEdit()
@@ -193,6 +211,10 @@ export function App() {
           ? [{ label: PAGE.study, to: href.study() }, { label: navPath(route.stage!)[0].title }]
           : route.name === 'insights' && route.tab !== 'overview'
             ? [{ label: PAGE.insights, to: href.insights() }, { label: TAB_LABEL[route.tab] }]
+            : route.name === 'revision' && route.tab !== 'today'
+              ? [{ label: PAGE.revision, to: href.revision() }, { label: REVISION_TAB_LABEL[route.tab] }]
+              : route.name === 'revise'
+                ? [{ label: PAGE.revision, to: href.revision() }, { label: 'Scheduled revision' }]
             : [{ label: PAGE[route.name] }]
 
   const resetEdits = async (prefix: string, what: string) => {
@@ -221,7 +243,7 @@ export function App() {
   const relKeys = chapter ? [...(section ? [section.key] : []), chapter.key, ...chapter.sections.map((x) => x.key)] : []
   const related = chapter ? relatedTo(linkIndex(), relKeys) : []
   const relatedPyqCount = chapter ? relatedPyqs(linkIndex(), relKeys).length : 0
-  const cls = ['app', sideOpen && !focus ? 'side-open' : '', focus ? 'focus' : '', prefs.recall ? 'recall' : '', editMode ? 'editing' : ''].join(' ')
+  const cls = ['app', sideOpen && !focus ? 'side-open' : '', focus ? 'focus' : '', prefs.recall ? 'recall' : '', `ri-${intensity}`, editMode ? 'editing' : ''].join(' ')
 
   return (
     <div className={cls}>
@@ -252,7 +274,7 @@ export function App() {
         )}
         <button className="ib only-sm" onClick={() => setPalette(true)} aria-label="Search"><Search /></button>
         {chapter && (
-          <button className={'ib' + (prefs.recall ? ' on' : '')} onClick={() => setPref({ recall: !prefs.recall })} title="Recall Mode (r)" aria-pressed={prefs.recall}>
+          <button className={'ib' + (prefs.recall ? ' on' : '')} onClick={() => setPref({ recall: !prefs.recall })} title={`Recall Mode (r) · ${INTENSITY_LABEL[intensity]} — Shift+R changes the intensity`} aria-pressed={prefs.recall}>
             {prefs.recall ? <EyeOff /> : <Eye />}<span className="hide-sm">Recall</span>
           </button>
         )}
@@ -277,7 +299,8 @@ export function App() {
           <div className="backdrop" onClick={() => setMenu(false)} />
           <div className="menu more" role="menu">
             <a className="only-sm" href={href.highlights()}><Highlighter />Highlights</a>
-            <a href={href.revision()}><RotateCw />Revision queue</a>
+            <a href={href.revision()}><RotateCw />Revision</a>
+            <a href={href.settings()}><SettingsIcon />Settings</a>
             {chapter && related.length + relatedPyqCount > 0 && <button className="only-sm" onClick={() => { setMenu(false); setRel(true) }}><Waypoints />Related notes &amp; PYQs</button>}
             <hr />
             {subject && (
@@ -340,6 +363,12 @@ export function App() {
           <InsightsPage subjects={subjects} tab={route.tab} />
         ) : route.name === 'highlights' ? (
           <Highlights subjects={subjects} />
+        ) : route.name === 'revision' ? (
+          <RevisionPage subjects={subjects} tab={route.tab} />
+        ) : route.name === 'revise' ? (
+          <ReviseView subjects={subjects} unitId={route.unitId} say={say} />
+        ) : route.name === 'settings' ? (
+          <SettingsPage subjects={subjects} say={say} />
         ) : route.name === 'home' ? (
           <Home subjects={subjects} say={say} />
         ) : (
@@ -362,7 +391,7 @@ export function App() {
                   ['Ctrl/Cmd + K  or  /', 'Search notes and PYQs, quick-jump'],
                   ['j / k', 'Next / previous section'],
                   ['] / [  (n / p)', 'Next / previous chapter'],
-                  ['r', 'Recall Mode'],
+                  ['r  /  Shift + r', 'Recall Mode / recall intensity'],
                   ['e', 'Edit Mode'],
                   ['f', 'Focus Mode (Esc to leave)'],
                   ['s', 'Study explorer'],

@@ -66,8 +66,8 @@ section>h2{font:600 21px/1.3 var(--serif);margin:34px 0 10px;padding-bottom:6px;
 nav{border:1px solid var(--line);border-radius:8px;padding:12px 18px;margin:20px 0}
 nav a{color:var(--accent);text-decoration:none}
 .bar{position:sticky;top:0;background:var(--bg);padding:8px 0;font-size:13px;color:var(--ink-2);border-bottom:1px solid var(--line-2)}
-body.recall .rc{filter:blur(5px);cursor:pointer}body.recall .rc.shown{filter:none}
-@media print{.bar,nav{display:none}body{max-width:none;padding:0}body.recall .rc{filter:none}}
+body.recall .rc:not(.shown){font-size:0;cursor:pointer}body.recall .rc:not(.shown)::before{content:'[ RECALL ]';font:600 11px/1.7 system-ui,sans-serif;letter-spacing:.08em;padding:0 .5em;border-radius:4px;background:#e6ecf5;color:#2f4a7a}
+@media print{.bar,nav{display:none}body{max-width:none;padding:0}body.recall .rc:not(.shown){font-size:inherit}body.recall .rc:not(.shown)::before{content:none}}
 ${proseCss}
 </style></head>
 <body class="prose-root">

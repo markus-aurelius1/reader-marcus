@@ -119,6 +119,11 @@ const PARL = '#/study/prelims/polity/parliament'
 // study timer: seconds on the header clock, and the stored timer row
 const secs = (d) => d.ev(() => { const t = document.querySelector('.ttime time')?.textContent; if (!t) return -1; const [h, m, s] = t.split(':').map(Number); return h * 3600 + m * 60 + s })
 const activeRow = async (d) => (await d.idb('activeStudySession'))[0]
+// Recall v2: an answer is concealed when it is not rendered at all and one fixed label stands in for it
+const masked = (d, sel) => d.ev((s) => { const e = document.querySelector(s); return !!e && getComputedStyle(e, '::before').content.includes('RECALL') && getComputedStyle(e.querySelector('.rq-a')).display === 'none' && getComputedStyle(e).filter === 'none' }, sel)
+const idbPut = (d, store, rows) => d.ev((store, rows) => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const tx = db.transaction(store, 'readwrite'); rows.forEach((r) => tx.objectStore(store).put(r)); tx.oncomplete = () => { db.close(); res(true) } } }), store, rows)
+const dayKey = (offset = 0) => { const d = new Date(Date.now() + offset * 86400000); return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-') }
+const tapBtn = (d, label, scope = 'body') => d.ev((label, scope) => { const b = [...document.querySelectorAll(scope + ' button, ' + scope + ' a.btn')].find((x) => x.textContent.trim().startsWith(label)); if (!b) return false; b.click(); return true }, label, scope)
 
 try {
   // ==========================================================================
@@ -236,11 +241,11 @@ try {
   // recall
   await L.key('r')
   await sleep(350)
-  const blur = await L.ev(() => getComputedStyle(document.querySelector('#s-composition-and-constitutional-map .rc')).filter)
+  const concealed = await masked(L, '#s-composition-and-constitutional-map .rc')
   await L.click('#s-composition-and-constitutional-map .rc'); await sleep(350)
-  const shown = await L.ev(() => getComputedStyle(document.querySelector('#s-composition-and-constitutional-map .rc')).filter)
-  check('Recall Mode blurs facts; click reveals', blur.includes('blur') && shown === 'none', { blur, shown })
-  check('sentence around a recall item stays readable', await L.ev(() => getComputedStyle(document.querySelector('#s-composition-and-constitutional-map td')).filter === 'none'))
+  const shown = await L.ev(() => { const e = document.querySelector('#s-composition-and-constitutional-map .rc'); return e.classList.contains('shown') && getComputedStyle(e.querySelector('.rq-a')).display !== 'none' && getComputedStyle(e, '::before').content === 'none' })
+  check('Recall Mode conceals facts behind a fixed mask; click reveals', concealed && shown, { concealed, shown })
+  check('the cue around a recall item stays readable: nothing is blurred and row headings are never masked', await L.ev(() => [...document.querySelectorAll('#s-composition-and-constitutional-map *')].every((e) => getComputedStyle(e).filter === 'none') && [...document.querySelectorAll('#s-composition-and-constitutional-map tbody tr')].every((r) => !r.children[0].querySelector('.rq[data-m~="standard"]'))))
   await L.key('r')
 
   // progress / flags / resume / scroll
@@ -251,8 +256,8 @@ try {
   check('breadcrumb follows the section in view', (await L.text('.crumbs')).split('›').length === 4, await L.text('.crumbs'))
   await L.reload(); await sleep(300)
   check('scroll position restored after reload (same section in view)', Math.abs((await L.ev(() => scrollY)) - 2400) < 150 && (await L.ev(() => { window.dispatchEvent(new Event('scroll')); return new Promise((r) => setTimeout(() => r(document.querySelector('.crumbs').textContent), 300)) })) === inView, await L.ev(() => scrollY))
-  await L.hash('#/revision')
-  check('Revision queue shows ↻ / ★ sections', (await L.ev(() => [...document.querySelectorAll('.row')].map((r) => r.textContent).join('|'))).includes('Sessions & Devices'))
+  await L.hash('#/revision/manual')
+  check('Revision → Manual shows ↻ / ★ sections', (await L.ev(() => [...document.querySelectorAll('.row')].map((r) => r.textContent).join('|'))).includes('Sessions & Devices'))
   await L.hash('#/')
   check('Resume card points at the last chapter and section', (await L.text('.cont')).includes('Parliament'))
   await L.click('.cont .btn.primary'); await sleep(500)
@@ -345,8 +350,8 @@ try {
   // reader features on Economy: recall, progress, highlight, edit (links survive), export
   await L.hash(ECO + 'budget-fiscal-policy')
   check('Economy chapter renders its sections with recall items and callouts', (await L.count('.sec')) === 7 && (await L.count('.sec-body .rc')) > 20 && (await L.count('.callout[data-kind="dyn"]')) >= 2)
-  await L.key('r'); const ecoBlur = await L.ev(() => getComputedStyle(document.querySelector('#s-deficits .rc')).filter); await L.click('#s-deficits .rc')
-  check('Recall Mode blurs and reveals Economy answers', ecoBlur.includes('blur') && (await L.ev(() => document.querySelector('#s-deficits .rc').classList.contains('shown'))), ecoBlur)
+  await L.key('r'); const ecoBlur = await masked(L, '#s-deficits .rc'); await L.click('#s-deficits .rc')
+  check('Recall Mode conceals and reveals Economy answers', ecoBlur && (await L.ev(() => document.querySelector('#s-deficits .rc').classList.contains('shown'))), ecoBlur)
   await L.key('r')
   await L.highlight('fiscal-policy', 'Crowding out', 'blue'); await L.click('#s-deficits .tg.done'); await L.click('#s-frbm .tg.rev')
   await L.editMode(true); await L.edit('fiscal-federalism', '<p>ECO-E2E edit</p>'); await L.saved(); await L.editMode(false)
@@ -357,8 +362,8 @@ try {
   await L.page.goBack(); await sleep(400)
   await L.reload()
   check('Economy edit, highlight and progress persist across reload', (await L.text('#s-fiscal-federalism .sec-body')).includes('ECO-E2E edit') && (await L.marks('fiscal-policy')).join() === 'blue:Crowding out' && (await L.text('.chap-meta span')) === '1 / 7 sections done')
-  await L.hash('#/revision')
-  check('Economy section appears in the Revision queue', (await L.ev(() => [...document.querySelectorAll('.row')].map((r) => r.textContent).join('|'))).includes('FRBM'))
+  await L.hash('#/revision/manual')
+  check('Economy section appears in Revision → Manual', (await L.ev(() => [...document.querySelectorAll('.row')].map((r) => r.textContent).join('|'))).includes('FRBM'))
   await L.hash(ECO + 'budget-fiscal-policy')
   await L.menu('Export Updated HTML — this chapter'); await L.menu('Export to Markdown — this chapter'); await L.menu('Export Updated HTML — whole subject')
   await sleep(1500)
@@ -409,8 +414,8 @@ try {
   // reader features on History: recall, progress, highlight, edit (links survive), export, reset
   await L.hash(HIS + 'constitutional-development')
   check('History chapter renders its sections with recall items and callouts', (await L.count('.sec')) === 8 && (await L.count('.sec-body .rc')) > 30 && (await L.count('.callout[data-kind="trap"]')) >= 3)
-  await L.key('r'); const hisBlur = await L.ev(() => getComputedStyle(document.querySelector('#s-act-1935 .rc')).filter); await L.click('#s-act-1935 .rc')
-  check('Recall Mode blurs and reveals History answers', hisBlur.includes('blur') && (await L.ev(() => document.querySelector('#s-act-1935 .rc').classList.contains('shown'))), hisBlur)
+  await L.key('r'); const hisBlur = await masked(L, '#s-act-1935 .rc'); await L.click('#s-act-1935 .rc')
+  check('Recall Mode conceals and reveals History answers', hisBlur && (await L.ev(() => document.querySelector('#s-act-1935 .rc').classList.contains('shown'))), hisBlur)
   await L.key('r')
   await L.highlight('act-1919', 'High Commissioner for India', 'blue'); await L.click('#s-act-1919 .tg.done'); await L.click('#s-simon-nehru .tg.rev')
   await L.editMode(true); await L.edit('act-1935', '<p>HIS-E2E edit</p>'); await L.saved(); await L.editMode(false)
@@ -418,8 +423,8 @@ try {
   check('edited History section keeps its cross-links', hEdited.text && hEdited.links.includes('prelims/polity/preamble#sources-of-the-constitution #/study/prelims/polity/preamble/sources-of-the-constitution') && hEdited.links.includes('prelims/polity/parts-schedules#seventh-schedule-lists #/study/prelims/polity/parts-schedules/seventh-schedule-lists'), hEdited)
   await L.reload()
   check('History edit, highlight and progress persist across reload', (await L.text('#s-act-1935 .sec-body')).includes('HIS-E2E edit') && (await L.marks('act-1919')).join() === 'blue:High Commissioner for India' && (await L.text('.chap-meta span')) === '1 / 8 sections done')
-  await L.hash('#/revision')
-  check('History section appears in the Revision queue', (await L.ev(() => [...document.querySelectorAll('.row')].map((r) => r.textContent).join('|'))).includes('Simon Commission'))
+  await L.hash('#/revision/manual')
+  check('History section appears in Revision → Manual', (await L.ev(() => [...document.querySelectorAll('.row')].map((r) => r.textContent).join('|'))).includes('Simon Commission'))
   await L.hash(HIS + 'constitutional-development')
   await L.menu('Export to Markdown — this chapter'); await sleep(1200)
   const hm = dl('prelims-history-culture-constitutional-development.md')
@@ -451,8 +456,8 @@ try {
     // reader features: recall, progress, highlight, edit (links survive), reload, reset
     await L.hash(base + '/' + s.chap)
     check(s.title + ' chapter renders its sections with recall items and callouts', (await L.count('.sec')) === s.secs && (await L.count('.sec-body .rc')) > 8 && (await L.count('.callout')) >= 2, [await L.count('.sec'), await L.count('.sec-body .rc')])
-    await L.key('r'); const blur3 = await L.ev((id) => getComputedStyle(document.querySelector('#s-' + id + ' .rc')).filter, s.rc); await L.click('#s-' + s.rc + ' .rc')
-    check('Recall Mode blurs and reveals ' + s.title + ' answers', blur3.includes('blur') && (await L.ev((id) => document.querySelector('#s-' + id + ' .rc').classList.contains('shown'), s.rc)), blur3)
+    await L.key('r'); const blur3 = await masked(L, '#s-' + s.rc + ' .rc'); await L.click('#s-' + s.rc + ' .rc')
+    check('Recall Mode conceals and reveals ' + s.title + ' answers', blur3 && (await L.ev((id) => document.querySelector('#s-' + id + ' .rc').classList.contains('shown'), s.rc)), blur3)
     await L.key('r')
     await L.highlight(s.hl[0], s.hl[1], 'blue'); await L.click('#s-' + s.done + ' .tg.done')
     await L.editMode(true); await L.edit(s.edit, '<p>N3-E2E edit</p>'); await L.saved(); await L.editMode(false)
@@ -527,7 +532,7 @@ try {
   // desktop rail
   await L.go('#/')
   const rail = await L.ev(() => ({ items: [...document.querySelectorAll('.rail a, .rail button')].map((e) => e.querySelector('span').textContent).join('|'), tab: getComputedStyle(document.querySelector('.tabbar')).display, w: document.querySelector('.rail').getBoundingClientRect().width }))
-  check('desktop: primary rail — Home, Study, PYQ Hub, Insights, Highlights, Search; no tab bar', rail.items === 'Home|Study|PYQ Hub|Insights|Highlights|Search' && rail.tab === 'none' && rail.w > 60, rail)
+  check('desktop: primary rail — Home, Study, PYQ Hub, Insights, Revision, Highlights, Search; no tab bar', rail.items === 'Home|Study|PYQ Hub|Insights|Revision|Highlights|Search' && rail.tab === 'none' && rail.w > 60, rail)
   const visited = []
   for (const label of ['Study', 'PYQ Hub', 'Insights', 'Highlights', 'Home']) {
     await L.ev((l) => [...document.querySelectorAll('.rail a')].find((a) => a.textContent === l).click(), label); await sleep(350)
@@ -623,7 +628,7 @@ try {
   check('phone: tabs open their routes and show the active one', tabs.join(' | ') === '#/study Study | #/pyqs PYQs | #/insights Insights', tabs)
   await L.click('.tabbar button')
   const more = await L.ev(() => { const m = document.querySelector('.menu.more'); const r = m.getBoundingClientRect(); const vis = [...m.querySelectorAll('a, button')].filter((e) => getComputedStyle(e).display !== 'none').map((e) => e.childNodes[1]?.textContent ?? e.textContent); return { vis, fits: r.left >= 0 && r.right <= innerWidth && r.bottom <= document.querySelector('.tabbar').getBoundingClientRect().top && r.top >= 0 } })
-  check('phone: More holds Highlights, Revision queue, theme and account/sync, above the bar', more.fits && ['Highlights', 'Revision queue', 'Account & sync'].every((x) => more.vis.includes(x)) && more.vis.some((x) => / theme$/.test(x)), more)
+  check('phone: More holds Highlights, Revision, Settings, theme and account/sync, above the bar', more.fits && ['Highlights', 'Revision', 'Settings', 'Account & sync'].every((x) => more.vis.includes(x)) && more.vis.some((x) => / theme$/.test(x)), more)
   await L.ev(() => [...document.querySelectorAll('.menu.more a')].find((a) => a.textContent === 'Highlights').click()); await sleep(350)
   check('phone: Highlights opens from More and More is marked active', (await hashNow()) === '#/highlights' && (await L.count('.menu.more')) === 0 && (await L.text('.tabbar .on')) === 'More')
   await L.hash(PARL)
@@ -902,9 +907,9 @@ try {
   check('nothing on Progress calls the study good or bad', !/productiv|efficien|great|well done|behind|on track/i.test(await L.text('.page')))
 
   await L.hash(PARL); await L.click('#s-bills-types-and-procedure .tg.rev')
-  await L.go('#/revision')
+  await L.go('#/revision/manual')
   const rv = await L.ev(() => ({ hash: location.hash, tab: document.querySelector('.tabs .on').textContent, stat: document.querySelector('.stat').textContent, rows: [...document.querySelectorAll('.row.rv')].map((r) => r.textContent), hl: [...document.querySelectorAll('.rhl a')].map((a) => a.textContent + ' ' + a.getAttribute('href')) }))
-  check('the Revision queue is now Insights → Revision; its old link still opens it', rv.hash === '#/insights/revision' && rv.tab === 'Revision' && /★ Difficult.*↻ Revise.*in progress/.test(rv.stat), rv)
+  check('the flagged-section list is Revision → Manual', rv.hash === '#/revision/manual' && rv.tab === 'Manual' && /★ Difficult.*↻ Revise.*in progress/.test(rv.stat), rv)
   check('Revision: ★ and ↻ sections, each with the time since it was last studied', rv.rows.some((r) => r.includes('Sessions & Devices') && r.includes('↻ Revise') && r.includes('★ Difficult') && /chapter last studied (today|yesterday)/.test(r)) && rv.rows.some((r) => r.includes('Simon') && r.includes('not timed yet')), rv.rows)
   check('Revision: highlights in a queued section are shown with it', rv.hl.some((h) => h.startsWith('All Money Bills are Financial Bills ') && h.includes('/parliament/bills-types-and-procedure?h=')), rv.hl)
   await L.ev(() => [...document.querySelectorAll('.rhl a')].find((a) => a.textContent.startsWith('All Money Bills')).click()); await sleep(600)
@@ -924,7 +929,7 @@ try {
   check('Revision: Clear takes a section off the queue', (await L.count('.row.rv')) === rvBefore - 1 && (await L.idb('kv')).some((v) => v?.sections?.['prelims/polity/parliament/bills-types-and-procedure']?.revise === false))
 
   const disk = await L.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { const out = { stores: [...db.objectStoreNames].sort().join(), kv: g.result.join(), ls: Object.keys(localStorage).join() }; db.close(); res(out) } } }))
-  check('analytics stored nothing: no new IndexedDB store, no counters or caches on disk', disk.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,pyqUserState,studyGoals,studyQueue,studySessions' && !/analytic|insight|total|heat|streak|cache|index/i.test(disk.kv + disk.ls), disk)
+  check('analytics stored nothing: no new IndexedDB store, no counters or caches on disk', disk.stores === 'activeStudySession,conflicts,examTargets,highlights,kv,outbox,overrides,pyqUserState,recallAttempts,revisionEvents,revisionPreferences,revisionUnits,studyGoals,studyQueue,studySessions,userDataEpoch' && !/analytic|insight|total|heat|streak|cache|index/i.test(disk.kv + disk.ls), disk)
   check('the sessions themselves were not touched', JSON.stringify(await L.idb('studySessions')) === JSON.stringify(sesAll))
   for (const [w, h, name] of [[375, 812, 'phone'], [768, 1024, 'tablet']]) {
     await L.page.setViewport({ width: w, height: h })
@@ -949,7 +954,7 @@ try {
   const kpi = await L.ev(() => Object.fromEntries([...document.querySelectorAll('.kpi')].map((k) => [k.dataset.k, [k.querySelector('b').textContent, k.querySelector('span').textContent]])))
   await L.hash('#/insights/progress')
   const prelimsPct = await L.text('.kpi[data-stage="prelims"] b')
-  await L.hash('#/insights/revision')
+  await L.hash('#/revision/manual')
   const revStat = await L.ev(() => [...document.querySelectorAll('.stat b')].map((b) => b.textContent))
   await home()
   const lastKey = (await L.idb('kv')).find((v) => v?.last)?.last.chapterKey
@@ -966,7 +971,7 @@ try {
   check('Study progress: Prelims overall as on Insights → Progress; no Mains card while Mains has no content', prog.stages === `prelims ${prelimsPct}` && /Not started.*Reading.*Revised.*Mastered/.test(prog.legend) && prog.link === '#/insights/progress', prog.stages)
   check('Subjects: compact rows with progress, time studied, last studied and Resume / Open', prog.subs.map((s) => s[0]).join('|') === 'Polity|Economy & Social Development|History & Culture|Geography|Environment & Ecology|Science & Technology' && /studied · last (today|yesterday|\d+ days ago)$/.test(prog.subs[0][1]) && prog.subs[2][1] === 'Not timed yet' && prog.subs.every((s) => /^\d+%$/.test(s[2]) && (s[3] === 'Resume' ? s[4].endsWith('?resume') : s[3] === 'Open' && s[4] === s[5])) && prog.subs[0][5] === '#/study/prelims/polity', prog.subs)
   const rev = await L.ev(() => ({ stat: [...document.querySelectorAll('.rev .mstat b')].map((b) => b.textContent), rows: document.querySelectorAll('.rev .qlist li').length, link: document.querySelector('.rev h3 a').getAttribute('href'), first: document.querySelector('.rev .qlist li .qt')?.getAttribute('href') }))
-  check('Revision: ★ / ↻ counts as on Insights → Revision, at most five rows, each opening its section', rev.stat[0] === revStat[0] && rev.stat[1] === revStat[1] && rev.rows >= 1 && rev.rows <= 5 && rev.link === '#/insights/revision' && /^#\/study\/prelims\/[^/]+\/[^/]+\/[^/?]+$/.test(rev.first), [rev, revStat])
+  check('Flagged for revision: ★ / ↻ counts as on Revision → Manual, at most five rows, each opening its section', rev.stat[0] === revStat[0] && rev.stat[1] === revStat[1] && rev.rows >= 1 && rev.rows <= 5 && rev.link === '#/revision/manual' && /^#\/study\/prelims\/[^/]+\/[^/]+\/[^/?]+$/.test(rev.first), [rev, revStat])
   await L.page.screenshot({ path: join(OUT, 'desktop-home.png'), fullPage: true })
 
   // study queue
@@ -1030,7 +1035,7 @@ try {
 
   // nothing derived is stored
   const disk2 = await L.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { const out = { stores: [...db.objectStoreNames].sort().join(), kv: g.result.join(), ls: Object.keys(localStorage).join() }; db.close(); res(out) } } }))
-  check('the dashboard stored nothing: no totals, streaks or view model on disk', disk2.stores === 'activeStudySession,conflicts,highlights,kv,outbox,overrides,pyqUserState,studyGoals,studyQueue,studySessions' && !/dash|total|heat|streak|week|today|cache/i.test(disk2.kv + disk2.ls) && !/"(\w*Ms|\w*[Ss]treak\w*|\w*[Pp]ercent\w*)":/.test(JSON.stringify([await L.idb('studyQueue'), await L.idb('studyGoals')]).replace(/"(daily|weekly)TargetMs"/g, '"target"')), disk2)
+  check('the dashboard stored nothing: no totals, streaks or view model on disk', disk2.stores === 'activeStudySession,conflicts,examTargets,highlights,kv,outbox,overrides,pyqUserState,recallAttempts,revisionEvents,revisionPreferences,revisionUnits,studyGoals,studyQueue,studySessions,userDataEpoch' && !/dash|total|heat|streak|week|today|cache/i.test(disk2.kv + disk2.ls) && !/"(\w*Ms|\w*[Ss]treak\w*|\w*[Pp]ercent\w*)":/.test(JSON.stringify([await L.idb('studyQueue'), await L.idb('studyGoals')]).replace(/"(daily|weekly)TargetMs"/g, '"target"')), disk2)
 
   // deep links
   await L.click('.week h3 a'); await sleep(350)
@@ -1081,6 +1086,267 @@ try {
   await N.ctx.close()
 
   // ==========================================================================
+  // ==========================================================================
+  // Job 5.5 — a profile of its own, so nothing above or below depends on it
+  const RV = await device(P.local, 'revision')
+  const RU = (id) => 'prelims/polity/parliament/' + id
+  const rvUnits = async (d = RV) => Object.fromEntries((await d.idb('revisionUnits')).map((u) => [u.id.split('/').pop(), u]))
+  const flat = (d, sel) => d.ev((s) => document.querySelector(s)?.innerText.replace(/\s+/g, ' ') ?? '', sel)
+  const stopTimerOf = async (d) => { await d.click('.tchip .ttime'); await sleep(200); await tapBtn(d, 'Stop', '.timer-pop'); await sleep(400) }
+
+  section('Adaptive revision (local-only)')
+  {
+    await RV.go('#/revision')
+    check('nothing scheduled: an empty state, never sample data', (await RV.text('.shell-note')).includes('Nothing is scheduled yet') && (await RV.count('.runit')) === 0 && (await RV.idb('revisionUnits')).length === 0)
+    await RV.hash('#/insights/revision')
+    check('Insights → Revision is empty too until something is recorded', (await RV.text('.shell-note')).includes('No revision recorded yet') && (await RV.count('.kpi')) === 0)
+    await RV.hash(PARL)
+    for (const id of ['presiding-officers', 'sessions-and-devices', 'bills-types-and-procedure']) await RV.click(`#s-${id} .tg.done`)
+    await sleep(300)
+    let us = await rvUnits()
+    check('marking a section Done enrols exactly that section, with R1 on the next calendar day', Object.keys(us).length === 3 && Object.values(us).every((u) => u.status === 'new' && u.dueDate === dayKey(1) && u.revisionCount === 0 && u.target.kind === 'section' && u.target.chapterId === 'parliament' && !u.scheduler.stability && u.title && !u.title.includes('/')), us)
+    await RV.click('#s-presiding-officers .tg.done'); await RV.click('#s-presiding-officers .tg.done'); await sleep(300)
+    us = await rvUnits()
+    check('unticking and ticking Done again never makes a second unit', Object.keys(us).length === 3 && us['presiding-officers'].status === 'new' && us['presiding-officers'].dueDate === dayKey(1), us['presiding-officers'])
+    await RV.click('#s-uppcs-recall .tg.star'); await RV.click('#s-uppcs-recall .tg.rev'); await sleep(200)
+    check('★ and ↻ do not enrol a section: the manual pipeline stays separate', (await RV.idb('revisionUnits')).length === 3)
+    await RV.hash('#/revision')
+    const t0 = await flat(RV, '.rtoday')
+    check('Today: nothing due yet; the next day is announced with its workload', /Nothing due today/.test(t0) && /Next: Tomorrow · 3 units · ~15 min/.test(t0) && (await RV.count('.runit')) === 0, t0)
+    await RV.hash('#/revision/upcoming')
+    const up = await RV.ev(() => ({ stat: [...document.querySelectorAll('.stat b')].map((b) => b.textContent).join(), day: document.querySelector('.rday h2').innerText.replace(/\s+/g, ' '), chap: document.querySelector('.rchap-h').textContent, rows: [...document.querySelectorAll('.runit')].map((r) => r.innerText.replace(/\s+/g, ' ')) }))
+    check('Upcoming: sections grouped under their chapter, each with its round and estimate', up.stat === '3,3,3' && /Tomorrow · 3 units · ~15 min/.test(up.day) && up.chap.includes('Parliament') && up.rows.length === 3 && up.rows.every((r) => /R1/.test(r) && /~5 min/.test(r) && /Revise early/.test(r)), up)
+    await RV.hash('#/revision/manual')
+    check('Manual: the flagged sections, as before', (await RV.count('.row.rv')) === 1 && (await flat(RV, '.row.rv')).includes('↻ Revise'))
+
+    // time passes: one unit due today, one three days overdue; the third is still for tomorrow
+    await idbPut(RV, 'revisionUnits', [{ ...us['presiding-officers'], dueDate: dayKey(0) }, { ...us['sessions-and-devices'], dueDate: dayKey(-3) }])
+    await RV.hash('#/revision'); await RV.reload(); await sleep(400)
+    const t1 = await RV.ev(() => ({ head: document.querySelector('.rtoday').innerText.replace(/\s+/g, ' '), rows: [...document.querySelectorAll('.runit')].map((r) => r.dataset.unit.split('/').pop() + ' ' + r.dataset.state + ' ' + r.innerText.replace(/\s+/g, ' ')), tabn: document.querySelector('.tabs .tabn')?.textContent, start: !!document.querySelector('.rtoday .btn.primary') }))
+    check('Today: due and overdue units and the workload; a missed revision reads OVERDUE · 3 DAYS', /2 due · ~10 min/.test(t1.head) && /1 overdue/.test(t1.head) && /0 \/ 2 completed/.test(t1.head) && t1.rows.length === 2 && t1.rows.some((r) => r.startsWith('sessions-and-devices overdue') && /overdue · 3 days/i.test(r)) && t1.rows.some((r) => r.startsWith('presiding-officers due')) && t1.tabn === '1' && t1.start, t1)
+    await tapBtn(RV, 'Defer today', '.runit[data-unit$="sessions-and-devices"]'); await sleep(300)
+    us = await rvUnits()
+    const t2 = await flat(RV, '.rtoday')
+    check('Defer today hides the unit from Today; its due date is not moved', (await RV.count('.runit')) === 1 && /1 due/.test(t2) && /1 deferred/.test(t2) && us['sessions-and-devices'].dueDate === dayKey(-3) && us['sessions-and-devices'].deferredUntilDate === dayKey(1), [t2, us['sessions-and-devices']])
+    await RV.hash('#/revision/overdue')
+    const od = await RV.ev(() => [...document.querySelectorAll('.runit')].map((r) => r.innerText.replace(/\s+/g, ' ')))
+    check('Overdue still lists it, marked deferred; the deferral can be undone', od.length === 1 && /deferred/i.test(od[0]) && /Undo defer/.test(od[0]), od)
+    await tapBtn(RV, 'Undo defer'); await sleep(300)
+    check('…undone: overdue again, still on its original date', !(await rvUnits())['sessions-and-devices'].deferredUntilDate && /overdue · 3 days/i.test(await flat(RV, '.runit')))
+
+    // guided revision of the day's units
+    await RV.hash('#/revision')
+    await tapBtn(RV, 'Start Revision', '.rtoday'); await sleep(900)
+    const g0 = await RV.ev(() => ({ hash: location.hash, phase: document.querySelector('.revise')?.dataset.phase, title: document.querySelector('.revise h1').innerText, notes: document.querySelectorAll('.sec-body').length, card: document.querySelector('.rcard').innerText.replace(/\s+/g, ' '), timer: !!document.querySelector('.ttime'), rid: document.querySelector('.rcard').dataset.rid }))
+    const act0 = await activeRow(RV)
+    check('Start Revision opens the most overdue unit in a focused view: one prompt, none of the surrounding notes', g0.hash === '#/revise/' + RU('sessions-and-devices') && g0.phase === 'prompt' && /R1/.test(g0.title) && g0.notes === 0 && /^1 \/ \d+/.test(g0.card) && /Reveal/.test(g0.card), g0)
+    check('the one timer starts in a revision span for that unit', g0.timer && act0.state === 'running' && act0.currentActivity?.activity === 'revision' && act0.currentActivity.revisionUnitId === RU('sessions-and-devices') && act0.currentActivity.revisionOrdinal === 1 && (await RV.idb('activeStudySession')).length === 1, act0)
+    const before = await RV.ev(() => ({ mask: document.querySelector('.rcard .rmask')?.textContent ?? getComputedStyle(document.querySelector('.rcard .rb[data-t]'), '::before').content, answer: !!document.querySelector('.rcard .rans, .rcard .ra') }))
+    await tapBtn(RV, 'Reveal', '.rcard'); await sleep(250)
+    const after = await RV.ev(() => ({ answer: (document.querySelector('.rcard .rans, .rcard .ra')?.textContent ?? '').length, btns: [...document.querySelectorAll('.rcard .btn')].map((b) => b.textContent.replace(/\d$/, '')).join() }))
+    check('the answer stays behind a fixed label until Reveal; then Knew / Missed / Skip', /recall/i.test(before.mask) && !before.answer && after.answer > 0 && after.btns === 'Knew,Missed,Skip', [before, after])
+    await tapBtn(RV, 'Missed', '.rcard'); await sleep(250)
+    await tapBtn(RV, 'Reveal', '.rcard'); await sleep(200); await tapBtn(RV, 'Knew', '.rcard'); await sleep(250)
+    const at1 = await RV.idb('recallAttempts')
+    check('each answer is stored as a RecallAttempt against the unit and this revision', at1.length === 2 && at1.map((a) => a.outcome).sort().join() === 'knew,missed' && at1.every((a) => a.revisionUnitId === RU('sessions-and-devices') && a.revisionEventId === act0.currentActivity.revisionEventId && a.contentHash && a.recallUnitId.startsWith(RU('sessions-and-devices') + '#')) && at1.some((a) => a.recallUnitId === g0.rid), at1)
+    const place = await RV.text('.rprog span')
+    await RV.reload(); await sleep(500)
+    const g1 = await RV.ev(() => ({ phase: document.querySelector('.revise')?.dataset.phase, prog: document.querySelector('.rprog span')?.textContent }))
+    const act1 = await activeRow(RV)
+    check('a reload in the middle of a revision carries on: same revision, same place, same timer', g1.phase === 'prompt' && g1.prog === place && act1.sessionId === act0.sessionId && act1.currentActivity.revisionEventId === act0.currentActivity.revisionEventId && (await RV.idb('recallAttempts')).length === 2 && (await RV.idb('revisionEvents')).length === 0, [g1, place])
+    await tapBtn(RV, 'Finish now', '.rcard'); await sleep(250)
+    const gr = await RV.ev(() => ({ phase: document.querySelector('.revise').dataset.phase, q: document.querySelector('.rcard h2').textContent, grades: [...document.querySelectorAll('.grade-b b')].map((b) => b.textContent).join(), tally: document.querySelector('.rtally')?.textContent }))
+    check('the revision ends with exactly one scheduling question: Again / Hard / Good / Easy', gr.phase === 'grade' && gr.q === 'How well did you remember this?' && gr.grades === 'Again,Hard,Good,Easy' && /1 knew · 1 missed/.test(gr.tally), gr)
+    await sleep(1100)
+    await RV.click('.grade-b[data-grade="good"]'); await sleep(900)
+    const ev1 = (await RV.idb('revisionEvents'))[0]
+    us = await rvUnits()
+    check('grading writes one RevisionEvent: R1, the date it was due, the real delay, the grade and the next date', ev1.ordinal === 1 && ev1.grade === 'good' && ev1.scheduledDueDate === dayKey(-3) && ev1.overdueDays === 3 && ev1.nextDueDate > dayKey(0) && ev1.recallAttemptCount === 2 && ev1.recallMissCount === 1 && ev1.durationMs >= 1000 && ev1.studySessionId === act0.sessionId && !ev1.schedulerBefore.stability && ev1.schedulerAfter.stability > 0, ev1)
+    check('the unit moves to its next date and keeps only the current scheduling state', us['sessions-and-devices'].revisionCount === 1 && us['sessions-and-devices'].status === 'active' && us['sessions-and-devices'].dueDate === ev1.nextDueDate && us['sessions-and-devices'].scheduler.stability === ev1.schedulerAfter.stability && !us['sessions-and-devices'].deferredUntilDate, us['sessions-and-devices'])
+    const g2 = await RV.ev(() => ({ hash: location.hash, phase: document.querySelector('.revise')?.dataset.phase }))
+    const act2 = await activeRow(RV)
+    check('the run moves straight on to the next unit: the same timer, a new revision span', g2.hash === '#/revise/' + RU('presiding-officers') && act2.sessionId === act0.sessionId && act2.currentActivity.revisionUnitId === RU('presiding-officers') && act2.completedSpans.length >= 1 && act2.completedSpans.every((s) => s.activity === 'revision' && s.revisionOrdinal === 1) && (await RV.idb('activeStudySession')).length === 1, [g2, act2.currentActivity])
+    await tapBtn(RV, 'Finish now', '.rcard'); await sleep(1300)
+    await RV.click('.grade-b[data-grade="easy"]'); await sleep(900)
+    const fin = await RV.ev(() => ({ phase: document.querySelector('.revise').dataset.phase, card: document.querySelector('.rcard').innerText.replace(/\s+/g, ' '), toast: document.querySelector('.toast')?.textContent ?? '', timer: !!document.querySelector('.tchip') }))
+    const ses = await RV.idb('studySessions')
+    check('when the run ends, the timer it started is stopped and saved as one session of revision spans', fin.phase === 'done' && /R1 recorded · Easy/.test(fin.card) && /Next revision:/.test(fin.card) && /Revision recorded/.test(fin.toast) && !fin.timer && ses.length === 1 && ses[0].spans.length >= 2 && ses[0].spans.every((s) => s.activity === 'revision' && s.revisionOrdinal === 1 && s.revisionEventId) && new Set(ses[0].spans.map((s) => s.revisionUnitId)).size === 2 && (await activeRow(RV)).state === undefined, [fin, ses[0]?.spans.map((s) => [s.activity, s.revisionUnitId])])
+    const evs = await RV.idb('revisionEvents')
+    const easy = evs.find((e) => e.grade === 'easy')
+    check('Easy schedules further out than Good; a completed event is never rewritten', evs.length === 2 && easy.nextDueDate > ev1.nextDueDate && easy.overdueDays === 0 && easy.scheduledDueDate === dayKey(0) && JSON.stringify(evs.find((e) => e.id === ev1.id)) === JSON.stringify(ev1), [ev1.nextDueDate, easy.nextDueDate])
+    await tapBtn(RV, 'Back to Revision', '.rcard'); await sleep(400)
+    const t3 = await RV.ev(() => ({ head: document.querySelector('.rtoday').innerText.replace(/\s+/g, ' '), done: [...document.querySelectorAll('.rdone')].map((r) => r.innerText.replace(/\s+/g, ' ')) }))
+    check('Today is cleared: completion stated, the next day announced, the completed revisions listed', /Revision complete for today/.test(t3.head) && /2 \/ 2 completed/.test(t3.head) && /Next: Tomorrow · 1 unit · ~5 min/.test(t3.head) && t3.done.length === 2 && t3.done.every((d) => /R1/.test(d)), t3)
+
+    // an early revision, while an initial-study timer is already running
+    await RV.hash(PARL); await RV.click('.ib.timer'); await sleep(1300)
+    const study0 = await activeRow(RV)
+    await RV.hash('#/revision/upcoming')
+    await tapBtn(RV, 'Revise early', '.runit[data-unit$="bills-types-and-procedure"]'); await sleep(900)
+    const sw = await activeRow(RV)
+    check('revising while a study timer runs switches that timer into a revision span — never a second timer', study0.state === 'running' && !study0.currentActivity && sw.sessionId === study0.sessionId && sw.currentActivity?.activity === 'revision' && sw.completedSpans.length === 1 && !sw.completedSpans[0].activity && (await RV.idb('activeStudySession')).length === 1, sw)
+    await tapBtn(RV, 'Finish now', '.rcard'); await sleep(1300); await RV.click('.grade-b[data-grade="hard"]'); await sleep(800)
+    const early = (await RV.idb('revisionEvents')).find((e) => e.grade === 'hard')
+    const paused = await activeRow(RV)
+    check('an early revision is recorded against the date it was due, with no overdue days', early.scheduledDueDate === dayKey(1) && early.overdueDays === 0 && early.ordinal === 1 && early.nextDueDate > dayKey(0), early)
+    check('the study timer that was already running is paused, not stopped, when the revision ends', paused.state === 'paused' && paused.sessionId === study0.sessionId && paused.completedSpans.map((s) => s.activity ?? 'initial-study').join() === 'initial-study,revision', paused)
+    await stopTimerOf(RV)
+    const ses2 = (await RV.idb('studySessions')).find((s) => s.id === study0.sessionId)
+    check('one session holds both: the initial-study span and the revision span, attributed apart', ses2?.spans.length === 2 && !ses2.spans[0].activity && ses2.spans[1].activity === 'revision' && ses2.spans[1].revisionUnitId === RU('bills-types-and-procedure') && ses2.spans[1].revisionOrdinal === 1, ses2?.spans)
+
+    // calendar, Home, Insights
+    await RV.hash('#/revision/calendar')
+    const cal = await RV.ev((today) => { const c = document.querySelector(`.cal-d[data-date="${today}"]`); return { cells: document.querySelectorAll('.cal-d').length, today: c?.classList.contains('today'), done: c?.querySelector('i[data-k="done"]')?.textContent, detail: document.querySelector('.cal-day').innerText.replace(/\s+/g, ' ') } }, dayKey(0))
+    check('Calendar: a month grid; today carries its completed revisions', cal.cells >= 28 && cal.cells % 7 === 0 && cal.today && cal.done === '3' && /3 completed/.test(cal.detail), cal)
+    let dueCell = null
+    for (let m = 0; m < 3 && !dueCell; m++) { dueCell = await RV.ev(() => document.querySelector('.cal-d:not(.out) i[data-k="due"]')?.closest('.cal-d').dataset.date ?? null); if (!dueCell) await RV.click('.stepper button[aria-label="Next month"]') }
+    await RV.click(`.cal-d[data-date="${dueCell}"]`); await sleep(250)
+    const dd = await RV.ev(() => ({ head: document.querySelector('.cal-day h2').innerText.replace(/\s+/g, ' '), rows: [...document.querySelectorAll('.cal-day .runit')].map((r) => r.innerText.replace(/\s+/g, ' ')), to: document.querySelector('.cal-day .runit a.t')?.getAttribute('href'), dueAll: [...document.querySelectorAll('.cal-d i[data-k="due"]')].length }))
+    check('each unit appears once, on its next date; a day shows its units with round, workload and a link to the revision', dueCell > dayKey(0) && dd.rows.length >= 1 && dd.rows.every((r) => /R2/.test(r) && /~\d+ min/.test(r)) && /due · ~\d+ min/.test(dd.head) && dd.to.startsWith('#/revise/prelims/polity/parliament/') && [ev1.nextDueDate, easy.nextDueDate, early.nextDueDate].includes(dueCell), [dueCell, dd])
+    await RV.go('#/')
+    const hs = await flat(RV, '.card.sched')
+    check('Home: a compact Revision card — today complete, and what comes next', /^revision/i.test(hs) && /Revision complete for today/.test(hs) && /Next: /.test(hs) && /Next 7 days \d/.test(hs) && (await RV.ev(() => document.querySelector('.card.sched').getBoundingClientRect().height)) < 220, hs)
+    await RV.hash('#/insights/revision')
+    const ins = await RV.ev(() => ({ kpi: Object.fromEntries([...document.querySelectorAll('.kpi')].map((k) => [k.dataset.k, k.querySelector('b').textContent + ' ' + k.querySelector('span').textContent])), text: document.querySelector('.page').innerText.replace(/\s+/g, ' ') }))
+    check('Insights → Revision: completed, on time, backlog, grades and recall answers counted from the records', /^3 of 3 scheduled · 100%/.test(ins.kpi.completed) && /^2 1 done after/.test(ins.kpi.ontime) && /^0 /.test(ins.kpi.backlog) && /Recall prompts: 1 knew · 1 missed/.test(ins.text) && /R1 3 · R2 0/.test(ins.text) && /initial study/.test(ins.kpi.time), ins.kpi)
+    await RV.click('.topic-time button.row'); await sleep(200)
+    const tt = await RV.ev(() => ({ head: [...document.querySelectorAll('table.ord thead th')].map((t) => t.textContent).join(), rows: [...document.querySelectorAll('table.ord tbody tr')].map((r) => [...r.children].map((c) => c.textContent).join('|')) }))
+    check('topic drill-down keeps Initial, R1, R2 … apart', /Initial,R1,R2,R3,R4,R5\+,Total$/.test(tt.head) && tt.rows.length >= 2 && tt.rows[tt.rows.length - 1].startsWith('Whole chapter|') && tt.rows.every((r) => r.split('|').length === 8), tt)
+    const kv5 = await RV.ev(() => new Promise((res) => { const q = indexedDB.open('upsc-notes'); q.onsuccess = () => { const db = q.result; const g = db.transaction('kv').objectStore('kv').getAllKeys(); g.onsuccess = () => { db.close(); res(g.result.join() + '|' + Object.keys(localStorage).join()) } } }))
+    check('no revision counter, forecast or memory score is stored anywhere', !/analytic|insight|total|streak|cache|forecast|calendar|retriev|score/i.test(kv5), kv5)
+    for (const [w, h, name] of [[375, 812, 'phone'], [768, 1024, 'tablet']]) {
+      await RV.page.setViewport({ width: w, height: h })
+      const wide = []
+      for (const t of ['#/revision', '#/revision/upcoming', '#/revision/calendar', '#/revision/manual', '#/insights/revision', '#/settings', '#/revise/' + RU('presiding-officers')]) { await RV.go(t); if (await RV.ev(() => document.documentElement.scrollWidth > innerWidth + 1)) wide.push(t) }
+      check(`${name}: Revision, its calendar, Settings and the guided view fit the screen`, wide.length === 0, wide)
+      if (w === 375) { await RV.go('#/revision/calendar'); await RV.page.screenshot({ path: join(OUT, 'phone-revision-calendar.png') }) }
+    }
+    await RV.page.setViewport({ width: 1280, height: 860 })
+    // the guided view opened above started a revision that was never graded: nothing was recorded
+    await RV.go('#/revision'); await sleep(300)
+    check('a revision that is left without a grade writes no event and changes no date', (await RV.idb('revisionEvents')).length === 3 && (await rvUnits())['presiding-officers'].revisionCount === 1)
+    if (await RV.count('.tchip')) await stopTimerOf(RV)
+    await RV.page.screenshot({ path: join(OUT, 'desktop-revision.png'), fullPage: true })
+  }
+
+  section('Recall v2')
+  {
+    const attempts0 = (await RV.idb('recallAttempts')).length
+    await RV.go(PARL); await RV.key('r'); await sleep(300)
+    const probe = () => RV.ev(() => { const q = (m) => [...document.querySelectorAll(`.sec-body .rq[data-m~="${m}"]`)]; const vis = (e) => !e.classList.contains('shown') && getComputedStyle(e, '::before').content.includes('RECALL') && getComputedStyle(e).display !== 'contents'; const all = [...document.querySelectorAll('.sec-body .rq')]; const on = all.filter(vis); return { cls: document.querySelector('.app').className, light: q('light').length, standard: q('standard').length, exam: q('exam').length, masked: on.length, labels: [...new Set(on.map((e) => getComputedStyle(e, '::before').content))], blur: [...document.querySelectorAll('.sec-body *')].some((e) => getComputedStyle(e).filter !== 'none'), leak: on.some((e) => e.querySelector(':scope > .rq-a').getBoundingClientRect().width > 0), cells: document.querySelectorAll('.sec-body td > .rq[data-m~="standard"]').length, heads: [...document.querySelectorAll('.sec-body tbody tr')].filter((r) => r.children[0].querySelector('.rq:not(.rc)')).length, nested: document.querySelectorAll('.sec-body .rq[data-m~="exam"] .rq[data-m~="exam"]').length, examOnly: q('exam').filter((e) => !e.dataset.m.includes('standard')).length } })
+    const rs = await probe()
+    check('Standard is the default: every eligible answer behind the same label; nothing blurred, no length shown', /recall ri-standard/.test(rs.cls) && rs.masked === rs.standard && rs.masked > 40 && rs.labels.length === 1 && /RECALL/.test(rs.labels[0]) && !rs.blur && !rs.leak, rs)
+    check('tables are first class: whole answer cells are concealed, a row heading never is', rs.cells > 10 && rs.heads === 0, [rs.cells, rs.heads])
+    const tap = await RV.ev(() => { const e = document.querySelector('.sec-body td > .rq[data-m~="standard"]'); const text = e.textContent; e.click(); return { text, shown: e.classList.contains('shown'), visible: getComputedStyle(e.querySelector('.rq-a')).display !== 'none', after: e.textContent, mask: getComputedStyle(e, '::before').content } })
+    check('a tap reveals the exact source content; reading asks for no grade and records nothing', tap.shown && tap.visible && tap.text.length > 0 && tap.text === tap.after && tap.mask === 'none' && (await RV.count('.grades, .grade-b, .rcard')) === 0 && (await RV.idb('recallAttempts')).length === attempts0, tap)
+    const kb = await RV.ev(() => { const e = document.querySelector('.sec-body .rq[data-m~="standard"]:not(.shown)'); const ok = e.tabIndex === 0 && e.getAttribute('role') === 'button'; e.focus(); e.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); return ok && e.classList.contains('shown') })
+    check('a concealed answer can be reached and revealed from the keyboard', kb)
+    await RV.key('R'); await sleep(300)
+    const re = await probe()
+    check('Exam conceals whole answers, lists and arrows as well — and never one mask inside another', /ri-exam/.test(re.cls) && re.examOnly > 0 && re.nested === 0 && re.labels.length === 1 && !re.leak && (await RV.idb('revisionPreferences'))[0].recallIntensity === 'exam', re)
+    await RV.key('R'); await sleep(300)
+    const rl = await probe()
+    check('Light conceals only PYQ facts, traps and the answers marked in the notes', /ri-light/.test(rl.cls) && rl.light > 0 && rl.light < rl.standard && rl.masked <= rl.light && rl.masked > 0, rl)
+    await RV.key('R'); await sleep(300)
+    await RV.reload(); await sleep(300)
+    check('the intensity is a saved preference: Standard again after the full cycle and a reload', /recall ri-standard/.test(await RV.ev(() => document.querySelector('.app').className)) && (await RV.idb('revisionPreferences'))[0].recallIntensity === 'standard')
+    await RV.key('r')
+    check('Recall off: the notes read exactly as written', (await RV.ev(() => [...document.querySelectorAll('.sec-body .rq')].every((e) => getComputedStyle(e, '::before').content === 'none' && getComputedStyle(e).display === 'contents'))))
+    // guided prompts off: the section itself with its answers concealed, then the same single question
+    await RV.hash('#/settings'); await RV.ev(() => document.querySelector('input[aria-label="Guided revision"]').click()); await sleep(250)
+    await RV.go('#/revise/' + RU('presiding-officers')); await sleep(600)
+    const rd = await RV.ev(() => ({ phase: document.querySelector('.revise').dataset.phase, masks: [...document.querySelectorAll('.rcard .sec-body .rq')].filter((e) => getComputedStyle(e, '::before').content.includes('RECALL')).length }))
+    await tapBtn(RV, 'Done reading', '.rcard'); await sleep(250)
+    check('with guided prompts off, scheduled revision shows the section with its answers concealed, then asks the same one question', rd.phase === 'read' && rd.masks > 3 && (await RV.ev(() => document.querySelector('.revise').dataset.phase)) === 'grade' && (await RV.count('.grade-b')) === 4, rd)
+    await RV.hash('#/settings'); await RV.ev(() => document.querySelector('input[aria-label="Guided revision"]').click()); await sleep(250)
+    if (await RV.count('.tchip')) await stopTimerOf(RV)
+  }
+
+  section('Exam targets')
+  {
+    const addExam = async (name, date) => { await tapBtn(RV, 'Add an exam'); await sleep(200); await RV.page.type('input[aria-label="Exam name"]', name); await RV.ev((d) => { const i = document.querySelector('input[aria-label="Exam date"]'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, d); i.dispatchEvent(new Event('input', { bubbles: true })) }, date); await sleep(150); await tapBtn(RV, 'Save', '.exam-form'); await sleep(350) }
+    const setDate = async (date) => { await RV.hash('#/settings'); await tapBtn(RV, 'Edit', '.row.exam'); await sleep(200); await RV.ev((d) => { const i = document.querySelector('input[aria-label="Exam date"]'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, d); i.dispatchEvent(new Event('input', { bubbles: true })) }, date); await sleep(150); await tapBtn(RV, 'Save', '.exam-form'); await sleep(350) }
+    const countdownOf = async () => { await RV.go('#/'); await sleep(500); return flat(RV, '.examcd') }
+    await RV.go('#/')
+    check('no exam set: Home shows no countdown', (await RV.count('.examcd')) === 0)
+    await RV.hash('#/settings')
+    await addExam('UPSC CSE Prelims', dayKey(232)); await addExam('UPPCS Prelims', dayKey(120))
+    let ex = await RV.idb('examTargets')
+    check('several exam targets, exactly one of them primary', ex.length === 2 && ex.filter((e) => e.primary && e.active).length === 1 && ex.find((e) => e.primary).name === 'UPSC CSE Prelims' && (await RV.count('.row.exam .chip.u')) === 1 && ex.every((e) => e.finalRevisionWindowDays === 21 && e.timeZone), ex)
+    const cd1 = await countdownOf()
+    check('Home: a compact countdown to the primary exam — days and the date, no seconds', /^UPSC CSE PRELIMS 232 DAYS \d{1,2} [A-Z]{3} \d{4}$/.test(cd1) && (await RV.ev(() => { const r = document.querySelector('.examcd').getBoundingClientRect(); return r.height < 90 && r.width < 320 })), cd1)
+    await RV.hash('#/settings'); await tapBtn(RV, 'Make primary', '.row.exam'); await sleep(300)
+    ex = await RV.idb('examTargets')
+    check('making another exam primary leaves exactly one primary', ex.filter((e) => e.primary).length === 1 && ex.find((e) => e.primary).name === 'UPPCS Prelims' && /^UPPCS PRELIMS 120 DAYS/.test(await countdownOf()), ex.map((e) => [e.name, e.primary]))
+    await setDate(dayKey(3))
+    const cd2 = await countdownOf()
+    check('an edited date is counted down at once; inside the last week in days and hours', /^UPPCS PRELIMS \dD \d{1,2}H /i.test(cd2) && !/:/.test(cd2), cd2)
+    await RV.hash('#/revision/calendar')
+    for (let m = 0; m < 2 && !(await RV.count(`.cal-d[data-date="${dayKey(3)}"]`)); m++) await RV.click('.stepper button[aria-label="Next month"]')
+    await RV.click(`.cal-d[data-date="${dayKey(3)}"]`); await sleep(250)
+    const cx = await RV.ev((d) => ({ mark: document.querySelector(`.cal-d[data-date="${d}"] .cal-x`)?.textContent, row: document.querySelector('.cal-day .exam-row')?.innerText.replace(/\s+/g, ' ') }), dayKey(3))
+    check('the calendar shows the exam as an event of its own on its date', cx.mark === 'UPPCS Prelims' && /UPPCS Prelims Exam/.test(cx.row ?? ''), cx)
+    await setDate(dayKey(-1))
+    check('once the primary exam has passed, the countdown moves to the next exam ahead', /^UPSC CSE PRELIMS 232 DAYS/.test(await countdownOf()))
+    await RV.hash('#/settings')
+    RV.page.once('dialog', (d) => d.accept())
+    await RV.click('.row.exam .tg'); await sleep(350)
+    ex = await RV.idb('examTargets')
+    check('removing the primary exam makes the remaining one primary', (await RV.count('.row.exam')) === 1 && ex.find((e) => e.name === 'UPPCS Prelims').removed === true && ex.filter((e) => e.primary && !e.removed).map((e) => e.name).join() === 'UPSC CSE Prelims', ex.map((e) => [e.name, e.primary, e.removed]))
+  }
+
+  section('Reset (local-only)')
+  {
+    const stores = ['studySessions', 'activeStudySession', 'studyQueue', 'pyqUserState', 'revisionUnits', 'revisionEvents', 'recallAttempts']
+    const sizes = async (names) => Object.fromEntries(await Promise.all(names.map(async (s) => [s, (await RV.idb(s)).length])))
+    const openReset = async (label) => { await RV.hash('#/settings'); await tapBtn(RV, label); await sleep(300) }
+    const confirmReset = async (label) => { const off = await RV.ev(() => document.querySelector('.reset .btn.danger').disabled); await RV.page.type('.reset-word input', 'RESET'); await sleep(150); await tapBtn(RV, label, '.reset .acts'); await sleep(1500); return off }
+    // personal data of every kind
+    await RV.go(PARL); await RV.key('t'); await sleep(200)
+    const theme5 = await RV.ev(() => document.documentElement.dataset.theme)
+    await RV.highlight('bills-types-and-procedure', 'All Money Bills are Financial Bills', 'green')
+    await RV.editMode(true); await RV.edit('presiding-officers', '<p>RESET-E2E edit</p>'); await RV.saved(); await RV.editMode(false)
+    await RV.click('.chap-meta .fav:not(.q)'); await RV.click('.chap-meta .fav.q'); await sleep(200)
+    await RV.hash('#/pyqs'); const pq5 = await RV.text('.pq-count')
+    await RV.hash(PARL); await sleep(300)
+    const lib5 = await RV.ev(() => ({ secs: document.querySelectorAll('.sec').length, xref: document.querySelectorAll('a.xref, .related a').length, rq: document.querySelectorAll('.sec-body .rq').length, done: document.querySelector('.chap-meta span').textContent }))
+    const had = await sizes(stores)
+    check('before the reset: sessions, units, events, recall answers and a queue item exist', had.studySessions >= 2 && had.revisionUnits === 3 && had.revisionEvents === 3 && had.recallAttempts === 2 && had.studyQueue === 1 && lib5.done === '3 / 9 sections done', [had, lib5])
+
+    await openReset('Reset study history')
+    const off1 = await confirmReset('Reset study history')
+    const after1 = await sizes(stores)
+    const kvP = (await RV.idb('kv')).find((v) => v && typeof v === 'object' && 'sections' in v)
+    check('the reset needs RESET typed; Reset Study History then removes progress, sessions, the timer, revision units and history, recall answers and the queue', off1 === true && Object.values(after1).every((n) => n === 0) && Object.values(kvP.sections).every((s) => !s.done) && Object.keys(kvP.chapters).length === 0 && (await RV.ev(() => location.hash)) === '#/' && (await RV.ev(() => localStorage.getItem('upsc-revision-run'))) === null, [off1, after1])
+    const kept1 = { hl: (await RV.idb('highlights')).filter((h) => !h.deleted).length, edits: (await RV.idb('overrides')).filter((o) => !o.deleted).length, exams: (await RV.idb('examTargets')).filter((e) => !e.removed).length, prefs: await RV.ev(() => JSON.parse(localStorage.getItem('upsc-prefs'))), theme: await RV.ev(() => document.documentElement.dataset.theme), rprefs: (await RV.idb('revisionPreferences')).length }
+    check('…and keeps highlights, edits, ★ / ↻ marks, favourites, appearance, revision preferences and exam targets', kvP.sections[RU('uppcs-recall')]?.revise === true && kvP.sections[RU('uppcs-recall')]?.difficult === true && kept1.hl === 1 && kept1.edits === 1 && kept1.exams === 1 && kept1.prefs.favourites.length === 1 && kept1.prefs.recents.length === 0 && kept1.theme === theme5 && kept1.rprefs === 1 && (await RV.count('.examcd')) === 1, kept1)
+    const ep1 = (await RV.idb('userDataEpoch'))[0]
+    check('the reset raises the data epoch on this device and leaves nothing stale queued', ep1.doc.epoch === 1 && ep1.doc.floors.study === 1 && ep1.doc.resetScope === 'study-history' && !(await RV.idb('outbox')).some((o) => /^(chap|ses|run|q|pyq|ru|rev|ra)~/.test(o.id)), ep1)
+    await RV.hash('#/pyqs'); const pq6 = await RV.text('.pq-count')
+    await RV.hash(PARL); await sleep(300)
+    const lib6 = await RV.ev(() => ({ secs: document.querySelectorAll('.sec').length, xref: document.querySelectorAll('a.xref, .related a').length, rq: document.querySelectorAll('.sec-body .rq').length, done: document.querySelector('.chap-meta span').textContent }))
+    check('the notes, the static PYQ corpus and the cross-links are untouched', pq6 === pq5 && pq5 === '2146 questions' && lib6.secs === lib5.secs && lib6.xref === lib5.xref && lib6.xref > 0 && lib6.done === '0 / 9 sections done' && (await RV.text('#s-presiding-officers .sec-body')).includes('RESET-E2E edit') && (await RV.marks('bills-types-and-procedure')).length === 1, [pq5, pq6, lib5, lib6])
+    await RV.reload(); await sleep(300)
+    check('the reset survives a reload', (await RV.idb('revisionUnits')).length === 0 && (await RV.text('.chap-meta span')) === '0 / 9 sections done')
+    await RV.click('#s-presiding-officers .tg.done'); await sleep(300)
+    check('study starts cleanly afterwards: a new Done is enrolled as usual', (await RV.idb('revisionUnits')).length === 1 && (await rvUnits())['presiding-officers'].dueDate === dayKey(1))
+
+    await openReset('Full personal reset')
+    const boxes = await RV.ev(() => [...document.querySelectorAll('.reset-keep input')].map((i) => i.checked).join())
+    const off2 = await confirmReset('Reset everything personal')
+    const after2 = await sizes([...stores, 'studyGoals'])
+    const kvF = (await RV.idb('kv')).find((v) => v && typeof v === 'object' && 'sections' in v)
+    const kept2 = { marks: Object.keys(kvF.sections).length, hl: (await RV.idb('highlights')).length, edits: (await RV.idb('overrides')).length, conflicts: (await RV.idb('conflicts')).length, exams: (await RV.idb('examTargets')).filter((e) => !e.removed).length, prefs: await RV.ev(() => JSON.parse(localStorage.getItem('upsc-prefs'))), theme: await RV.ev(() => document.documentElement.dataset.theme), ep: (await RV.idb('userDataEpoch'))[0].doc }
+    check('Full Personal Reset: everything personal goes — highlights, edits, flags and favourites too', off2 === true && Object.values(after2).every((n) => n === 0) && kept2.marks === 0 && kept2.hl === 0 && kept2.edits === 0 && kept2.conflicts === 0 && kept2.prefs.favourites.length === 0 && kept2.ep.epoch === 2 && kept2.ep.floors.notes === 2 && kept2.ep.floors.study === 2, [after2, kept2])
+    check('"Keep exam targets" and "Keep appearance / settings" are on by default, and are honoured', boxes === 'true,true' && kept2.exams === 1 && kept2.theme === theme5 && (await RV.count('.examcd')) === 1, [boxes, kept2.exams, kept2.theme])
+    await RV.hash('#/pyqs'); const pq7 = await RV.text('.pq-count')
+    await RV.hash(PARL); await sleep(300)
+    const lib7 = await RV.ev(() => ({ secs: document.querySelectorAll('.sec').length, xref: document.querySelectorAll('a.xref, .related a').length, rq: document.querySelectorAll('.sec-body .rq').length, text: document.querySelector('#s-presiding-officers .sec-body').textContent.includes('RESET-E2E edit'), marks: document.querySelectorAll('mark[data-hid]').length }))
+    check('after a full reset the library is exactly as imported: notes, PYQs, cross-links and recall units', pq7 === pq5 && lib7.secs === lib5.secs && lib7.xref === lib5.xref && lib7.rq === lib5.rq && !lib7.text && lib7.marks === 0, [pq7, lib7])
+    await RV.go('#/')
+    check('Home after a full reset: nothing of the old study record is shown', /Nothing scheduled yet/.test(await flat(RV, '.card.sched')) && /^00:00:00/.test((await flat(RV, '.tcard .tc-time'))) && (await RV.ev(() => document.querySelector('.today .big').dataset.final)) === '0 min')
+  }
+
   section('Print / PDF')
   await L.hash(PARL)
   await L.key('r') // Recall Mode ON: answers must still print
@@ -1091,13 +1357,13 @@ try {
     const d = (s) => { const e = document.querySelector(s); return e ? getComputedStyle(e).display : 'absent' }
     const rc = document.querySelector('#s-composition-and-constitutional-map .rc')
     return { topbar: d('.topbar'), sidebar: d('.sidebar'), tools: d('.sec-tools'), meta: d('.chap-meta'), pn: d('.pn'), bar: d('.readbar'), acct: d('.acct'),
-      bg: getComputedStyle(document.body).backgroundColor, ink: getComputedStyle(document.querySelector('.prose')).color, rc: getComputedStyle(rc).filter,
+      bg: getComputedStyle(document.body).backgroundColor, ink: getComputedStyle(document.querySelector('.prose')).color, rc: getComputedStyle(rc.querySelector('.rq-a')).display + '|' + getComputedStyle(rc, '::before').content,
       collapsed: document.querySelector('#s-presiding-officers .sec-body').getBoundingClientRect().height, table: getComputedStyle(document.querySelector('.prose table')).display,
       clipped: [...document.querySelectorAll('.prose table, .prose .callout')].filter((e) => e.scrollWidth > e.clientWidth + 1).length }
   })
   check('print: controls hidden', [pr.topbar, pr.sidebar, pr.tools, pr.meta, pr.pn, pr.bar].every((x) => x === 'none'), pr)
   check('print: white background, dark text', pr.bg === 'rgb(255, 255, 255)' && pr.ink === 'rgb(17, 17, 17)', pr)
-  check('print: recall answers revealed', pr.rc === 'none', pr.rc)
+  check('print: recall answers revealed', pr.rc === 'contents|none', pr.rc)
   check('print: collapsed section expanded', pr.collapsed > 100, pr.collapsed)
   check('print: tables are real tables, nothing clipped', pr.table === 'table' && pr.clipped === 0, pr)
   await L.page.pdf({ path: join(OUT, 'print-parliament.pdf'), preferCSSPageSize: true, printBackground: true })
@@ -1112,7 +1378,7 @@ try {
 
   // ==========================================================================
   section('Responsive layout')
-  const routes = ['#/', '#/study', '#/study/mains', '#/pyqs', '#/insights', '#/study/prelims/polity', '#/study/prelims/polity?tab=insights', '#/highlights', '#/revision', '#/insights/time', '#/insights/subjects', '#/insights/progress', PARL, '#/study/prelims/polity/constitutional-bodies', '#/study/prelims/polity/parts-schedules', '#/study/prelims/economy', '#/study/prelims/economy?tab=insights', '#/study/prelims/economy/budget-fiscal-policy', '#/study/prelims/economy/government-schemes', '#/study/prelims/economy/money-rbi-monetary-policy', '#/study/prelims/economy/international-institutions', '#/study/prelims/history-culture', '#/study/prelims/history-culture?tab=insights', '#/study/prelims/history-culture/constitutional-development', '#/study/prelims/history-culture/architecture-sculpture', '#/study/prelims/history-culture/early-nationalism-swadeshi', '#/study/prelims/history-culture/british-administration-economy', '#/study/prelims/geography', '#/study/prelims/geography?tab=insights', '#/study/prelims/geography/india-drainage', '#/study/prelims/geography/world-regional', '#/study/prelims/environment', '#/study/prelims/environment/international-conventions', '#/study/prelims/environment/protected-areas', '#/study/prelims/science-tech', '#/study/prelims/science-tech/physics-everyday', '#/study/prelims/science-tech/defence-organisations', '#/pyqs?subject=geography']
+  const routes = ['#/', '#/study', '#/study/mains', '#/pyqs', '#/insights', '#/study/prelims/polity', '#/study/prelims/polity?tab=insights', '#/highlights', '#/revision', '#/revision/upcoming', '#/revision/calendar', '#/revision/manual', '#/insights/revision', '#/settings', '#/insights/time', '#/insights/subjects', '#/insights/progress', PARL, '#/study/prelims/polity/constitutional-bodies', '#/study/prelims/polity/parts-schedules', '#/study/prelims/economy', '#/study/prelims/economy?tab=insights', '#/study/prelims/economy/budget-fiscal-policy', '#/study/prelims/economy/government-schemes', '#/study/prelims/economy/money-rbi-monetary-policy', '#/study/prelims/economy/international-institutions', '#/study/prelims/history-culture', '#/study/prelims/history-culture?tab=insights', '#/study/prelims/history-culture/constitutional-development', '#/study/prelims/history-culture/architecture-sculpture', '#/study/prelims/history-culture/early-nationalism-swadeshi', '#/study/prelims/history-culture/british-administration-economy', '#/study/prelims/geography', '#/study/prelims/geography?tab=insights', '#/study/prelims/geography/india-drainage', '#/study/prelims/geography/world-regional', '#/study/prelims/environment', '#/study/prelims/environment/international-conventions', '#/study/prelims/environment/protected-areas', '#/study/prelims/science-tech', '#/study/prelims/science-tech/physics-everyday', '#/study/prelims/science-tech/defence-organisations', '#/pyqs?subject=geography']
   for (const [name, w, h] of [['phone 375', 375, 812], ['tablet 768', 768, 1024], ['desktop 1280', 1280, 860]]) {
     await L.page.setViewport({ width: w, height: h })
     const bad = []
@@ -1306,7 +1572,7 @@ try {
   const navB = await B.ev(() => Object.fromEntries([...document.querySelectorAll('.page section')].map((x) => [x.querySelector('h3').textContent, [...x.querySelectorAll('.row b')].map((b) => b.textContent)])))
   check('favourites and recent destinations reach the second device', navB.Favourites?.join() === 'Parliament' && navB.Recent?.[0] === 'Parliament', navB)
   const prefDocs = (await cloudDump()).filter((d) => d.rec.kind === 'pref')
-  check('they travel inside the existing preferences record; no navigation tree or view model is uploaded', prefDocs.length === 1 && prefDocs[0].rec.f.favourites.v[0].chapterId === 'parliament' && Array.isArray(prefDocs[0].rec.f.recents.v) && (await cloudDump()).every((d) => ['edit', 'hl', 'sec', 'chap', 'pref'].includes(d.rec.kind)), prefDocs.map((d) => Object.keys(d.rec.f)))
+  check('they travel inside the existing preferences record; no navigation tree or view model is uploaded', prefDocs.length === 1 && prefDocs[0].rec.f.favourites.v[0].chapterId === 'parliament' && Array.isArray(prefDocs[0].rec.f.recents.v) && (await cloudDump()).every((d) => ['edit', 'hl', 'sec', 'chap', 'pref', 'ru'].includes(d.rec.kind)), prefDocs.map((d) => Object.keys(d.rec.f)))
   await A.click('.chap-meta .fav'); await A.syncNow(); await B.syncNow()
   check('removing a favourite syncs too', (await B.ev(() => JSON.parse(localStorage.getItem('upsc-prefs')).favourites.length)) === 0)
   await A.hash(PARL); await B.hash(PARL)
@@ -1489,6 +1755,71 @@ try {
     check(`${n}: signed-in account panel fits and shows status`, await A.ev(() => { const r = document.querySelector('.acct-panel').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && !!document.querySelector('.acct-status') }))
     if (w === 375) await A.page.screenshot({ path: join(OUT, 'phone-account.png') })
     await A.panel(false)
+  }
+
+  section('Sync — revision, exam targets and the reset epoch')
+  {
+    const STUDY = ['sec', 'chap', 'ses', 'run', 'q', 'pyq', 'ru', 'rev', 'ra']
+    const ids = async (d, store) => (await d.idb(store)).map((r) => r.id).sort().join()
+    await A.page.setViewport({ width: 1280, height: 860 })
+    await A.hash(PARL); await B.hash(PARL)
+    if (!(await A.ev(() => document.querySelector('#s-parliamentary-committees .tg.done').classList.contains('on')))) await A.click('#s-parliamentary-committees .tg.done')
+    await A.syncNow(); await B.syncNow(); await A.syncNow()
+    const uA = await rvUnits(A)
+    const uB = await rvUnits(B)
+    const dumpU = await cloudDump()
+    check('revision units reach the other device as they are; one cloud record per unit', Object.keys(uA).length >= 2 && Object.keys(uA).sort().join() === Object.keys(uB).sort().join() && uB['parliamentary-committees']?.dueDate === uA['parliamentary-committees'].dueDate && dumpU.filter((d) => d.rec.kind === 'ru').length === Object.keys(uA).length, [Object.keys(uA), Object.keys(uB)])
+    // a revision completed on A
+    await idbPut(A, 'revisionUnits', [{ ...uA['parliamentary-committees'], dueDate: dayKey(0) }])
+    await A.hash('#/revise/' + RU('parliamentary-committees')); await A.reload(); await sleep(900)
+    if ((await A.ev(() => document.querySelector('.revise').dataset.phase)) === 'prompt') { await tapBtn(A, 'Reveal', '.rcard'); await sleep(200); await tapBtn(A, 'Knew', '.rcard'); await sleep(200); await tapBtn(A, 'Finish now', '.rcard') }
+    await sleep(1200); await A.click('.grade-b[data-grade="good"]'); await sleep(800)
+    await A.syncNow(); await B.syncNow()
+    const evA = (await A.idb('revisionEvents'))[0]
+    const evB = (await B.idb('revisionEvents'))[0]
+    const dumpE = await cloudDump()
+    check('a completed revision, its recall answers and the unit\'s new date reach the other device', !!evA && JSON.stringify(evB) === JSON.stringify(evA) && (await ids(B, 'recallAttempts')) === (await ids(A, 'recallAttempts')) && (await rvUnits(B))['parliamentary-committees'].dueDate === evA.nextDueDate && (await rvUnits(B))['parliamentary-committees'].revisionCount === 1, [evA, evB])
+    check('revision events are write-once in the cloud; static recall units, calendars and forecasts are never uploaded', dumpE.filter((d) => d.rec.kind === 'rev').length === 1 && dumpE.filter((d) => d.rec.kind === 'rev').every((d) => d.ver === 1) && dumpE.every((d) => ['edit', 'hl', 'sec', 'chap', 'pref', 'ses', 'run', 'goal', 'q', 'pyq', 'ru', 'rev', 'ra', 'exam', 'rpref'].includes(d.rec.kind)) && !JSON.stringify(dumpE).includes('cueHtml') && !JSON.stringify(dumpE).includes('answerHtml'), dumpE.map((d) => d.rec.kind))
+    // an exam target and a revision preference
+    await A.hash('#/settings'); await tapBtn(A, 'Add an exam'); await sleep(200)
+    await A.page.type('input[aria-label="Exam name"]', 'UPSC CSE Prelims')
+    await A.ev((d) => { const i = document.querySelector('input[aria-label="Exam date"]'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, d); i.dispatchEvent(new Event('input', { bubbles: true })) }, dayKey(200))
+    await sleep(150); await tapBtn(A, 'Save', '.exam-form'); await sleep(300)
+    await tapBtn(A, 'Exam', '.set-row .seg'); await sleep(200) // recall intensity → Exam
+    await A.syncNow(); await B.syncNow()
+    await B.go('#/'); await sleep(500)
+    check('exam targets and revision preferences sync: the countdown and the recall intensity appear on the other device', /^UPSC CSE PRELIMS 200 DAYS/.test(await flat(B, '.examcd')) && (await B.idb('revisionPreferences'))[0]?.recallIntensity === 'exam' && /ri-exam/.test(await B.ev(() => document.querySelector('.app').className)))
+
+    // B goes offline and keeps its old study data; meanwhile A resets the study history
+    await B.hash(PARL); await sleep(300)
+    await B.page.setOfflineMode(true)
+    if (!(await B.ev(() => document.querySelector('#s-joint-sitting-and-lapse-of-bills .tg.done').classList.contains('on')))) await B.click('#s-joint-sitting-and-lapse-of-bills .tg.done')
+    await sleep(300)
+    const staleB = { units: (await B.idb('revisionUnits')).length, sessions: (await B.idb('studySessions')).length, done: await B.text('.chap-meta span'), queued: (await B.idb('outbox')).map((o) => o.id) }
+    const hlB = (await B.marks('bills-types-and-procedure')).length
+    await A.hash('#/settings'); await tapBtn(A, 'Reset study history'); await sleep(300)
+    const lockedA = await A.ev(() => document.querySelector('.reset .btn.danger').disabled)
+    await A.page.type('.reset-word input', 'RESET'); await sleep(150)
+    await tapBtn(A, 'Reset study history', '.reset .acts'); await sleep(1500)
+    await A.syncNow(); await A.panel(false)
+    const dumpR = await cloudDump()
+    const meta = dumpR.find((d) => d.rec.id === 'meta~dataEpoch')?.rec.data
+    check('a signed-in reset raises the account\'s data epoch and removes the old study records from the cloud', lockedA === true && meta?.epoch === 1 && meta.floors.study === 1 && meta.resetScope === 'study-history' && dumpR.filter((d) => STUDY.includes(d.rec.kind)).every((d) => d.rec.kind === 'sec' && d.rec.ep === 1 && !d.rec.f.done) && dumpR.some((d) => d.rec.kind === 'hl') && dumpR.some((d) => d.rec.kind === 'exam'), [meta, dumpR.map((d) => d.rec.kind)])
+    check('on the device that reset: study history gone, highlights, edits and exam target kept', (await A.idb('revisionUnits')).length === 0 && (await A.idb('revisionEvents')).length === 0 && (await A.idb('studySessions')).length === 0 && (await A.idb('highlights')).filter((h) => !h.deleted).length > 0 && (await A.idb('examTargets')).length === 1 && (await A.idb('userDataEpoch'))[0].doc.epoch === 1)
+    check('device B, offline, still holds the old data and has changes queued', staleB.units >= 2 && staleB.sessions >= 1 && staleB.queued.some((id) => id.startsWith('sec~')) && !/^0 \//.test(staleB.done), staleB)
+    await B.page.setOfflineMode(false); await B.ev(() => window.dispatchEvent(new Event('online'))); await sleep(1500)
+    await B.syncNow(); await B.panel(false); await sleep(300)
+    const dumpB = await cloudDump()
+    const epB = (await B.idb('userDataEpoch'))[0]
+    check('the stale device drops its old study data when it reconnects and adopts the epoch', (await B.idb('revisionUnits')).length === 0 && (await B.idb('revisionEvents')).length === 0 && (await B.idb('studySessions')).length === 0 && epB?.doc.epoch === 1 && epB.doc.floors.study === 1 && /^0 \/ 9 sections done/.test(await B.text('.chap-meta span')) && !(await B.ev(() => document.querySelector('#s-joint-sitting-and-lapse-of-bills .tg.done').classList.contains('on'))) && (await B.ev(() => document.querySelector('#s-sessions-and-devices .tg.star').classList.contains('on'))), [epB, await B.text('.chap-meta span')])
+    check('…and uploads none of it: nothing from before the reset is back in the cloud', !dumpB.some((d) => STUDY.includes(d.rec.kind) && (d.rec.ep ?? 0) < 1) && !dumpB.some((d) => d.rec.kind === 'ses' || d.rec.kind === 'rev' || d.rec.kind === 'ru') && !dumpB.some((d) => d.rec.kind === 'sec' && d.rec.f?.done?.v) && !(await B.idb('outbox')).some((o) => /^(ses|rev|ra|ru)~/.test(o.id)), dumpB.filter((d) => STUDY.includes(d.rec.kind)).map((d) => [d.rec.id, d.rec.ep]))
+    check('what the reset did not cover is untouched on the stale device', (await B.marks('bills-types-and-procedure')).length === hlB && hlB > 0 && /^UPSC CSE PRELIMS/.test((await B.go('#/'), await sleep(400), await flat(B, '.examcd'))))
+    await A.go(PARL); await A.syncNow(); await A.panel(false); await A.reload(); await sleep(300)
+    check('nothing is resurrected on the first device', (await A.idb('revisionUnits')).length === 0 && (await A.idb('studySessions')).length === 0 && (await A.text('.chap-meta span')) === '0 / 9 sections done')
+    await A.click('#s-presiding-officers .tg.done'); await sleep(300)
+    await A.syncNow(); await A.panel(false); await B.go(PARL); await B.syncNow(); await B.panel(false)
+    const ruNew = (await cloudDump()).filter((d) => d.rec.kind === 'ru')
+    check('study after the reset syncs as usual, under the new epoch', ruNew.length === 1 && ruNew[0].rec.ep === 1 && (await B.idb('revisionUnits')).length === 1 && (await B.ev(() => document.querySelector('#s-presiding-officers .tg.done').classList.contains('on'))), ruNew.map((d) => [d.rec.id, d.rec.ep]))
   }
 
   section('Console')

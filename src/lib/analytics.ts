@@ -94,6 +94,8 @@ export interface Slice {
   day: number
   ctx: StudyContext
   session: SessionStat
+  /** Set when the time was spent revising: which review (R1 = 1 …) of which unit. Absent = initial study. */
+  rev?: { ordinal: number; unitId?: string }
 }
 export interface StudyIndex {
   tz: string
@@ -107,13 +109,13 @@ export interface StudyIndex {
 }
 
 export function buildIndex(sessions: Iterable<StudySession>, tz: string): StudyIndex {
-  const spans: { from: number; to: number; ctx: StudyContext; session: SessionStat }[] = []
+  const spans: { from: number; to: number; ctx: StudyContext; session: SessionStat; rev?: Slice['rev'] }[] = []
   for (const s of sessions) {
     const session: SessionStat = { id: s.id, from: Infinity, to: -Infinity, ms: 0, source: s.source, contexts: [] }
     for (const x of s.spans ?? []) {
       const from = Date.parse(x.startedAt)
       // a span is an unbroken stretch of active study, so it runs from startedAt for durationMs
-      if (Number.isFinite(from) && x.durationMs > 0 && x.context?.ref) spans.push({ from, to: from + x.durationMs, ctx: x.context, session })
+      if (Number.isFinite(from) && x.durationMs > 0 && x.context?.ref) spans.push({ from, to: from + x.durationMs, ctx: x.context, session, ...(x.activity === 'revision' ? { rev: { ordinal: Math.max(1, x.revisionOrdinal ?? 1), unitId: x.revisionUnitId } } : {}) })
     }
   }
   spans.sort((a, b) => a.from - b.from || b.to - a.to || (a.session.id < b.session.id ? -1 : 1))
@@ -153,7 +155,7 @@ export function buildIndex(sessions: Iterable<StudySession>, tz: string): StudyI
         dayTo = dayStart(dn + 1, tz)
       }
       const b = Math.min(sp.to, Math.max(dayTo, a + 1))
-      slices.push({ from: a, to: b, day: dn, ctx: sp.ctx, session: s })
+      slices.push({ from: a, to: b, day: dn, ctx: sp.ctx, session: s, ...(sp.rev ? { rev: sp.rev } : {}) })
       a = b
     }
   }
@@ -194,6 +196,66 @@ function each(ix: StudyIndex, from: number, to: number, scope: Scope | undefined
     if (f && !matches(s.ctx, f)) continue
     const ms = Math.min(s.to, to) - Math.max(s.from, from)
     if (ms > 0) fn(s, ms)
+  }
+}
+
+// ---- initial study and revision, kept apart ----------------------------------------------
+/** Time by what it was spent on: index 0 = initial study, 1 – 4 = R1 – R4, 5 = R5 and later. */
+export type OrdinalTime = [number, number, number, number, number, number]
+export const ORDINAL_LABEL = ['Initial', 'R1', 'R2', 'R3', 'R4', 'R5+'] as const
+export interface TopicTime {
+  /** Chapter key, or section key for a row inside a chapter. */
+  key: string
+  ctx: StudyContext
+  time: OrdinalTime
+  totalMs: number
+  /** Sections of the chapter that were revised, or timed on their own. */
+  sections?: TopicTime[]
+}
+export interface ActivityTime {
+  initialMs: number
+  revisionMs: number
+  time: OrdinalTime
+  bySubject: { key: string; label: string; initialMs: number; revisionMs: number }[]
+  /** Chapters, most time first. */
+  byTopic: TopicTime[]
+}
+const zero = (): OrdinalTime => [0, 0, 0, 0, 0, 0]
+
+/**
+ * Initial study and each revision round, separately — per topic and overall. Derived from the
+ * spans like every other figure: a span is initial study unless it was recorded as a revision,
+ * and a revision span carries the number of its review.
+ */
+export function activityTime(ix: StudyIndex, from = -Infinity, to = Infinity, scope?: Scope): ActivityTime {
+  const time = zero()
+  const subjects = new Map<string, ActivityTime['bySubject'][number]>()
+  const chapters = new Map<string, TopicTime & { secs: Map<string, TopicTime> }>()
+  each(ix, from, to, scope, (s, ms) => {
+    const slot = s.rev ? Math.min(5, s.rev.ordinal) : 0
+    time[slot] += ms
+    const sk = subjectKeyOf(s.ctx)
+    const sub = subjects.get(sk) ?? subjects.set(sk, { key: sk, label: s.ctx.subjectTitle, initialMs: 0, revisionMs: 0 }).get(sk)!
+    if (slot) sub.revisionMs += ms
+    else sub.initialMs += ms
+    const ck = chapterKeyOf(s.ctx)
+    const ch = chapters.get(ck) ?? chapters.set(ck, { key: ck, ctx: s.ctx, time: zero(), totalMs: 0, secs: new Map() }).get(ck)!
+    ch.time[slot] += ms
+    ch.totalMs += ms
+    if (s.ctx.ref.sectionId) {
+      const key = `${ck}/${s.ctx.ref.sectionId}`
+      const sec = ch.secs.get(key) ?? ch.secs.set(key, { key, ctx: s.ctx, time: zero(), totalMs: 0 }).get(key)!
+      sec.time[slot] += ms
+      sec.totalMs += ms
+    }
+  })
+  const revisionMs = time.slice(1).reduce((n, v) => n + v, 0)
+  return {
+    initialMs: time[0],
+    revisionMs,
+    time,
+    bySubject: [...subjects.values()].sort((a, b) => b.initialMs + b.revisionMs - (a.initialMs + a.revisionMs)),
+    byTopic: [...chapters.values()].sort((a, b) => b.totalMs - a.totalMs).map(({ secs, ...c }) => ({ ...c, sections: [...secs.values()].sort((a, b) => b.totalMs - a.totalMs) })),
   }
 }
 

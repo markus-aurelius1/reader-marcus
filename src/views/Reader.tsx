@@ -13,6 +13,8 @@ import { chapterRef, recordVisit } from '../lib/nav'
 import { FavButton } from './Pages'
 import type { PyqFilter } from '../lib/pyq'
 import { QueueButton } from '../components/Queue'
+import { annotate } from '../lib/recall'
+import { prefsOf, useRevision } from '../lib/revision'
 
 /** Section currently in view — read by the top bar breadcrumbs and the sidebar. */
 export const useSpy = create<{ id?: string }>(() => ({}))
@@ -112,15 +114,40 @@ export function Reader({ subject, chapter, route, n }: { subject: Subject; chapt
     }
   }, [chapter.key, setChapter])
 
-  const onClick = (e: React.MouseEvent) => {
-    const rc = (e.target as Element).closest?.('.rc')
-    if (rc && useStore.getState().prefs.recall && !editMode) rc.classList.toggle('shown')
+  // Recall Mode: a concealed answer is revealed (or hidden again) by a tap, Enter or Space.
+  // Nothing is graded and nothing is recorded while reading.
+  const recall = useStore((s) => s.prefs.recall)
+  const intensity = useRevision((s) => prefsOf(s.prefs).recallIntensity)
+  const reveal = (t: EventTarget) => {
+    if (!useStore.getState().prefs.recall || editMode) return false
+    const rq = (t as Element).closest?.(`.rq[data-m~="${intensity}"]`)
+    rq?.classList.toggle('shown')
+    return !!rq
   }
+  const onClick = (e: React.MouseEvent) => void reveal(e.target)
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.key === 'Enter' || e.key === ' ') && (e.target as Element).classList?.contains('rq') && reveal(e.target)) e.preventDefault()
+  }
+  // concealed answers can be reached from the keyboard only while they are concealed
+  useEffect(() => {
+    const on = recall && !editMode
+    for (const el of root.current?.querySelectorAll<HTMLElement>('.sec-body .rq') ?? []) {
+      if (on && el.dataset.m?.split(' ').includes(intensity)) {
+        el.tabIndex = 0
+        el.setAttribute('role', 'button')
+        el.setAttribute('aria-label', 'Concealed answer: reveal')
+      } else {
+        el.removeAttribute('tabindex')
+        el.removeAttribute('role')
+        el.removeAttribute('aria-label')
+      }
+    }
+  })
   const allKeys = chapter.sections.map((s) => s.key)
   const anyOpen = allKeys.some((k) => !collapsed.includes(k))
 
   return (
-    <div className="page" ref={root} onClick={onClick} key={chapter.key}>
+    <div className="page" ref={root} onClick={onClick} onKeyDown={onKeyDown} key={chapter.key}>
       <div className="readbar" ref={bar} />
       <div className="eyebrow">{chapter.topicTitle}</div>
       <h1 className="title">{chapter.title}</h1>
@@ -190,8 +217,12 @@ interface SecProps {
 }
 const SectionView = memo(function SectionView({ section, title, html, marks, related, pyqs, pyqHref, from, tick, edit, closed, state }: SecProps) {
   const { setSection, setPref, saveOverride } = useStore.getState()
+  // recall answers are found from the structure of the text (lib/recall.ts) and wrapped;
   // highlights are stored apart from the text and laid over it here
-  const shown = useMemo(() => (marks?.length ? applyHighlights(html, marks).html : html), [html, marks])
+  const shown = useMemo(() => {
+    const body = annotate(html, section.key, { pyq: pyqs > 0 }).html
+    return marks?.length ? applyHighlights(body, marks).html : body
+  }, [html, marks, section.key, pyqs])
   const toggle = () => {
     const c = useStore.getState().prefs.collapsed
     setPref({ collapsed: c.includes(section.key) ? c.filter((k) => k !== section.key) : [...c, section.key] })

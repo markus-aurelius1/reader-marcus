@@ -6,6 +6,8 @@ import { PYQ_FILTER_KEYS, type PyqFilter } from './pyq'
 export type SubjectTab = 'overview' | 'pyq' | 'insights'
 export const INSIGHTS_TABS = ['overview', 'time', 'subjects', 'progress', 'revision'] as const
 export type InsightsTab = (typeof INSIGHTS_TABS)[number]
+export const REVISION_TABS = ['today', 'overdue', 'upcoming', 'calendar', 'manual'] as const
+export type RevisionTab = (typeof REVISION_TABS)[number]
 export type Route =
   | { name: 'home' }
   | { name: 'study'; stage?: string }
@@ -13,10 +15,15 @@ export type Route =
   | { name: 'reader'; subjectKey: string; chapterId: string; sectionId?: string; hid?: string; q?: string; resume?: boolean }
   | { name: 'pyqs'; filter: PyqFilter }
   | { name: 'insights'; tab: InsightsTab }
+  | { name: 'revision'; tab: RevisionTab }
+  /** Scheduled revision of one unit; unitId is the section key. */
+  | { name: 'revise'; unitId: string }
+  | { name: 'settings' }
   | { name: 'highlights' }
 
 const tabOf = (v?: string | null): SubjectTab => (v === 'pyq' || v === 'insights' ? v : 'overview')
 const insightsTab = (v?: string): InsightsTab => INSIGHTS_TABS.find((t) => t === v) ?? 'overview'
+const revisionTab = (v?: string): RevisionTab => REVISION_TABS.find((t) => t === v) ?? 'today'
 
 export function parse(hash: string): Route {
   const [path, query = ''] = hash.replace(/^#\/?/, '').split('?')
@@ -37,10 +44,13 @@ export function parse(hash: string): Route {
     return reader(seg.slice(1))
   }
   if (seg[0] === 'insights') return { name: 'insights', tab: insightsTab(seg[1]) }
-  // earlier links: #/s/<subject>[/tab], #/r/<chapter>[/section], #/progress, #/revision
+  if (seg[0] === 'revision') return { name: 'revision', tab: revisionTab(seg[1]) }
+  if (seg[0] === 'revise' && seg.length === 5) return { name: 'revise', unitId: seg.slice(1).join('/') }
+  if (seg[0] === 'settings') return { name: 'settings' }
+  // earlier links: #/s/<subject>[/tab], #/r/<chapter>[/section], #/progress
   if (seg[0] === 's' && seg[2]) return { name: 'subject', subjectKey: `${seg[1]}/${seg[2]}`, tab: tabOf(seg[3]) }
   if (seg[0] === 'r' && seg[3]) return reader(seg.slice(1))
-  if (seg[0] === 'progress' || seg[0] === 'revision') return { name: 'insights', tab: seg[0] }
+  if (seg[0] === 'progress') return { name: 'insights', tab: 'progress' }
   if (seg[0] === 'pyqs') {
     const filter: PyqFilter = {}
     for (const k of PYQ_FILTER_KEYS) if (params.get(k)) filter[k] = params.get(k)!
@@ -70,7 +80,9 @@ export const href = {
   },
   insights: (tab?: InsightsTab) => `#/insights${tab && tab !== 'overview' ? '/' + tab : ''}`,
   highlights: () => '#/highlights',
-  revision: () => '#/insights/revision',
+  revision: (tab?: RevisionTab) => `#/revision${tab && tab !== 'today' ? '/' + tab : ''}`,
+  revise: (unitId: string) => `#/revise/${unitId}`,
+  settings: () => '#/settings',
 }
 
 /** The canonical link for a route. */
@@ -83,6 +95,9 @@ export function hrefOf(r: Route): string {
     case 'home': return href.home()
     case 'pyqs': return href.pyqs(r.filter)
     case 'highlights': return href.highlights()
+    case 'revision': return href.revision(r.tab)
+    case 'revise': return href.revise(r.unitId)
+    case 'settings': return href.settings()
   }
 }
 
@@ -100,7 +115,7 @@ export const replace = (h: string) => {
 
 /** An earlier deep link is rewritten in place, so bookmarks keep working and Back is unaffected. */
 function canonicalise() {
-  if (/^#\/(s|r|progress|revision)(\/|\?|$)/.test(location.hash)) history.replaceState(history.state, '', hrefOf(parse(location.hash)))
+  if (/^#\/(s|r|progress)(\/|\?|$)/.test(location.hash)) history.replaceState(history.state, '', hrefOf(parse(location.hash)))
 }
 
 const subscribe = (cb: () => void) => {

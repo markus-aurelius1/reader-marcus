@@ -2,6 +2,9 @@
 
 > **Status: FROZEN** (2026-10-03). This contract is the shared reference for all Reader v2 work.
 > Change it only when something genuinely requires it, and record the change here first.
+>
+> Adaptive revision, Recall v2, exam targets and reset (Job 5.5) are specified in the companion
+> [`READER_V2_REVISION_CONTRACT.md`](READER_V2_REVISION_CONTRACT.md).
 
 ## Core principles
 
@@ -108,6 +111,12 @@ interface StudySpan {
 
   // Active study only; pause time excluded.
   durationMs: number;
+
+  // Job 5.5 (see READER_V2_REVISION_CONTRACT.md). Absent = initial study.
+  activity?: "initial-study" | "revision";
+  revisionUnitId?: string;
+  revisionEventId?: string;
+  revisionOrdinal?: number;
 }
 
 interface StudySession {
@@ -149,6 +158,8 @@ interface ActiveStudySession {
 
   // Running span.
   currentContext: StudyContext;
+  // Job 5.5: what the open span is spent on; absent = initial study.
+  currentActivity?: { activity: "initial-study" | "revision"; revisionUnitId?: string; revisionEventId?: string; revisionOrdinal?: number };
   currentSpanStartedAt?: string;
 
   // Time accumulated before current running span.
@@ -533,6 +544,8 @@ IndexedDB
 ├── studyGoals              one row, id "default"
 ├── studyQueue              one row per item
 ├── pyqUserState            one row per flagged question, key pyqId
+├── revisionUnits · revisionEvents · recallAttempts · examTargets ·
+│   revisionPreferences · userDataEpoch      ← Job 5.5, READER_V2_REVISION_CONTRACT.md
 └── optionalAnalyticsCache   ← regenerable only
 ```
 
@@ -851,6 +864,7 @@ Home
 Study
 PYQ Hub
 Insights
+Revision
 Highlights
 ────────
 Search / ⌘K
@@ -898,7 +912,7 @@ Insights
 More
 ```
 
-`More` contains Highlights, settings, account/sync and secondary actions.
+`More` contains Revision, Highlights, Settings, account/sync and secondary actions.
 
 ---
 
@@ -917,7 +931,11 @@ Hash routes, built only by `href` in `src/lib/router.ts`. Every path segment is 
 #/pyqs?stage=&exam=&year=&subject=&topic=       PYQ Hub filtered; every parameter optional
        &chapter=&section=&status=&mine=&q=&id=    (subject / topic / chapter / section are content ids)
 #/insights                                      Insights → Overview
-#/insights/{time|subjects|progress|revision}    Insights tabs
+#/insights/{time|subjects|progress|revision}    Insights tabs (revision = revision analytics)
+#/revision                                      Revision → Today
+#/revision/{overdue|upcoming|calendar|manual}   Revision tabs (manual = the ★ / ↻ list)
+#/revise/{stage}/{subject}/{chapter}/{section}  scheduled revision of one unit
+#/settings                                      exam targets, revision preferences, reset
 #/highlights                                    Highlights
 ```
 
@@ -927,8 +945,9 @@ Earlier links keep working and are rewritten in place (no extra history entry):
 #/s/{stage}/{subject}[/pyq|/insights]   → #/study/{stage}/{subject}[?tab=…]
 #/r/{stage}/{subject}/{chapter}[/…]     → #/study/{stage}/{subject}/{chapter}[/…]
 #/progress                              → #/insights/progress
-#/revision                              → #/insights/revision
 ```
+
+`#/revision` is no longer an alias: since Job 5.5 it is the Revision page itself.
 
 ---
 
@@ -946,4 +965,9 @@ Earlier links keep working and are rewritten in place (no extra history entry):
 | 2026-10-03 | "Dashboard rules as built": streak and goal-streak rules, goal semantics, queue order / completion / removal, field-merged `goal` and `q` records | Job 4 built Home, the study queue and goals; a removal has to reach other devices, and two devices must be able to change one queue item without losing either change. Types unchanged |
 | 2026-10-04 | `PyqHubRecord.stage` is `ExamStage` (was the literal `"prelims"`) | Job 5: the hub must take Mains questions later without another redesign |
 | 2026-10-04 | "PYQ Hub and cross-link rules as built"; `#/pyqs` query parameters; `pyqUserState` row key | Job 5 fixed what the contract left open: how records, status, relations and backlinks are derived, and where the hub filter lives. No other type changed |
+| 2026-10-04 | Job 5.5: `StudySpan.activity / revisionUnitId / revisionEventId / revisionOrdinal`; `ActiveStudySession.currentActivity` | A revision is a span of the one timer; time must stay attributable to Initial, R1, R2 … |
+| 2026-10-04 | Routes: `#/revision[/{tab}]` is the Revision page (was an alias of `#/insights/revision`); `#/revise/…`; `#/settings`. `#/insights/revision` is now revision analytics; the ★ / ↻ list moved to `#/revision/manual` | Job 5.5: Revision is Today · Overdue · Upcoming · Calendar · Manual, with analytics in Insights |
+| 2026-10-04 | Navigation: Revision added to the desktop rail and to `More` on phones; Settings in `More` | Job 5.5: scheduled revision is a daily destination; the five phone tabs are unchanged |
+| 2026-10-04 | Storage: six IndexedDB stores and six Firestore locations for revision, exam targets and the reset epoch; every synced record may carry `ep` | Job 5.5; details in READER_V2_REVISION_CONTRACT.md |
+| 2026-10-04 | Recall: `{{answer}}` items are concealed behind a fixed mask instead of blurred; the same preference (`recall`) switches it on | Job 5.5: Recall Engine v2 |
 | 2026-10-03 | "Timer rules as built": span ids, stopped marker in `studyRuntime/active`, record envelope for study documents, meaning of `source: "recovered"`, two-device reconciliation | Job 2 needed a deterministic, loss-free rule for timers that diverge offline; types unchanged |

@@ -5,7 +5,7 @@
 // currentSpanStartedAt. Elapsed time is always derived from those timestamps, so a reload, a
 // closed browser or another device computes the same figure. Pausing closes the open span;
 // nothing accrues until Resume opens the next one.
-import type { ActiveStudySession, StudyContext, StudySession, StudySpan } from './contract'
+import type { ActiveStudySession, SpanActivity, StudyContext, StudySession, StudySpan } from './contract'
 import type { Rec } from '../sync/merge'
 
 /** Left in place of the active timer once it stops, so other devices learn that it ended. */
@@ -44,6 +44,15 @@ export const timeZone = () => {
 /** The tracked unit: stage/subject/chapter[/section] — the reader's own stable keys. */
 export const contextKey = (c: StudyContext) => [c.ref.stage, c.ref.subjectId, c.ref.chapterId, c.ref.sectionId].filter(Boolean).join('/')
 
+/** What a span is spent on. Initial study is the default and is not written on the span. */
+const revisionOf = (x?: SpanActivity) => (x?.activity === 'revision' ? x : undefined)
+/** The tracked unit and what is being done with it: revising a section is not the same span as first studying it. */
+export const trackKey = (c: StudyContext, x?: SpanActivity) => `${contextKey(c)}|${revisionOf(x)?.revisionEventId ?? revisionOf(x)?.revisionUnitId ?? ''}`
+const withActivity = (a: ActiveStudySession, x?: SpanActivity): ActiveStudySession => {
+  const { currentActivity: _c, ...rest } = a
+  return revisionOf(x) ? { ...rest, currentActivity: JSON.parse(JSON.stringify(x)) } : rest
+}
+
 // A span is named by the device that opened it and the moment it opened, so two copies of one
 // timer that drifted apart still agree on the spans they share.
 const openSpanId = (a: ActiveStudySession) => `${a.ownerDeviceId}-${Date.parse(a.currentSpanStartedAt!).toString(36)}`
@@ -52,13 +61,13 @@ function closeSpan(a: ActiveStudySession, now: number): ActiveStudySession {
   if (a.state !== 'running' || !a.currentSpanStartedAt) return a
   const from = Date.parse(a.currentSpanStartedAt)
   const durationMs = Math.max(0, now - from)
-  const span: StudySpan = { id: openSpanId(a), context: a.currentContext, startedAt: a.currentSpanStartedAt, endedAt: iso(from + durationMs), durationMs }
+  const span: StudySpan = { id: openSpanId(a), context: a.currentContext, startedAt: a.currentSpanStartedAt, endedAt: iso(from + durationMs), durationMs, ...revisionOf(a.currentActivity) }
   return { ...a, completedSpans: durationMs ? [...a.completedSpans, span] : a.completedSpans, accumulatedMs: a.accumulatedMs + durationMs, currentSpanStartedAt: undefined }
 }
 const bump = (a: ActiveStudySession, now: number): ActiveStudySession => ({ ...a, updatedAt: iso(now), revision: a.revision + 1 })
 
-export function start(context: StudyContext, now: number, dev: string, offlineProvisional = false): ActiveStudySession {
-  return {
+export function start(context: StudyContext, now: number, dev: string, offlineProvisional = false, activity?: SpanActivity): ActiveStudySession {
+  return withActivity({
     sessionId: newSessionId(now),
     state: 'running',
     startedAt: iso(now),
@@ -70,24 +79,29 @@ export function start(context: StudyContext, now: number, dev: string, offlinePr
     updatedAt: iso(now),
     revision: 1,
     ...(offlineProvisional ? { offlineProvisional: true } : {}),
-  }
+  }, activity)
 }
 
 export const pause = (a: ActiveStudySession, now: number) => (a.state === 'running' ? bump({ ...closeSpan(a, now), state: 'paused' }, now) : a)
 
 export const resume = (a: ActiveStudySession, now: number) => (a.state === 'paused' ? bump({ ...a, state: 'running', currentSpanStartedAt: iso(now) }, now) : a)
 
-/** Moving to another tracked unit: the open span ends where it is, the next one begins. */
-export function switchContext(a: ActiveStudySession, context: StudyContext, now: number): ActiveStudySession {
-  if (contextKey(a.currentContext) === contextKey(context)) return a
-  if (a.state === 'paused') return bump({ ...a, currentContext: context }, now)
-  return bump({ ...closeSpan(a, now), currentContext: context, currentSpanStartedAt: iso(now) }, now)
+/**
+ * Moving to another tracked unit, or from studying to revising: the open span ends where it is,
+ * the next one begins. The timer and its session stay the same.
+ */
+export function switchContext(a: ActiveStudySession, context: StudyContext, now: number, activity?: SpanActivity): ActiveStudySession {
+  if (trackKey(a.currentContext, a.currentActivity) === trackKey(context, activity)) return a
+  if (a.state === 'paused') return bump(withActivity({ ...a, currentContext: context }, activity), now)
+  return bump(withActivity({ ...closeSpan(a, now), currentContext: context, currentSpanStartedAt: iso(now) }, activity), now)
 }
 
 /** "Continue here": the same session carries on, owned by `dev`. */
-export function takeOver(a: ActiveStudySession, dev: string, now: number, context?: StudyContext): ActiveStudySession {
+export function takeOver(a: ActiveStudySession, dev: string, now: number, context?: StudyContext, activity?: SpanActivity): ActiveStudySession {
   const { offlineProvisional: _p, ...rest } = closeSpan(a, now)
-  return bump({ ...rest, state: 'running', ownerDeviceId: dev, currentContext: context ?? a.currentContext, currentSpanStartedAt: iso(now) }, now)
+  const next = { ...rest, state: 'running' as const, ownerDeviceId: dev, currentContext: context ?? a.currentContext, currentSpanStartedAt: iso(now) }
+  // carrying on as it was keeps what it was doing; a new context starts as given
+  return bump(context ? withActivity(next, activity) : next, now)
 }
 
 /** Active study time so far. Paused time is never part of it. */

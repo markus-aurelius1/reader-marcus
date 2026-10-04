@@ -20,6 +20,9 @@ import { BarChart, Heatmap, type Datum } from '../components/Charts'
 import { pathOf, useElapsed, useTimerActions } from '../components/Timer'
 import { agoText, changeText, describeDay, plural, timeText, useData } from './Insights'
 import { DestRows, Meter, locate } from './Pages'
+import { useRevision } from '../lib/revision'
+import { countdown, daySummary, examDateText } from '../lib/revisionModel'
+import { estText, startRun, useRevisionQueue, whenText } from './Revision'
 
 const HOUR = 3600000
 const STATUSES = Object.keys(STATUS_LABEL) as Status[]
@@ -79,8 +82,13 @@ export function Home({ subjects, say }: { subjects: Subject[]; say: (m: string) 
   )
   return (
     <div className="page home">
-      <div className="eyebrow">{dayText(dayOf(now, tz))} · UPSC CSE · UPPCS</div>
-      <h1 className="title">Home</h1>
+      <div className="home-h">
+        <div>
+          <div className="eyebrow">{dayText(dayOf(now, tz))} · UPSC CSE · UPPCS</div>
+          <h1 className="title">Home</h1>
+        </div>
+        <ExamCountdown now={now} />
+      </div>
       <div className="hero">
         <ContinueCard m={m} />
         <TimerCard m={m} subjects={subjects} say={say} />
@@ -90,6 +98,7 @@ export function Home({ subjects, say }: { subjects: Subject[]; say: (m: string) 
         <div className="col">
           <ProgressCard m={m} />
           <SubjectsCard m={m} now={now} tz={tz} />
+          <ScheduledCard />
           <RevisionCard m={m} now={now} tz={tz} />
           <FavouritesCard />
         </div>
@@ -333,7 +342,55 @@ function WeekCard({ m, now, tz }: { m: DashboardModel; now: number; tz: string }
   )
 }
 
-// ---- revision and queue -------------------------------------------------------------
+// ---- exam countdown and scheduled revision ----------------------------------------------
+/** The primary exam: days to go, no ticking seconds. Hidden until an exam date is set. */
+function ExamCountdown({ now }: { now: number }) {
+  const exams = useRevision((s) => s.exams)
+  const c = useMemo(() => countdown(exams, now), [exams, now])
+  if (!c) return null
+  return (
+    <a className="examcd" href={href.settings()} title="Exam targets" aria-label={`${c.exam.name}: ${c.text}, ${examDateText(c.exam.examDate)}`}>
+      <small>{c.exam.name}</small>
+      <b>{c.text}</b>
+      <span>{examDateText(c.exam.examDate)}</span>
+    </a>
+  )
+}
+
+/** Scheduled revision in one glance. Every figure is lib/revisionModel.ts's, built now. */
+function ScheduledCard() {
+  const { queue } = useRevisionQueue()
+  const s = useMemo(() => daySummary(queue), [queue])
+  const list = queue.recovery ? queue.recovery.recommended : queue.todayList
+  return (
+    <section className="card sched" style={{ '--i': 6 } as React.CSSProperties}>
+      <h3 className="gh"><a href={href.revision()}>Revision<ArrowRight /></a></h3>
+      {s.enrolled === 0 && s.completedToday === 0 ? (
+        <p className="none">Nothing scheduled yet. Mark a section done (✓) and its first revision is due the next day.</p>
+      ) : s.dueCount > 0 ? (
+        <>
+          <div className="sched-main"><small>Today</small><b>{s.dueCount} due · {estText(s.dueMs)}</b></div>
+          <div className="mstat">
+            {s.overdueCount > 0 && <span className="warn"><b>{s.overdueCount}</b> overdue</span>}
+            <span><b>{s.completedToday} / {s.totalToday}</b> completed</span>
+            <span>Tomorrow <b>{s.tomorrowCount}</b></span>
+            <span>Next 7 days <b>{s.next7Count}</b></span>
+          </div>
+          {s.recovery && <p className="sub dim">Recovery mode: {s.recovery.count} recommended today · {estText(s.recovery.ms)} · {s.recovery.rest} more waiting.</p>}
+          <div className="acts"><button className="btn primary" onClick={() => startRun(list.map((i) => i.unit.id))}><Play />{s.completedToday ? 'Continue Revision' : 'Start Revision'}</button></div>
+        </>
+      ) : (
+        <>
+          <div className="sched-main ok"><b><Check />{s.completedToday ? 'Revision complete for today' : 'Nothing due today'}</b></div>
+          <p className="sub">{s.next ? `Next: ${whenText(s.next.day, queue.today)} · ${s.next.count} ${s.next.count === 1 ? 'unit' : 'units'} · ${estText(s.next.ms)}` : 'No revision scheduled ahead yet.'}</p>
+          <div className="mstat"><span>Next 7 days <b>{s.next7Count}</b></span>{s.deferredCount > 0 && <span><b>{s.deferredCount}</b> deferred</span>}</div>
+        </>
+      )}
+    </section>
+  )
+}
+
+// ---- flagged sections and queue -------------------------------------------------------
 function RevisionCard({ m, now, tz }: { m: DashboardModel; now: number; tz: string }) {
   const overrides = useStore((s) => s.overrides)
   const queued = new Set(m.queueOpen.map((q) => targetKey(q.target)))
@@ -341,7 +398,7 @@ function RevisionCard({ m, now, tz }: { m: DashboardModel; now: number; tz: stri
   const more = m.revisionRows.length - REVISION_ROWS
   return (
     <section className="card rev" style={{ '--i': 7 } as React.CSSProperties}>
-      <h3 className="gh"><a href={href.revision()}>Revision<ArrowRight /></a></h3>
+      <h3 className="gh"><a href={href.revision('manual')}>Flagged for revision<ArrowRight /></a></h3>
       {m.revisionRows.length === 0 ? (
         <p className="none">Nothing flagged. Use ↻ or ★ beside any section heading to send it here.</p>
       ) : (
@@ -364,7 +421,7 @@ function RevisionCard({ m, now, tz }: { m: DashboardModel; now: number; tz: stri
               )
             })}
           </ul>
-          {more > 0 && <a className="more" href={href.revision()}>+ {more} more in the revision list</a>}
+          {more > 0 && <a className="more" href={href.revision('manual')}>+ {more} more in the revision list</a>}
         </>
       )}
     </section>

@@ -27,6 +27,7 @@ content/                      ← all notes; the reader never names a subject in
     pyq.json                  ← generated from the Source Pack (PYQ Hub, PYQs + Insights tabs)
     pyq-meta.json             ← curated: the pack's review / demand-only / dynamic flags, demand label → sections
     pyq-oneliners.json        ← optional, none yet: { "<pyqId>": "one line" } — shown as soon as it exists
+docs/                         ← the frozen contracts: READER_V2_CONTRACT.md, READER_V2_REVISION_CONTRACT.md
 source/                       ← Source Packs as supplied (input only)
 scripts/check-content.mjs     ← coverage, cross-link and PYQ-file checks (npm run check)
 scripts/extract-pyq.mjs       ← builds pyq.json from a Source Pack
@@ -70,7 +71,9 @@ Code: `src/lib/timer.ts` (pure rules), `src/lib/study.ts` (state, IndexedDB, syn
 | **Subjects** | One compact row per subject: progress, time studied, last studied, **Resume** / **Open**. |
 | **This week** | Week-to-date time beside the same part of last week, a daily chart, a 13-week heatmap and the study-day streak. Opens Insights → Time. |
 | **Study queue** | A personal, ordered list of chapters and sections: **Add current chapter**, move up / down, mark complete, remove, **Start next**. A chapter can also be added from its own page (**Add to queue**). |
-| **Revision** | ★ Difficult and ↻ Revise sections, longest since studied first, each with ＋ to queue it. Opens Insights → Revision. |
+| **Revision** | Scheduled revision in one glance: due today with the workload, overdue, completed, tomorrow and the next 7 days, and **Start Revision**. |
+| **Flagged for revision** | ★ Difficult and ↻ Revise sections, longest since studied first, each with ＋ to queue it. Opens Revision → Manual. |
+| **Exam countdown** | Top right: the primary exam, days to go and its date (days and hours in the last week; never seconds). Hidden until an exam is set. |
 | **Recent** · **Favourites** | Recent destinations and latest highlights; favourite chapters and subjects. |
 
 - **Goals are opt-in.** There is no target until you set one (**Set a daily or weekly goal**), and none is suggested. Only the targets are stored; progress and streaks are worked out from the sessions.
@@ -90,13 +93,28 @@ Code: `src/lib/dashboard.ts` (view model, `dashboard.test.ts`), `src/lib/plan.ts
 | **Time** | Day / Week / Month / Year selector with earlier periods; study time by hour, day or month; a 53-week calendar heatmap; trend; sessions by length; longest and most recent sessions; a stage / subject filter. |
 | **Subjects** | Time by exam stage, by subject (most studied first, reading progress beside it), by topic and chapter; least recently studied subjects. Every row opens what it names. |
 | **Progress** | The reader's progress page: Prelims overall (Mains once it has content), per subject completion, Not started / Reading / Revised / Mastered, ★ and ↻ counts, and tracked time. Chapter status is set here as before. |
-| **Revision** | The revision queue: ★ Difficult and ↻ Revise sections with the time since each was last studied and the highlights made in it, plus chapters in progress. |
+| **Revision** | Revision analytics: scheduled / completed / on time / backlog, revision time against initial-study time, Again · Hard · Good · Easy, Knew · Missed, the next 7 and 30 days, by subject, and per topic Initial · R1 · R2 · R3 · R4 · R5+. |
 
 Rules, in short: days and weeks follow the device's timezone (weeks run Monday–Sunday); a session crossing midnight is split between the two days; paused time is never counted; time recorded on two devices at once counts once; "so far" periods are compared with the same elapsed part of the previous period; a percentage is shown only when there is something to divide by. The full rules are in [`docs/READER_V2_CONTRACT.md`](docs/READER_V2_CONTRACT.md) → "Analytics rules as built".
 
-With no tracked sessions the time tabs say so and draw nothing. Old links `#/progress` and `#/revision` open the matching tab.
+With no tracked sessions the time tabs say so and draw nothing. The old link `#/progress` opens its tab. The ★ / ↻ list is now Revision → Manual.
 
 Code: `src/lib/analytics.ts` (pure calculations, `analytics.test.ts`), `src/views/Insights.tsx` (the five tabs), `src/components/Charts.tsx` (bar, line and heatmap in plain HTML/SVG — no chart dependency).
+
+## Revision (Reader v2 · Job 5.5)
+
+The full rules are in [`docs/READER_V2_REVISION_CONTRACT.md`](docs/READER_V2_REVISION_CONTRACT.md).
+
+- **Adaptive, not a ladder.** Marking a section done (✓) enrols it once; its first revision (R1) is due the next calendar day. After each revision you answer one question — *How well did you remember this?* Again / Hard / Good / Easy — and the FSRS scheduler (`ts-fsrs`, wrapped in `src/lib/scheduler.ts`) sets the next date from that and from the real time since the last review. Only the next date exists.
+- **Revision** (`#/revision`): Today · Overdue · Upcoming · Calendar · Manual. A missed revision stays overdue on its date; *Defer today* hides it until tomorrow without moving it. With a large backlog, Recovery Mode recommends a manageable day by priority and changes no date. Manual is the ★ / ↻ list, as before.
+- **Recall Mode v2** (`r`; `Shift+r` changes the intensity). Answers are found from the structure of the notes — `{{answers}}`, table cells under their row heading, `**Term** → fact` lines, arrows, plain lists, traps (`src/lib/recall.ts`) — and concealed behind one fixed `[ RECALL ]` label that shows nothing of the answer. Light / Standard / Exam. Reading never asks for a grade.
+- **Guided Revision** (`#/revise/…`): one cue at a time, away from the surrounding notes; Reveal, then Knew / Missed / Skip (optional); then the one grade. Facts missed before are asked again; nothing is scored.
+- **Timer.** Starting a revision moves the one study timer into a revision span (R1, R2 …), so Insights can show initial study and each round apart. There is never a second timer.
+- **Exam targets** (`#/settings`): several exams, one primary. It is counted down on Home, shown in the calendar, and keeps a final revision of each section inside its final window — without shortening intervals in general.
+- **Reset** (`#/settings`): *Reset study history* or *Full personal reset*, each confirmed by typing `RESET`, with *Export backup first*. A reset raises the account's data epoch, so another device that was offline drops the same data when it reconnects and cannot upload it again. The notes, PYQs, taxonomy and cross-links are never touched.
+- **Existing progress** is not enrolled by the upgrade: *Schedule existing completed topics* (Settings) does it on request.
+
+Code: `src/lib/scheduler.ts`, `recall.ts`, `revisionModel.ts`, `epoch.ts` (pure; `*.test.ts`), `src/lib/revision.ts`, `reset.ts` (state, IndexedDB, sync), `src/views/Revision.tsx`, `Settings.tsx`.
 
 ## PYQ Hub (Reader v2)
 
@@ -171,7 +189,7 @@ One mechanism for every subject, present and future. A link names its destinatio
 |---|---|
 | `## Section title` | collapsible section (id = slug of the title, or `{#custom-id}`) |
 | `### Sub-heading`, lists, tables, `**bold**` | as usual |
-| `{{answer}}` | recall item — blurred in Recall Mode, click to reveal |
+| `{{answer}}` | recall item — concealed behind `[ RECALL ]` in Recall Mode, click to reveal |
 | `==text==` | high-yield emphasis |
 | `!!text!!` | red keyword |
 | `` `Art. 368` `` | article / act anchor |
@@ -233,14 +251,14 @@ Troubleshooting
 | `auth/unauthorized-domain` | hostname missing from Firebase Authorized domains |
 | Google `redirect_uri_mismatch` | `https://<host>/__/auth/handler` missing from the OAuth client's redirect URIs |
 | Popup opens the reader itself | an old service worker is intercepting `/__/auth/*` — reload once |
-| `Sync paused — will retry` with `permission-denied` | rules not deployed (the study timer, queue and goals need the `studySessions` / `studyRuntime` / `studyQueue` / `studyGoals` rules — deploy `firestore.rules` before the app), or signed in to a different Firebase project than the build's |
+| `Sync paused — will retry` with `permission-denied` | rules not deployed (the study timer, queue, goals, PYQ flags, revision and reset need the `studySessions` / `studyRuntime` / `studyQueue` / `studyGoals` / `pyqState` / `revisionUnits` / `revisionEvents` / `recallAttempts` / `examTargets` / `revisionPreferences` / `meta` rules — deploy `firestore.rules` before the app), or signed in to a different Firebase project than the build's |
 | Stays on `Offline — changes queued` while online | Firestore unreachable (network filter / ad-blocker); the queue is kept and retried |
 
 ### Sync behaviour
 
 | | |
 |---|---|
-| **What syncs** | Section edits (heading + body), highlights and colours, section done / ★ / ↻, chapter status, reading position and last-opened chapter, theme, Recall Mode, collapsed sections, completed study sessions, the active study timer and timer preferences, the study queue and study goals. Never the notes themselves, the Source Pack or build assets. |
+| **What syncs** | Section edits (heading + body), highlights and colours, section done / ★ / ↻, chapter status, reading position and last-opened chapter, theme, Recall Mode, collapsed sections, completed study sessions, the active study timer and timer preferences, the study queue and study goals, revision units, completed revisions, recall answers, exam targets and revision preferences. Never the notes themselves, the Source Pack, build assets, recall units or anything derived (calendars, forecasts, analytics). |
 | **Granularity** | One small cloud document per section edit, per highlight, per section's flags, per chapter's status/position, and one for preferences — scrolling or ticking a box never rewrites an edit. |
 | **Local-first** | Every change updates the screen, is written to IndexedDB and is added to a persistent queue. The queue is sent when you are signed in and online; nothing waits on the network. |
 | **Offline** | Status shows `Offline — changes queued`. The queue survives reloads and restarts and drains automatically on reconnect. |
@@ -259,10 +277,12 @@ Troubleshooting
 
 ```bash
 npm run test     # merge, queue, conflict, anchoring, migration, cross-link index, PYQ index, PYQ flags,
-                 # study-timer, timer-sync, analytics, dashboard and study-queue / goals unit tests
+                 # study-timer, timer-sync, analytics, dashboard, study-queue / goals, scheduler, recall,
+                 # revision (enrolment, reviews, queue, calendar, exam targets, timer spans, sync) and reset-epoch unit tests
 npm run check    # content contract (taxonomy coverage, cross-links across subjects, PYQ files, markers)
 npm run e2e      # headless-Chrome regression of the production build: reader, migration, print-to-PDF,
-                 # cross-links, offline, responsive, and two-device sync against the mock cloud  → e2e-out/
+                 # cross-links, offline, responsive, revision, recall, exam targets, reset, and two-device sync
+                 # (including a stale device after a reset) against the mock cloud  → e2e-out/
 npm run verify   # typecheck + all of the above
 ```
 
@@ -280,6 +300,10 @@ There is no linter: typescript-eslint does not yet support the TypeScript 7 comp
 | The active study timer | IndexedDB → `activeStudySession` (one row) · cloud `users/{uid}/studyRuntime/active` |
 | Study queue | IndexedDB → `studyQueue` (one row per item) · cloud `users/{uid}/studyQueue/{itemId}` |
 | PYQ flags (seen / revised / difficult) | IndexedDB → `pyqUserState` (one row per flagged question) · cloud `users/{uid}/pyqState/{pyqId}` |
+| Revision units (current schedule) · completed revisions · recall answers | IndexedDB → `revisionUnits` · `revisionEvents` · `recallAttempts` · cloud `users/{uid}/revisionUnits` · `revisionEvents` · `recallAttempts` |
+| Exam targets · revision preferences | IndexedDB → `examTargets` · `revisionPreferences` · cloud `users/{uid}/examTargets` · `revisionPreferences/default` |
+| Reset epoch | IndexedDB → `userDataEpoch` · cloud `users/{uid}/meta/dataEpoch` |
+| A revision in progress (so a reload returns to it) | localStorage `upsc-revision-run` — not study data |
 | Study goals (only once set) | IndexedDB → `studyGoals` (one row) · cloud `users/{uid}/studyGoals/default` |
 | Theme, Recall Mode, explorer panel, collapsed sections, favourites, recent destinations | localStorage `upsc-prefs` (all but the panel state sync as `pref~main`) |
 

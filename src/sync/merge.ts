@@ -11,10 +11,16 @@
 //   goal~default        study goals                               → merged field by field
 //   q~<itemId>          one study-queue item                      → merged field by field
 //   pyq~<pyqId>         seen / revised / difficult on one PYQ     → merged field by field
+//   ru~<sectionKey>     scheduling state of one revision unit     → newest wins as a whole
+//   rev~<eventId>       one completed revision                    → written once, never changed
+//   ra~<attemptId>      one recall answer                         → written once, never changed
+//   exam~<id>           one exam target                           → merged field by field
+//   rpref~default       revision preferences                      → merged field by field
+//   meta~dataEpoch      the reset epoch (lib/epoch.ts)            → raised by a reset, never merged
 import { isActive, salvage, salvageSession, sesRec, type Env, type Runtime } from '../lib/timer'
 import type { StudySession } from '../lib/contract'
 
-export type Kind = 'edit' | 'hl' | 'sec' | 'chap' | 'pref' | 'ses' | 'run' | 'goal' | 'q' | 'pyq'
+export type Kind = 'edit' | 'hl' | 'sec' | 'chap' | 'pref' | 'ses' | 'run' | 'goal' | 'q' | 'pyq' | 'ru' | 'rev' | 'ra' | 'exam' | 'rpref' | 'meta'
 
 export interface Field {
   v: unknown
@@ -30,7 +36,8 @@ export interface Rec {
   rev?: string // edit: identity of this content version · run: session + revision
   del?: boolean // edit / hl: tombstone · run: the timer has stopped
   data?: Record<string, unknown> // edit: { title, html } · hl: anchor + colour · ses: StudySession · run: timer state
-  f?: Record<string, Field> // sec / chap / pref / goal / q / pyq
+  f?: Record<string, Field> // sec / chap / pref / goal / q / pyq / exam / rpref
+  ep?: number // the reset epoch of the device that wrote it (absent = 0)
 }
 
 export type Decision =
@@ -42,7 +49,7 @@ export type Decision =
 
 export const kindOf = (id: string) => id.slice(0, id.indexOf('~')) as Kind
 export const keyOf = (id: string) => id.slice(id.indexOf('~') + 1)
-export const isFieldKind = (k: Kind) => k === 'sec' || k === 'chap' || k === 'pref' || k === 'goal' || k === 'q' || k === 'pyq'
+export const isFieldKind = (k: Kind) => k === 'sec' || k === 'chap' || k === 'pref' || k === 'goal' || k === 'q' || k === 'pyq' || k === 'exam' || k === 'rpref'
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 const newer = (at: number, ad: string, bt: number, bd: string) => at > bt || (at === bt && ad > bd)
@@ -112,7 +119,10 @@ export function reconcile(local: Rec | null, remote: Rec | null, ctx: { dirty: b
     return { type: 'pull', rec: remote, also: split(salvage(mine, theirs, env)) }
   }
 
-  if (kind === 'hl') {
+  // Immutable history: whichever copy reached the cloud first stands.
+  if (kind === 'rev' || kind === 'ra' || kind === 'meta') return { type: 'noop' }
+
+  if (kind === 'hl' || kind === 'ru') {
     if (sameContent(local, remote)) return { type: 'noop' }
     if (!ctx.dirty) return { type: 'pull', rec: remote }
     return newer(local.t, local.dev, remote.t, remote.dev) ? { type: 'push', rec: local } : { type: 'pull', rec: remote }

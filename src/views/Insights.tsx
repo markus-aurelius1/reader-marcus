@@ -12,10 +12,12 @@ import { activeTimer, clock, useStudy } from '../lib/study'
 import { durationText, timeZone } from '../lib/timer'
 import type { StudyContext, StudyDistribution, StudyHeatmapDay } from '../lib/contract'
 import {
-  chapterKeyOf, civil, compare, dayNo, dayOf, dayText, durationBins, heatmap, indexOf, period, series, summarize, totalBetween, weekStart,
+  ORDINAL_LABEL, activityTime, chapterKeyOf, civil, compare, dayNo, dayOf, dayText, durationBins, heatmap, indexOf, period, series, summarize, totalBetween, weekStart,
   type Comparison, type PeriodKind, type Scope, type SessionStat, type StudyIndex,
 } from '../lib/analytics'
 import { BarChart, Heatmap, LineChart, type Datum } from '../components/Charts'
+import { prefsOf, useRevision } from '../lib/revision'
+import { buildQueue, horizonOf, primaryExam, revisionStats } from '../lib/revisionModel'
 import { Meter } from './Pages'
 
 export const TAB_LABEL: Record<InsightsTab, string> = { overview: 'Overview', time: 'Time', subjects: 'Subjects', progress: 'Progress', revision: 'Revision' }
@@ -73,7 +75,7 @@ export function InsightsPage({ subjects, tab }: { subjects: Subject[]; tab: Insi
       <nav className="tabs" aria-label="Insights">
         {INSIGHTS_TABS.map((t) => <a key={t} className={tab === t ? 'on' : ''} aria-current={tab === t ? 'page' : undefined} href={href.insights(t)}>{TAB_LABEL[t]}</a>)}
       </nav>
-      {tab === 'time' ? <Time {...data} /> : tab === 'subjects' ? <Subjects {...data} subjects={subjects} /> : tab === 'progress' ? <ProgressTab {...data} subjects={subjects} /> : tab === 'revision' ? <RevisionTab {...data} subjects={subjects} /> : <Overview {...data} />}
+      {tab === 'time' ? <Time {...data} /> : tab === 'subjects' ? <Subjects {...data} subjects={subjects} /> : tab === 'progress' ? <ProgressTab {...data} subjects={subjects} /> : tab === 'revision' ? <RevisionInsights {...data} /> : <Overview {...data} />}
     </div>
   )
 }
@@ -151,7 +153,7 @@ function Overview(data: Data) {
     return (
       <>
         <NoData what="Study time, comparisons and the activity calendar" />
-        <p className="lead" style={{ marginTop: 16 }}>Reading progress and the revision list do not depend on the timer: <a className="ilink" href={href.insights('progress')}>Progress →</a> · <a className="ilink" href={href.insights('revision')}>Revision →</a></p>
+        <p className="lead" style={{ marginTop: 16 }}>Reading progress and the revision list do not depend on the timer: <a className="ilink" href={href.insights('progress')}>Progress →</a> · <a className="ilink" href={href.revision('manual')}>Revision →</a></p>
       </>
     )
   }
@@ -429,10 +431,123 @@ function ProgressTab({ ix, now, tz, subjects }: Data & { subjects: Subject[] }) 
   )
 }
 
-// ---- Revision ---------------------------------------------------------------------------
+// ---- Revision analytics -------------------------------------------------------------------
+// Counted from RevisionEvents, RevisionUnits and RecallAttempts each time; revision time comes
+// from the study sessions, where a revision span carries the number of its review. No counter
+// and no memory score is kept anywhere.
+const GRADE_NAME = { again: 'Again', hard: 'Hard', good: 'Good', easy: 'Easy' } as const
+const estimate = (ms: number) => `~${Math.max(1, Math.round(ms / 60000))} min`
+
+function RevisionInsights(data: Data) {
+  const { ix, now, tz } = data
+  const [span, setSpan] = useState<Span>('all')
+  const [open, setOpen] = useState('')
+  const units = useRevision((s) => s.units)
+  const events = useRevision((s) => s.events)
+  const attempts = useRevision((s) => s.attempts)
+  const exams = useRevision((s) => s.exams)
+  const row = useRevision((s) => s.prefs)
+  const prefs = useMemo(() => prefsOf(row), [row])
+  const from = span === 'all' ? -Infinity : period(span, now, tz).from
+  const view = useMemo(() => {
+    const today = dayOf(now, prefs.schedulerTimeZone)
+    const q = buildQueue({ units: Object.values(units), events: Object.values(events), today, tz: prefs.schedulerTimeZone, exam: prefs.examAwareScheduling ? horizonOf(primaryExam(exams), today) : null })
+    return { q, stats: revisionStats(q, Object.values(events), Object.values(attempts), from, Infinity), time: activityTime(ix, from, Infinity) }
+  }, [units, events, attempts, exams, prefs, ix, now, from])
+  const { q, stats, time } = view
+  if (!q.items.length && !stats.completed && !time.revisionMs) {
+    return (
+      <div className="shell-note nodata">
+        <b>No revision recorded yet.</b> Figures appear here once sections are marked done and their scheduled revisions are completed. Nothing is estimated in advance. <a href={href.revision()}>Open Revision →</a>
+      </div>
+    )
+  }
+  const grades = (Object.keys(GRADE_NAME) as (keyof typeof GRADE_NAME)[]).map((g) => ({ key: g, label: GRADE_NAME[g], title: `${GRADE_NAME[g]}: ${plural(stats.grades[g], 'revision')}`, value: stats.grades[g] }))
+  const rounds: Datum[] = ORDINAL_LABEL.map((label, i) => ({ key: label, label, title: `${label}: ${timeText(time.time[i])}`, value: time.time[i] }))
+  const answered = stats.recall.knew + stats.recall.missed
+  const ratio = time.initialMs > 0 ? time.revisionMs / time.initialMs : undefined
+  return (
+    <>
+      <div className="filters"><Chips value={span} options={SPANS} onChange={setSpan} label="Period" /></div>
+      <div className="kpis rev-kpis">
+        <div className="kpi" data-k="completed"><small>Completed</small><b>{stats.completed}</b><span>of {stats.scheduled} scheduled{stats.completionRate === undefined ? '' : ` · ${Math.round(stats.completionRate * 100)}%`}</span></div>
+        <div className="kpi" data-k="ontime"><small>On time</small><b>{stats.onTime}</b><span>{stats.late} done after the due date</span></div>
+        <div className="kpi" data-k="backlog"><small>Current backlog</small><b>{stats.backlog}</b><span>{stats.backlog ? 'past their date now' : 'nothing overdue'}</span></div>
+        <div className="kpi" data-k="time"><small>Revision time</small><b>{timeText(time.revisionMs)}</b><span>{timeText(time.initialMs)} initial study{ratio === undefined ? '' : ` · ${ratio.toFixed(2)} : 1`}</span></div>
+      </div>
+
+      <h3 className="gh">Upcoming workload</h3>
+      <div className="stat">
+        <span><b>{stats.upcoming7.count}</b>next 7 days{stats.upcoming7.count ? ` · ${estimate(stats.upcoming7.ms)}` : ''}</span>
+        <span><b>{stats.upcoming30.count}</b>next 30 days{stats.upcoming30.count ? ` · ${estimate(stats.upcoming30.ms)}` : ''}</span>
+        <span><b>{q.items.length}</b>{q.items.length === 1 ? 'unit' : 'units'} in revision</span>
+      </div>
+
+      <div className="two">
+        <div>
+          <h3 className="gh">How it went · Again / Hard / Good / Easy</h3>
+          {stats.completed ? <BarChart data={grades} format={(v) => plural(v, 'revision')} caption="Completed revisions by grade" unit="Grade" /> : <p className="empty" style={{ padding: '4px 0' }}>No revision completed in this period.</p>}
+          <p className="fine">{answered ? `Recall prompts: ${stats.recall.knew} knew · ${stats.recall.missed} missed${stats.recall.skipped ? ` · ${stats.recall.skipped} skipped` : ''}.` : 'No recall prompt has been answered in this period.'}</p>
+        </div>
+        <div>
+          <h3 className="gh">Time by round · initial study and each revision</h3>
+          {time.initialMs + time.revisionMs > 0 ? <BarChart data={rounds} format={timeText} caption="Study time by round: initial study, then each revision" unit="Round" /> : <p className="empty" style={{ padding: '4px 0' }}>No timed study in this period.</p>}
+          <p className="fine">Completed revisions: {[1, 2, 3, 4, 5].map((i) => `${ORDINAL_LABEL[i]} ${stats.byOrdinal[i]}`).join(' · ')}.</p>
+        </div>
+      </div>
+
+      {stats.bySubject.length > 0 && (
+        <>
+          <h3 className="gh">By subject</h3>
+          <div className="rows">
+            {stats.bySubject.map((s) => {
+              const t = time.bySubject.find((x) => x.key === s.subjectKey)
+              return (
+                <a className="row" key={s.subjectKey} href={linkOf(s.subjectKey)}>
+                  <span className="t"><b>{nameOf(s.subjectKey, s.subjectKey)}</b><small>{plural(s.units, 'unit')} in revision · {s.completed} completed · {s.waiting} waiting · {s.upcoming30} in the next 30 days</small></span>
+                  <span className="num wide">{t ? `${timeText(t.revisionMs)} revision · ${timeText(t.initialMs)} initial` : 'not timed'}</span>
+                </a>
+              )
+            })}
+          </div>
+        </>
+      )}
+
+      {time.byTopic.length > 0 && (
+        <>
+          <h3 className="gh">By topic · initial study, then each revision</h3>
+          <div className="rows topic-time">
+            {time.byTopic.map((t) => (
+              <div key={t.key} className="tt" data-topic={t.key}>
+                <button className="row" aria-expanded={open === t.key} onClick={() => setOpen(open === t.key ? '' : t.key)}>
+                  <span className="t"><b>{nameOf(t.key, t.ctx.chapterTitle)}</b><small>{t.ctx.subjectTitle} · {ORDINAL_LABEL.map((l, i) => (t.time[i] ? `${l} ${timeText(t.time[i])}` : '')).filter(Boolean).join(' · ')}</small></span>
+                  <span className="num wide">{timeText(t.totalMs)}</span>
+                </button>
+                {open === t.key && (
+                  <table className="ord">
+                    <thead><tr><th>{t.sections?.length ? 'Section' : 'Chapter'}</th>{ORDINAL_LABEL.map((l) => <th key={l}>{l}</th>)}<th>Total</th></tr></thead>
+                    <tbody>
+                      {[...(t.sections ?? []).map((s) => ({ key: s.key, name: nameOf(s.key, s.ctx.sectionTitle ?? s.key), time: s.time, total: s.totalMs })), { key: t.key, name: t.sections?.length ? 'Whole chapter' : nameOf(t.key, t.ctx.chapterTitle), time: t.time, total: t.totalMs }].map((r) => (
+                        <tr key={r.key}><th>{r.name}</th>{r.time.map((ms, i) => <td key={i}>{ms ? timeText(ms) : '—'}</td>)}<td><b>{timeText(r.total)}</b></td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+      <p className="fine">Revision time is the timer's revision spans; a timer that is still running is counted once it is stopped. <a className="ilink" href={href.revision()}>Revision queue →</a> · <a className="ilink" href={href.revision('calendar')}>Calendar →</a></p>
+    </>
+  )
+}
+
+// ---- Manual revision: sections flagged ↻ Revise / ★ Difficult (Revision → Manual) -------------
 type Mode = 'all' | 'revise' | 'difficult'
 
-function RevisionTab({ ix, now, tz, subjects }: Data & { subjects: Subject[] }) {
+export function ManualRevision({ ix, now, tz, subjects }: Data & { subjects: Subject[] }) {
+  const units = useRevision((s) => s.units)
   const progress = useStore((s) => s.progress)
   const overrides = useStore((s) => s.overrides)
   const highlights = useStore((s) => s.highlights)
@@ -484,7 +599,7 @@ function RevisionTab({ ix, now, tz, subjects }: Data & { subjects: Subject[] }) 
                 <div className="row rv" key={x.key}>
                   <div className="t">
                     <a href={href.reader(c.key, x.id)}><b>{secTitle(overrides, x)}</b></a>
-                    <small>{[st.revise && '↻ Revise', st.difficult && '★ Difficult', st.done && 'done', studied(c, x.key).text, order === 'stale' && `${s.title} › ${c.title}`].filter(Boolean).join(' · ')}</small>
+                    <small>{[st.revise && '↻ Revise', st.difficult && '★ Difficult', st.done && 'done', studied(c, x.key).text, order === 'stale' && `${s.title} › ${c.title}`, units[x.key] && units[x.key].status !== 'suspended' && `scheduled R${units[x.key].revisionCount + 1} · due ${units[x.key].dueDate}`].filter(Boolean).join(' · ')}</small>
                     {hl.length > 0 && (
                       <div className="rhl">
                         {hl.slice(0, 2).map((h) => <a key={h.id} href={href.reader(c.key, x.id, { h: h.id })} style={{ borderLeftColor: `var(--hl-${h.color})` }} title="Open this highlight">{h.text.length > 110 ? h.text.slice(0, 110) + '…' : h.text}</a>)}

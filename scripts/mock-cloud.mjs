@@ -1,6 +1,7 @@
 // In-memory stand-in for Firestore, used only for local development and the end-to-end test
 // (build with VITE_SYNC_MOCK=http://localhost:4320). Implements the two operations the sync
-// engine needs — pull-since-cursor and versioned read-modify-write — per user.
+// engine needs — pull-since-cursor and versioned read-modify-write — per user, plus the delete a
+// personal-data reset uses to clear what it left behind.
 //   node scripts/mock-cloud.mjs [port]
 import { createServer } from 'node:http'
 
@@ -15,7 +16,7 @@ createServer((req, res) => {
     res.writeHead(code, {
       'content-type': 'application/json',
       'access-control-allow-origin': '*',
-      'access-control-allow-methods': 'GET,PUT,OPTIONS',
+      'access-control-allow-methods': 'GET,PUT,DELETE,OPTIONS',
       'access-control-allow-headers': 'content-type',
     })
     res.end(JSON.stringify(body))
@@ -35,6 +36,10 @@ createServer((req, res) => {
     const id = url.searchParams.get('id')
     const cur = docs.get(id)
     if (req.method === 'GET') return send(200, { rec: cur?.rec ?? null, ver: cur?.ver ?? 0 })
+    if (req.method === 'DELETE') {
+      docs.delete(id)
+      return send(200, { ok: true })
+    }
     let body = ''
     req.on('data', (c) => (body += c))
     req.on('end', () => {
