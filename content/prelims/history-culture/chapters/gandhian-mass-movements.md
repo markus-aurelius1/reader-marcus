@@ -114,4 +114,4 @@ taxonomy: prelims-history-and-culture-indian-national-movement-gandhian-phase-an
 > - Simon 1927 → Nehru Report 1928 → Sarda Act 1929 → Dandi 1930.
 > - Indian Navy Act 1927 · Communal Award 1932.
 
-Movement in Mains → [GS1 History](@mains/gs1-history-culture)
+Movement in Mains → [NCM → CDM → QIM](@mains/gs1-history-culture/gandhian-mass-movements#ncm-cdm-qim)

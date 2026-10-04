@@ -1,0 +1,37 @@
+{
+  "title": "History & Culture",
+  "source": "source/GS1-History-Culture-v01-source-pack-CLAUDE-READY.md",
+  "topics": [
+    { "id": "art-culture", "title": "Art & Culture", "chapters": ["foundations-sources-cultural-change", "religious-intellectual-traditions", "visual-performing-arts", "architecture-built-traditions", "literature-knowledge-traditions", "heritage-conservation"] },
+    { "id": "modern-history", "title": "Modern Indian History", "chapters": ["colonial-state", "colonial-economy", "socio-religious-reform", "early-resistance-1857", "rise-of-nationalism", "gandhian-mass-movements", "ideological-currents-participation", "endgame-transfer-of-power"] },
+    { "id": "post-independence", "title": "Post-Independence India", "chapters": ["early-republic", "princely-states-integration", "states-reorganisation", "planning-agrarian-change", "foreign-policy-security-crises"] },
+    { "id": "world-history", "title": "World History", "chapters": ["atlantic-revolutions", "industrial-revolution", "imperialism-migration", "decolonisation", "world-wars-interwar", "political-ideologies"] }
+  ],
+  "taxonomy": [
+    "mains-gs1-history-and-culture-art-and-culture-foundations-sources-and-cultural-change",
+    "mains-gs1-history-and-culture-art-and-culture-religious-and-intellectual-traditions",
+    "mains-gs1-history-and-culture-art-and-culture-visual-material-and-performing-arts",
+    "mains-gs1-history-and-culture-art-and-culture-architecture-and-built-traditions",
+    "mains-gs1-history-and-culture-art-and-culture-literature-and-knowledge-traditions",
+    "mains-gs1-history-and-culture-art-and-culture-heritage-conservation",
+    "mains-gs1-history-and-culture-modern-indian-history-eighteenth-century-transition-and-the-colonial-state",
+    "mains-gs1-history-and-culture-modern-indian-history-colonial-economy-and-material-transformations",
+    "mains-gs1-history-and-culture-modern-indian-history-socio-religious-reform-and-social-awakening",
+    "mains-gs1-history-and-culture-modern-indian-history-early-resistance-and-the-revolt-of-1857",
+    "mains-gs1-history-and-culture-modern-indian-history-rise-of-nationalism-and-early-congress-politics",
+    "mains-gs1-history-and-culture-modern-indian-history-gandhian-ideas-strategy-and-mass-movements",
+    "mains-gs1-history-and-culture-modern-indian-history-ideological-currents-social-bases-and-participation-in-nationalism",
+    "mains-gs1-history-and-culture-modern-indian-history-endgame-of-empire-transfer-of-power-and-independence",
+    "mains-gs1-history-and-culture-post-independence-india-early-republic-institution-building-and-nation-building",
+    "mains-gs1-history-and-culture-post-independence-india-integration-of-princely-states",
+    "mains-gs1-history-and-culture-post-independence-india-states-reorganization-and-federal-accommodation",
+    "mains-gs1-history-and-culture-post-independence-india-developmental-state-planning-and-agrarian-change",
+    "mains-gs1-history-and-culture-post-independence-india-post-independence-foreign-policy-and-security-crises",
+    "mains-gs1-history-and-culture-world-history-atlantic-revolutions-and-the-modern-political-order",
+    "mains-gs1-history-and-culture-world-history-industrial-revolution-and-global-industrialization",
+    "mains-gs1-history-and-culture-world-history-imperialism-colonialism-and-global-migration",
+    "mains-gs1-history-and-culture-world-history-decolonization-and-post-colonial-transitions",
+    "mains-gs1-history-and-culture-world-history-world-wars-interwar-crisis-and-the-remaking-of-boundaries",
+    "mains-gs1-history-and-culture-world-history-political-ideologies-and-revolutionary-transformations"
+  ]
+}

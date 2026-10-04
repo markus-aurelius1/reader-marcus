@@ -224,6 +224,13 @@ A callout may hold a list or a table (prefix each line with `> `). **⋯ → Exp
 - Revision style: short bullets, tables, arrows, traps, exceptions. One home per fact, cross-reference elsewhere.
 - Recall items only for article numbers, compositions, majorities, appointments/removals, sequences, exceptions and confusing pairs.
 
+Mains notes (`content/mains/…`, first subject: GS1 History & Culture — 25 chapters, one per Source Pack module) use the same dialect, as answer reservoirs rather than fact sheets:
+
+- Each chapter opens with a **Demand Map** (what was asked, by year, and the answer formula) and ends with a **Rapid Recall** strip: keywords · examples · one visual · intro cue · conclusion cue.
+- Sections are the dimensions an answer is built from (causes, mechanism, evidence, limits, debate); historians and examples sit beside the argument they prove.
+- Changing counts and listings go in `[!DYN]`; figures the pack calls disputed go in `[!VERIFY]`.
+- A Mains pack that names questions only by year carries no canonical PYQ IDs, so the subject has no `pyq.json` and no PYQ Hub records; nothing is invented to fill the hub.
+
 ## Cross-device sync (optional)
 
 The reader is local-first. IndexedDB is the working copy on every device; the cloud only relays changes between devices. Without sign-in, without network, or without any Firebase configuration, everything works exactly as before and no Firebase code is loaded.
