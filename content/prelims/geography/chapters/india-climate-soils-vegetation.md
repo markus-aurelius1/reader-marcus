@@ -45,7 +45,7 @@ Formation → parent rock + climate + relief + organisms + time.
 | **Peaty / marshy** | High organic matter, waterlogged, acidic | Kerala, Sundarbans |
 | **Forest / mountain** | Varies with height and slope | Himalaya |
 
-Soils and crops → [Agriculture](@prelims/agriculture)
+Soils and crops → [Crops](@prelims/agriculture/crops) · Erosion, salinity and conservation → [Soil conservation](@prelims/agriculture/soil-conservation#conservation-methods)
 
 > [!TRAP] Laterite is !!not!! rich in nitrogen or potash, and is !!not!! typical of Rajasthan or UP. · Black soil is !!not!! Himalayan.
 

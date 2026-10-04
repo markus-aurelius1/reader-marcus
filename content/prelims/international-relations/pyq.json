@@ -1,0 +1,261 @@
+{
+ "source": "source/International-Relations-v01-source-pack-CLAUDE-READY.md",
+ "chapters": {
+  "groupings": {
+   "upsc": [
+    {
+     "label": "BRICS / NDB",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q011",
+      "UPSC-CSE-2015-GS1-Q003",
+      "UPSC-CSE-2016-GS1-Q067",
+      "UPSC-CSE-2025-GS1-Q097"
+     ]
+    },
+    {
+     "label": "G20 / G7",
+     "ids": [
+      "UPSC-CSE-2020-GS1-Q065",
+      "UPSC-CSE-2022-GS1-Q004",
+      "UPSC-CSE-2023-GS1-Q100"
+     ]
+    },
+    {
+     "label": "ASEAN / East Asia",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q057",
+      "UPSC-CSE-2016-GS1-Q077",
+      "UPSC-CSE-2018-GS1-Q034"
+     ]
+    },
+    {
+     "label": "BIMSTEC",
+     "ids": [
+      "UPSC-CSE-2025-GS1-Q092",
+      "UPSC-CSE-2026-GS1-Q097"
+     ]
+    },
+    {
+     "label": "SCO / Turkic groupings",
+     "ids": [
+      "UPSC-CSE-2022-GS1-Q066",
+      "UPSC-CSE-2022-GS1-Q083"
+     ]
+    },
+    {
+     "label": "GCC / IORA / Arctic / NATO",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q035",
+      "UPSC-CSE-2015-GS1-Q067",
+      "UPSC-CSE-2016-GS1-Q070",
+      "UPSC-CSE-2024-GS1-Q087",
+      "UPSC-CSE-2025-GS1-Q021"
+     ]
+    },
+    {
+     "label": "EU institutions / pacts",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q082",
+      "UPSC-CSE-2017-GS1-Q018",
+      "UPSC-CSE-2023-GS1-Q087",
+      "UPSC-CSE-2023-GS1-Q089",
+      "UPSC-CSE-2026-GS1-Q100"
+     ]
+    },
+    {
+     "label": "Other groupings / membership logic",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q064",
+      "UPSC-CSE-2017-GS1-Q041",
+      "UPSC-CSE-2017-GS1-Q052",
+      "UPSC-CSE-2017-GS1-Q065",
+      "UPSC-CSE-2023-GS1-Q094"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q110",
+      "UPPCS-2020-GS1-Q047",
+      "UPPCS-2021-GS1-Q048",
+      "UPPCS-2022-GS1-Q094",
+      "UPPCS-2023-GS1-Q081",
+      "UPPCS-2023-GS1-Q087",
+      "UPPCS-2023-GS1-Q089",
+      "UPPCS-2024-GS1-Q046",
+      "UPPCS-2025-GS1-Q046",
+      "UPPCS-2025-GS1-Q091"
+     ]
+    }
+   ],
+   "synthesis": "- **Membership discrimination is the dominant durable skill.** Learn members/non-members through contrasts, not isolated lists.\n- **Current expansion questions are usually static-core + one fresh delta.** Keep founding/origin/institutional identity permanent; refresh only the membership delta.\n- **EU is a repeated institutional-confusion zone:** Commission / Parliament / European Council / ECB / ESM / EU pacts.\n- UPSC frequently embeds a **false origin story** or **false mandate** inside an otherwise familiar grouping.\n- UPPCS adds a replaceable layer of **summit host, theme, logo, chairmanship and venue**."
+  },
+  "un-system-law": {
+   "upsc": [
+    {
+     "label": "UN organs / institutional architecture",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q060",
+      "UPSC-CSE-2021-GS1-Q081",
+      "UPSC-CSE-2022-GS1-Q076",
+      "UPSC-CSE-2022-GS1-Q078",
+      "UPSC-CSE-2026-GS1-Q095"
+     ]
+    },
+    {
+     "label": "Declarations / conventions / protocol-family traps",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q046",
+      "UPSC-CSE-2015-GS1-Q079",
+      "UPSC-CSE-2018-GS1-Q030",
+      "UPSC-CSE-2019-GS1-Q054",
+      "UPSC-CSE-2020-GS1-Q008",
+      "UPSC-CSE-2020-GS1-Q010"
+     ]
+    },
+    {
+     "label": "UN-linked agency / programme association",
+     "ids": [
+      "UPSC-CSE-2021-GS1-Q014",
+      "UPSC-CSE-2021-GS1-Q050",
+      "UPSC-CSE-2022-GS1-Q074"
+     ]
+    },
+    {
+     "label": "Maritime law",
+     "ids": [
+      "UPSC-CSE-2022-GS1-Q085"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q119",
+      "UPPCS-2020-GS1-Q063",
+      "UPPCS-2022-GS1-Q085",
+      "UPPCS-2022-GS1-Q121",
+      "UPPCS-2023-GS1-Q126",
+      "UPPCS-2024-GS1-Q006",
+      "UPPCS-2024-GS1-Q052",
+      "UPPCS-2024-GS1-Q139",
+      "UPPCS-2025-GS1-Q059"
+     ]
+    }
+   ],
+   "synthesis": "- Recurring UPSC pattern = **institutional parentage + legal status + precise mandate**.\n- Learn convention families as **parent treaty → protocol → implementing/secretariat body → subject**.\n- UN questions repeatedly punish the assumption that every UN-linked entity is a **specialised agency**.\n- Maritime-law questions demand exact **zone + right + institution** mapping.\n- UPPCS fixed **day/date** facts are worth a compact revision table; **annual themes remain ↻ DYNAMIC**."
+  },
+  "ngos-other-bodies": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q053",
+      "UPSC-CSE-2016-GS1-Q051",
+      "UPSC-CSE-2021-GS1-Q056",
+      "UPSC-CSE-2022-GS1-Q042",
+      "UPSC-CSE-2024-GS1-Q024"
+     ]
+    }
+   ],
+   "uppcs": [],
+   "synthesis": "- The dominant question is not “what does the body do?” but **what kind of body is it?**\n- Elimination should start with: **UN entity? intergovernmental? NGO/non-profit? commission? treaty body?**\n- “Consultative status with ECOSOC” **does not make an NGO a UN agency**.\n- Private/non-profit initiatives are frequently paired with a plausible but false UN/IEA/World Bank parentage."
+  },
+  "geopolitical-regions": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q090",
+      "UPSC-CSE-2014-GS1-Q034",
+      "UPSC-CSE-2014-GS1-Q036",
+      "UPSC-CSE-2015-GS1-Q033",
+      "UPSC-CSE-2016-GS1-Q019",
+      "UPSC-CSE-2018-GS1-Q018",
+      "UPSC-CSE-2018-GS1-Q024",
+      "UPSC-CSE-2022-GS1-Q027",
+      "UPSC-CSE-2022-GS1-Q082",
+      "UPSC-CSE-2022-GS1-Q086",
+      "UPSC-CSE-2022-GS1-Q087",
+      "UPSC-CSE-2023-GS1-Q078",
+      "UPSC-CSE-2023-GS1-Q093",
+      "UPSC-CSE-2023-GS1-Q097",
+      "UPSC-CSE-2023-GS1-Q098",
+      "UPSC-CSE-2024-GS1-Q088",
+      "UPSC-CSE-2024-GS1-Q091",
+      "UPSC-CSE-2026-GS1-Q040"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2024-GS1-Q113",
+      "UPPCS-2025-GS1-Q138"
+     ]
+    }
+   ],
+   "synthesis": ""
+  },
+  "nuclear-wmd-regimes": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q019",
+      "UPSC-CSE-2011-GS1-Q049",
+      "UPSC-CSE-2015-GS1-Q088",
+      "UPSC-CSE-2016-GS1-Q020",
+      "UPSC-CSE-2017-GS1-Q028",
+      "UPSC-CSE-2018-GS1-Q007",
+      "UPSC-CSE-2018-GS1-Q033",
+      "UPSC-CSE-2020-GS1-Q055",
+      "UPSC-CSE-2022-GS1-Q066"
+     ]
+    }
+   ],
+   "uppcs": [],
+   "synthesis": ""
+  },
+  "bilateral-connectivity": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q042",
+      "UPSC-CSE-2016-GS1-Q042",
+      "UPSC-CSE-2016-GS1-Q072",
+      "UPSC-CSE-2017-GS1-Q084",
+      "UPSC-CSE-2023-GS1-Q010",
+      "UPSC-CSE-2025-GS1-Q062",
+      "UPSC-CSE-2026-GS1-Q086",
+      "UPSC-CSE-2026-GS1-Q091",
+      "UPSC-CSE-2026-GS1-Q092"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2019-GS1-Q034",
+      "UPPCS-2019-GS1-Q115",
+      "UPPCS-2020-GS1-Q071"
+     ]
+    },
+    {
+     "label": "Dynamic-only evidence",
+     "ids": [
+      "UPPCS-2024-GS1-Q058",
+      "UPPCS-2025-GS1-Q038"
+     ]
+    }
+   ],
+   "synthesis": ""
+  }
+ }
+}

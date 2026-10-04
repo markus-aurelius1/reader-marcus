@@ -305,7 +305,7 @@ try {
   section('Economy + cross-links')
   const ECO = '#/study/prelims/economy/'
   await L.hash('#/study')
-  check('Library lists Economy & Social Development under Prelims, after Polity', (await L.ev(() => [...document.querySelectorAll('a.row b')].map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture|Geography|Environment & Ecology|Science & Technology')
+  check('Library lists Economy & Social Development under Prelims, after Polity', (await L.ev(() => [...document.querySelectorAll('a.row b')].map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture|Geography|Agriculture|Environment & Ecology|Science & Technology|International Relations')
   await L.hash('#/insights/progress')
   check('Economy: 17 chapters, 107 sections', (await L.count('section:nth-of-type(2) .rows .row')) === 17 && (await L.ev(() => document.querySelectorAll('.stat')[1].textContent)).includes('/107)'))
   await L.hash('#/study/prelims/economy'); const ecoRows = await L.count('.rows .row'); const ecoTopics = await L.count('h3.gh')
@@ -439,8 +439,10 @@ try {
   section('Geography, Environment, Science & Technology')
   const N3 = [
     { id: 'geography', title: 'Geography', chapters: 15, sections: 96, topics: 5, nth: 4, find: ['Gandikota', 'Peninsular Rivers'], chap: 'india-drainage', secs: 10, rc: 'ganga', hl: ['groundwater', 'surplus to deficit basins'], done: 'indus', edit: 'lakes', link: 'prelims/environment/protected-areas#wetlands-ramsar #/study/prelims/environment/protected-areas/wetlands-ramsar' },
-    { id: 'environment', title: 'Environment & Ecology', chapters: 12, sections: 75, topics: 3, nth: 5, find: ['Montreux', 'Wetlands & Ramsar'], chap: 'environmental-laws', secs: 8, rc: 'epa', hl: ['campa', 'approval needed to divert forest land'], done: 'epa', edit: 'ngt', link: 'prelims/polity/judiciary#tribunals #/study/prelims/polity/judiciary/tribunals' },
-    { id: 'science-tech', title: 'Science & Technology', chapters: 14, sections: 73, topics: 6, nth: 6, find: ['Chandrasekhar', 'Life of a Star'], chap: 'energy-technologies', secs: 5, rc: 'solar', hl: ['solar', 'gets credit on the bill'], done: 'nuclear', edit: 'batteries', link: 'prelims/geography/world-resources#critical-minerals #/study/prelims/geography/world-resources/critical-minerals' },
+    { id: 'environment', title: 'Environment & Ecology', chapters: 12, sections: 75, topics: 3, nth: 6, find: ['Montreux', 'Wetlands & Ramsar'], chap: 'environmental-laws', secs: 8, rc: 'epa', hl: ['campa', 'approval needed to divert forest land'], done: 'epa', edit: 'ngt', link: 'prelims/polity/judiciary#tribunals #/study/prelims/polity/judiciary/tribunals' },
+    { id: 'science-tech', title: 'Science & Technology', chapters: 14, sections: 73, topics: 6, nth: 7, find: ['Chandrasekhar', 'Life of a Star'], chap: 'energy-technologies', secs: 5, rc: 'solar', hl: ['solar', 'gets credit on the bill'], done: 'nuclear', edit: 'batteries', link: 'prelims/geography/world-resources#critical-minerals #/study/prelims/geography/world-resources/critical-minerals' },
+    { id: 'agriculture', title: 'Agriculture', chapters: 6, sections: 38, topics: 2, nth: 5, find: ['barnase', 'GM Mustard'], chap: 'agri-biotechnology', secs: 5, rc: 'bt-crops', hl: ['gm-mustard', 'mustard is mostly self-pollinating'], done: 'golden-rice', edit: 'regulation', link: 'prelims/environment/environmental-laws#epa #/study/prelims/environment/environmental-laws/epa' },
+    { id: 'international-relations', title: 'International Relations', chapters: 6, sections: 41, topics: 2, nth: 8, find: ['Bidibidi', 'Refugee Camps'], chap: 'nuclear-wmd-regimes', secs: 5, rc: 'iaea', hl: ['chemical-biological', 'Monitors the chemical industry'], done: 'npt', edit: 'export-controls', link: 'prelims/science-tech/defence-technology#missiles #/study/prelims/science-tech/defence-technology/missiles' },
   ]
   for (const s of N3) {
     const base = '#/study/prelims/' + s.id
@@ -483,6 +485,10 @@ try {
     ['Environment → Science & Technology', '#/study/prelims/environment/waste-remediation/treatment-technologies', 'treatment-technologies', 'prelims/science-tech/', '#/study/prelims/science-tech/chemistry-daily-life/water-purification', 'water-purification', 'Environment & Ecology'],
     ['Science & Technology → Economy', '#/study/prelims/science-tech/computing-digital/blockchain', 'blockchain', 'prelims/economy/', '#/study/prelims/economy/money-rbi-monetary-policy/cbdc', 'cbdc', 'Science & Technology'],
     ['Science & Technology → Geography', '#/study/prelims/science-tech/energy-technologies/nuclear', 'nuclear', 'prelims/geography/', '#/study/prelims/geography/india-minerals-energy-industry/atomic-beach-minerals', 'atomic-beach-minerals', 'Science & Technology'],
+    ['Agriculture → Economy', '#/study/prelims/agriculture/agricultural-economics/procurement', 'procurement', 'prelims/economy/', '#/study/prelims/economy/international-institutions/aoa-boxes', 'aoa-boxes', 'Agriculture'],
+    ['International Relations → Geography', '#/study/prelims/international-relations/geopolitical-regions/chokepoints', 'chokepoints', 'prelims/geography/', '#/study/prelims/geography/world-regional/straits-canals', 'straits-canals', 'International Relations'],
+    ['Geography → International Relations', '#/study/prelims/geography/india-transport/cross-border', 'cross-border', 'prelims/international-relations/', '#/study/prelims/international-relations/bilateral-connectivity/corridors', 'corridors', 'Geography'],
+    ['Science & Technology → Agriculture', '#/study/prelims/science-tech/genetics-biotechnology/gm-crops', 'gm-crops', 'prelims/agriculture/', '#/study/prelims/agriculture/agri-biotechnology/bt-crops', 'bt-crops', 'Science & Technology'],
   ]
   for (const [name, from, sec, prefix, to, toSec, subject] of X3) {
     const at3 = await hop3(from, sec, prefix); const rel3 = await back3(toSec)
@@ -492,7 +498,9 @@ try {
   }
   check('existing subjects are not rewritten to receive the new backlinks', await L.ev(() => true) && !readFileSync('content/prelims/polity/chapters/scheduled-tribal-areas.md', 'utf8').includes('@prelims/environment'))
   await L.hash('#/study/prelims/geography/india-climate-soils-vegetation/soils')
-  check('links into Agriculture and Mains stay plain text until those subjects exist', await L.ev(() => { const a = document.querySelector('#s-soils a.xref.pending'); return !!a && !a.getAttribute('href') && a.getAttribute('data-xref') === 'prelims/agriculture' }))
+  check('links into Agriculture are live now that the subject exists', await L.ev(() => { const a = document.querySelector('#s-soils a.xref[data-xref="prelims/agriculture/soil-conservation#conservation-methods"]'); return !!a && a.getAttribute('href') === '#/study/prelims/agriculture/soil-conservation/conservation-methods' && !document.querySelector('#s-soils a.xref.pending') }))
+  await L.hash('#/study/prelims/agriculture/soil-conservation/watershed')
+  check('links into Mains stay plain text until those subjects exist', await L.ev(() => { const a = document.querySelector('#s-watershed a.xref.pending'); return !!a && !a.getAttribute('href') && a.getAttribute('data-xref') === 'mains/gs3-agriculture' }))
   await L.hash('#/pyqs?subject=science-tech&chapter=energy-technologies'); await sleep(350)
   const hub3 = await L.ev(() => ({ n: document.querySelectorAll('.pq').length, notes: [...document.querySelectorAll('.pq .pq-notes a')].map((a) => a.getAttribute('href')) }))
   check('PYQ Hub lists the new subjects and opens their exact sections', hub3.n > 10 && hub3.notes.some((h) => h === '#/study/prelims/science-tech/energy-technologies/hydrogen-fuel-cells'), [hub3.n, hub3.notes.slice(0, 3)])
@@ -525,7 +533,7 @@ try {
   await L.go('#/s/prelims/economy/pyq')
   check('v1 subject-tab link opens the same tab', (await hashNow()) === '#/study/prelims/economy?tab=pyq' && (await L.count('details.syn')) === 17)
   await L.go('#/progress')
-  check('v1 Progress link opens Insights → Progress', (await hashNow()) === '#/insights/progress' && (await h1()) === 'Insights' && (await L.text('.tabs .on')) === 'Progress' && (await L.count('.stat')) === 6)
+  check('v1 Progress link opens Insights → Progress', (await hashNow()) === '#/insights/progress' && (await h1()) === 'Insights' && (await L.text('.tabs .on')) === 'Progress' && (await L.count('.stat')) === 8)
   await L.go('#/'); await L.hash('#/r/prelims/polity/judiciary'); const viaOld = await hashNow(); await L.page.goBack(); await sleep(400)
   check('a rewritten v1 link adds no extra history entry (Back returns in one step)', viaOld === '#/study/prelims/polity/judiciary' && ['#/', ''].includes(await hashNow()), [viaOld, await hashNow()])
 
@@ -549,7 +557,7 @@ try {
   // study explorer
   await L.hash('#/study')
   const lib = await L.ev(() => ({ open: document.querySelector('.app').classList.contains('side-open'), chapters: document.querySelectorAll('.sidebar .chap').length, stages: [...document.querySelectorAll('.x-stage > .x-row')].map((e) => e.textContent).join('|'), subjects: document.querySelectorAll('.x-subject').length, off: document.querySelectorAll('.x-row.off').length }))
-  check('Study: explorer shows stages and subjects, no chapters until a subject is chosen', lib.open && lib.chapters === 0 && lib.stages === 'Prelims|Mains' && lib.subjects === 6 && lib.off === 2, lib)
+  check('Study: explorer shows stages and subjects, no chapters until a subject is chosen', lib.open && lib.chapters === 0 && lib.stages === 'Prelims|Mains' && lib.subjects === 8 && lib.off === 0, lib)
   await L.ev(() => [...document.querySelectorAll('.x-stage > .x-row')].find((e) => e.textContent === 'Mains').click()); await sleep(250)
   check('Mains opens to its papers', (await L.ev(() => [...document.querySelectorAll('.x-paper > .x-row')].map((e) => e.textContent).join('|'))) === 'GS1|GS2|GS3|GS4')
   await L.hash('#/study/mains')
@@ -569,11 +577,11 @@ try {
   await L.click('.switch-head')
   const opts = await L.ev(() => [...document.querySelectorAll('.switcher a[role="option"]')].map((a) => a.childNodes[0].textContent).join('|'))
   await L.ev(() => [...document.querySelectorAll('.switcher a[role="option"]')].find((a) => a.textContent.startsWith('Economy')).click()); await sleep(450)
-  check('subject switcher lists every subject and resumes the chapter last read there', opts === 'Polity|Economy & Social Development|History & Culture|Geography|Environment & Ecology|Science & Technology' && (await hashNow()).startsWith('#/study/prelims/economy/') && (await L.count('.switcher')) === 0 && (await L.count('.sec')) > 3, [opts, await hashNow()])
+  check('subject switcher lists every subject and resumes the chapter last read there', opts === 'Polity|Economy & Social Development|History & Culture|Geography|Agriculture|Environment & Ecology|Science & Technology|International Relations' && (await hashNow()).startsWith('#/study/prelims/economy/') && (await L.count('.switcher')) === 0 && (await L.count('.sec')) > 3, [opts, await hashNow()])
   await L.page.goBack(); await sleep(400)
   check('browser Back returns from a subject switch', (await hashNow()) === PARL)
   await L.click('.crumbs .switch-crumb'); const crumbSw = await L.count('.switcher a[role="option"]'); await L.page.keyboard.press('Escape'); await sleep(150)
-  check('breadcrumb carries the compact switcher; Esc closes it', crumbSw === 6 && (await L.count('.switcher')) === 0)
+  check('breadcrumb carries the compact switcher; Esc closes it', crumbSw === 8 && (await L.count('.switcher')) === 0)
   check('breadcrumbs: stage › subject › chapter, each a link', (await L.ev(() => [...document.querySelectorAll('.crumbs a')].map((a) => a.textContent + ' ' + a.getAttribute('href')).join(' | '))) === 'Prelims #/study/prelims | Polity #/study/prelims/polity | Parliament #/study/prelims/polity/parliament')
   await L.click('button[aria-label="Next chapter"]'); const nx = await L.ev(() => document.title); await L.click('button[aria-label="Previous chapter"]')
   check('header Previous / Next step through the subject', nx.startsWith('Judiciary') && (await L.ev(() => document.title)).startsWith('Parliament'), nx)
@@ -601,7 +609,7 @@ try {
   // Ctrl/Cmd+K
   await L.ev(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))); await sleep(250)
   const groups = await L.ev(() => [...document.querySelectorAll('.palette li.grp')].map((e) => e.textContent).join('|'))
-  check('Ctrl+K with no query offers Recent, Favourites, Current Affairs and every subject', groups === 'Recent|Favourites|Current Affairs|Subjects' && (await L.ev(() => [...document.querySelectorAll('.palette li:not(.grp) b')].slice(-6).map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture|Geography|Environment & Ecology|Science & Technology', groups)
+  check('Ctrl+K with no query offers Recent, Favourites, Current Affairs and every subject', groups === 'Recent|Favourites|Current Affairs|Subjects' && (await L.ev(() => [...document.querySelectorAll('.palette li:not(.grp) b')].slice(-8).map((b) => b.textContent).join('|'))) === 'Polity|Economy & Social Development|History & Culture|Geography|Agriculture|Environment & Ecology|Science & Technology|International Relations', groups)
   await L.page.keyboard.press('Escape'); await sleep(150)
   const sSub = await search('history')
   check('Ctrl+K jumps to a subject by name', sSub[0] === 'History & Culture', sSub.slice(0, 3))
@@ -652,21 +660,21 @@ try {
   const pqPalette = async (q) => { await L.ev(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))); await sleep(200); return L.ev(async (q) => { const i = document.querySelector('.palette input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, q); i.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 250)); return [...document.querySelectorAll('.palette li:not(.grp)')].map((li) => (li.querySelector('.kind')?.textContent ?? '?') + '|' + li.querySelector('b').textContent) }, q) }
   await L.go('#/pyqs')
   const pqAll = await pqIds()
-  check('hub opens on Prelims with every canonical ID of the imported subjects, newest first, 40 at a time', (await pqCount()) === '2146 questions' && (await L.text('.stat')).includes('2146') && pqAll.length === 40 && new Set(pqAll).size === 40 && pqAll[0].startsWith('UPSC-CSE-2026') && (await L.count('.tabs')) === 0, [await pqCount(), pqAll[0]])
+  check('hub opens on Prelims with every canonical ID of the imported subjects, newest first, 40 at a time', (await pqCount()) === '2300 questions' && (await L.text('.stat')).includes('2300') && pqAll.length === 40 && new Set(pqAll).size === 40 && pqAll[0].startsWith('UPSC-CSE-2026') && (await L.count('.tabs')) === 0, [await pqCount(), pqAll[0]])
   check('no question text or one-liner is shown, and none is faked', (await L.count('.pq-one')) === 0 && !/one-liner|coming soon|placeholder|lorem/i.test(await L.text('.pyqhub')) && (await L.text('.lead')).includes('Question text is not in the library'))
   await L.click('.pq-more')
   check('Show more extends the list instead of rendering everything', (await L.count('.pq')) === 120)
   await pqSel('Exam', 'UPPCS'); const pqUppcs = await pqCount()
   await pqSel('Year', '2019'); await pqSel('Subject', 'polity'); await pqSel('Topic or chapter', 'parliament')
   const pqFiltered = { hash: await hashNow(), count: await pqCount(), ids: await pqIds(), sections: await L.count('.pq-filters select[aria-label="Section"] option') }
-  check('filters: exam, year, subject, chapter narrow the list and live in the address', pqUppcs === '855 of 2146 questions' && pqFiltered.hash === '#/pyqs?exam=UPPCS&year=2019&subject=polity&chapter=parliament' && pqFiltered.ids.length > 0 && pqFiltered.ids.every((id) => id.startsWith('UPPCS-2019-')) && pqFiltered.sections > 2, pqFiltered)
+  check('filters: exam, year, subject, chapter narrow the list and live in the address', pqUppcs === '895 of 2300 questions' && pqFiltered.hash === '#/pyqs?exam=UPPCS&year=2019&subject=polity&chapter=parliament' && pqFiltered.ids.length > 0 && pqFiltered.ids.every((id) => id.startsWith('UPPCS-2019-')) && pqFiltered.sections > 2, pqFiltered)
   await pqSel('Exam', ''); await pqSel('Year', ''); await pqSel('Section', 'parliamentary-committees')
   check('section filter: only questions recorded against that section', (await hashNow()) === '#/pyqs?subject=polity&chapter=parliament&section=parliamentary-committees' && (await L.ev(() => [...document.querySelectorAll('.pq')].every((li) => li.querySelector('.pq-notes').textContent.includes('Parliamentary Committees')))) && (await L.count('.pq')) > 0)
   await L.ev(() => [...document.querySelectorAll('.pq-filters button')].find((b) => b.textContent === 'Clear filters').click()); await sleep(300)
-  check('Clear filters returns to the whole hub', (await hashNow()) === '#/pyqs' && (await pqCount()) === '2146 questions')
+  check('Clear filters returns to the whole hub', (await hashNow()) === '#/pyqs' && (await pqCount()) === '2300 questions')
   await pqSel('Status', 'review-required')
   const pqReview = await L.ev(() => ({ n: document.querySelectorAll('.pq').length, flagged: [...document.querySelectorAll('.pq')].every((li) => li.dataset.status === 'review-required' && li.querySelector('.chip.warn')?.textContent === 'Review required' && li.querySelector('.pq-warn').textContent.startsWith('Review required')) }))
-  check('review-required questions stay flagged, with the reason', pqReview.n === 40 && pqReview.flagged && (await pqCount()) === '105 of 2146 questions', [pqReview, await pqCount()])
+  check('review-required questions stay flagged, with the reason', pqReview.n === 40 && pqReview.flagged && (await pqCount()) === '108 of 2300 questions', [pqReview, await pqCount()])
   await L.hash('#/pyqs'); await pqType('finance commission')
   const pqSearch = { hash: await hashNow(), n: await L.count('.pq'), all: await L.ev(() => [...document.querySelectorAll('.pq')].every((li) => /finance commission/i.test(li.textContent))) }
   check('hub search by concept / topic', pqSearch.hash === '#/pyqs?q=finance+commission' && pqSearch.n >= 8 && pqSearch.all, pqSearch)
@@ -703,11 +711,11 @@ try {
   await L.click('.pq button[aria-label="Mark seen"]'); await L.click('.pq button[aria-label="Mark difficult"]')
   await L.hash('#/pyqs'); await pqSel('My flags', 'difficult')
   const pqMine = { count: await pqCount(), ids: await pqIds(), row: (await L.idb('pyqUserState'))[0] }
-  check('Mark Seen / Difficult: saved on this device, and filterable once any flag exists', pqNoMine === 0 && pqMine.count === '1 of 2146 questions' && pqMine.ids.join() === 'UPSC-CSE-2019-GS1-Q045' && pqMine.row.pyqId === 'UPSC-CSE-2019-GS1-Q045' && pqMine.row.seen === true && pqMine.row.difficult === true && Object.keys(pqMine.row).sort().join() === 'difficult,pyqId,seen,st,updatedAt', pqMine)
+  check('Mark Seen / Difficult: saved on this device, and filterable once any flag exists', pqNoMine === 0 && pqMine.count === '1 of 2300 questions' && pqMine.ids.join() === 'UPSC-CSE-2019-GS1-Q045' && pqMine.row.pyqId === 'UPSC-CSE-2019-GS1-Q045' && pqMine.row.seen === true && pqMine.row.difficult === true && Object.keys(pqMine.row).sort().join() === 'difficult,pyqId,seen,st,updatedAt', pqMine)
   await L.reload()
   check('flags survive a reload; clearing one updates the list', (await L.ev(() => document.querySelector('.pq button[aria-label="Mark seen"]').getAttribute('aria-pressed'))) === 'true' && (await L.ev(() => document.querySelector('.pq').classList.contains('is-seen'))))
   await L.click('.pq button[aria-label="Mark difficult"]'); await sleep(200)
-  check('a cleared flag leaves the filtered list', (await pqCount()) === '0 of 2146 questions' && (await L.text('.pyqhub .empty')).startsWith('No questions match'))
+  check('a cleared flag leaves the filtered list', (await pqCount()) === '0 of 2300 questions' && (await L.text('.pyqhub .empty')).startsWith('No questions match'))
   await pqSel('My flags', 'revised'); await L.hash('#/pyqs?id=UPSC-CSE-2019-GS1-Q045'); await L.click('.pq button[aria-label="Mark revised"]')
   check('Mark Revised', (await L.idb('pyqUserState'))[0].revised === true && (await L.idb('pyqUserState'))[0].difficult === undefined)
 
@@ -888,8 +896,8 @@ try {
 
   await L.hash('#/insights/subjects')
   const sub = await L.ev(() => { const d = [...document.querySelectorAll('.page > .dist')]; return { stage: d[0].textContent, subjects: [...d[1].querySelectorAll('.dr')].map((r) => [r.querySelector('.dn').textContent, r.querySelector('.dv').textContent, r.querySelector('.dx').textContent].join('|')), stale: [...document.querySelectorAll('.page > .rows .row')].map((r) => r.textContent) } })
-  check('Subjects: time by exam stage, and by subject — most studied first, reading progress beside', sub.stage.startsWith('Prelims') && sub.subjects.length === 6 && sub.subjects[0].startsWith('Polity|') && /\|\d+% done$/.test(sub.subjects[0]) && sub.subjects[1].startsWith('Economy') && sub.subjects[2].startsWith('History & Culture|—|'), sub)
-  check('Subjects: least recently studied first; a subject never timed says so', sub.stale.length === 6 && sub.stale[0].startsWith('History & Culture') && sub.stale[0].includes('not studied with the timer yet') && /last studied (today|yesterday)/.test(sub.stale[5]), sub.stale)
+  check('Subjects: time by exam stage, and by subject — most studied first, reading progress beside', sub.stage.startsWith('Prelims') && sub.subjects.length === 8 && sub.subjects[0].startsWith('Polity|') && /\|\d+% done$/.test(sub.subjects[0]) && sub.subjects[1].startsWith('Economy') && sub.subjects[2].startsWith('History & Culture|—|'), sub)
+  check('Subjects: least recently studied first; a subject never timed says so', sub.stale.length === 8 && sub.stale[0].startsWith('History & Culture') && sub.stale[0].includes('not studied with the timer yet') && /last studied (today|yesterday)/.test(sub.stale[7]), sub.stale)
   const topic = await L.ev(() => ({ n: document.querySelectorAll('details.syn').length, heads: [...document.querySelectorAll('details.syn .th')].map((b) => b.textContent), chapters: [...document.querySelector('details.syn').querySelectorAll('a.dr')].map((a) => a.getAttribute('href')) }))
   check('Subjects: time by topic and chapter inside each studied subject', topic.n === 2 && topic.heads.length === 2 && topic.chapters.join() === '#/study/prelims/polity/judiciary,' + PARL, topic)
   await L.ev((h) => { document.querySelector('details.syn').open = true; document.querySelector(`details.syn a.dr[href="${h}"]`).click() }, PARL); await sleep(450)
@@ -900,8 +908,8 @@ try {
 
   await L.hash('#/insights/progress')
   const pg = await L.ev(() => ({ overall: [...document.querySelectorAll('.kpi')].map((k) => k.dataset.stage + ' ' + k.textContent), stats: document.querySelectorAll('.stat').length, first: document.querySelector('.stat').textContent, parl: [...document.querySelectorAll('.row')].find((r) => r.querySelector('b')?.textContent === 'Parliament').textContent, bar: document.querySelector('.sbar').getAttribute('aria-label') }))
-  check('Progress: Prelims overall; no Mains figure until Mains content exists', pg.overall.length === 1 && pg.overall[0].startsWith('prelims') && /106 chapters/.test(pg.overall[0]) && /of 672 sections done/.test(pg.overall[0]) && /★ \d+ difficult · ↻ \d+ to revise/.test(pg.overall[0]) && /tracked/.test(pg.overall[0]) && /Not started.*Reading.*Revised.*Mastered/.test(pg.bar), pg.overall)
-  check('Progress: per subject — completion, the four statuses, ★ / ↻ counts and study time; chapters show time too', pg.stats === 6 && /sections done \(\d+\/117\)/.test(pg.first) && /Not started.*Reading.*Revised.*Mastered/.test(pg.first) && /★ Difficult/.test(pg.first) && /↻ Revise/.test(pg.first) && /tracked · last (today|yesterday)/.test(pg.first) && /tracked/.test(pg.parl) && /★ [1-9]/.test(pg.parl), pg)
+  check('Progress: Prelims overall; no Mains figure until Mains content exists', pg.overall.length === 1 && pg.overall[0].startsWith('prelims') && /118 chapters/.test(pg.overall[0]) && /of 751 sections done/.test(pg.overall[0]) && /★ \d+ difficult · ↻ \d+ to revise/.test(pg.overall[0]) && /tracked/.test(pg.overall[0]) && /Not started.*Reading.*Revised.*Mastered/.test(pg.bar), pg.overall)
+  check('Progress: per subject — completion, the four statuses, ★ / ↻ counts and study time; chapters show time too', pg.stats === 8 && /sections done \(\d+\/117\)/.test(pg.first) && /Not started.*Reading.*Revised.*Mastered/.test(pg.first) && /★ Difficult/.test(pg.first) && /↻ Revise/.test(pg.first) && /tracked · last (today|yesterday)/.test(pg.first) && /tracked/.test(pg.parl) && /★ [1-9]/.test(pg.parl), pg)
   await pick('Status of Mughals', 'mastered'); await sleep(500)
   check('Progress: chapter status can still be set here, is saved, and the overall figure follows', /1 mastered/.test(await L.text('.kpi')) && (await L.idb('kv')).some((v) => v?.chapters?.['prelims/history-culture/mughals']?.status === 'mastered'))
   check('nothing on Progress calls the study good or bad', !/productiv|efficien|great|well done|behind|on track/i.test(await L.text('.page')))
@@ -969,7 +977,7 @@ try {
   check('streak is stated plainly: study days in a row', /^\d+-day study streak/.test(thisWeek.streak), thisWeek.streak)
   const prog = await L.ev(() => ({ stages: [...document.querySelectorAll('.stage')].map((s) => s.dataset.stage + ' ' + s.querySelector('.ring b').dataset.final).join(), legend: document.querySelector('.slegend').textContent, link: document.querySelector('.prog h3 a').getAttribute('href'), subs: [...document.querySelectorAll('.srow')].map((r) => [r.querySelector('.sn b').textContent, r.querySelector('.sn small').textContent, r.querySelector('.num').textContent, r.querySelector('.chip').textContent, r.querySelector('.chip').getAttribute('href'), r.querySelector('.sn').getAttribute('href')]) }))
   check('Study progress: Prelims overall as on Insights → Progress; no Mains card while Mains has no content', prog.stages === `prelims ${prelimsPct}` && /Not started.*Reading.*Revised.*Mastered/.test(prog.legend) && prog.link === '#/insights/progress', prog.stages)
-  check('Subjects: compact rows with progress, time studied, last studied and Resume / Open', prog.subs.map((s) => s[0]).join('|') === 'Polity|Economy & Social Development|History & Culture|Geography|Environment & Ecology|Science & Technology' && /studied · last (today|yesterday|\d+ days ago)$/.test(prog.subs[0][1]) && prog.subs[2][1] === 'Not timed yet' && prog.subs.every((s) => /^\d+%$/.test(s[2]) && (s[3] === 'Resume' ? s[4].endsWith('?resume') : s[3] === 'Open' && s[4] === s[5])) && prog.subs[0][5] === '#/study/prelims/polity', prog.subs)
+  check('Subjects: compact rows with progress, time studied, last studied and Resume / Open', prog.subs.map((s) => s[0]).join('|') === 'Polity|Economy & Social Development|History & Culture|Geography|Agriculture|Environment & Ecology|Science & Technology|International Relations' && /studied · last (today|yesterday|\d+ days ago)$/.test(prog.subs[0][1]) && prog.subs[2][1] === 'Not timed yet' && prog.subs.every((s) => /^\d+%$/.test(s[2]) && (s[3] === 'Resume' ? s[4].endsWith('?resume') : s[3] === 'Open' && s[4] === s[5])) && prog.subs[0][5] === '#/study/prelims/polity', prog.subs)
   const rev = await L.ev(() => ({ stat: [...document.querySelectorAll('.rev .mstat b')].map((b) => b.textContent), rows: document.querySelectorAll('.rev .qlist li').length, link: document.querySelector('.rev h3 a').getAttribute('href'), first: document.querySelector('.rev .qlist li .qt')?.getAttribute('href') }))
   check('Flagged for revision: ★ / ↻ counts as on Revision → Manual, at most five rows, each opening its section', rev.stat[0] === revStat[0] && rev.stat[1] === revStat[1] && rev.rows >= 1 && rev.rows <= 5 && rev.link === '#/revision/manual' && /^#\/study\/prelims\/[^/]+\/[^/]+\/[^/?]+$/.test(rev.first), [rev, revStat])
   await L.page.screenshot({ path: join(OUT, 'desktop-home.png'), fullPage: true })
@@ -1081,7 +1089,7 @@ try {
   const N = await device(P.local, 'new')
   await N.go('#/'); await sleep(700)
   const fresh = await N.ev(() => ({ cont: document.querySelector('.cont-t').textContent, today: document.querySelector('.today .big').dataset.final, sub: document.querySelector('.today .sub').textContent, week: document.querySelector('.week .none')?.textContent ?? '', charts: document.querySelectorAll('.week .vbars, .week .heat, .week .big').length, queue: document.querySelectorAll('.queue .qlist li').length, goal: document.querySelectorAll('.goal').length, rev: document.querySelector('.rev .none')?.textContent ?? '', start: document.querySelector('.tcard .btn').textContent, pct: document.querySelector('.ring b').dataset.final, recent: document.querySelectorAll('.card.recent').length, subs: [...document.querySelectorAll('.srow .sn small')].map((s) => s.textContent).join('|'), text: document.querySelector('.page').textContent }))
-  check('no history: Home says so in words — no charts, no sample figures, no default goal', fresh.cont === 'Nothing opened yet' && fresh.today === '0 min' && fresh.sub === 'None yesterday either' && fresh.week.startsWith('No tracked study time yet') && fresh.charts === 0 && fresh.queue === 0 && fresh.goal === 0 && fresh.rev.startsWith('Nothing flagged') && fresh.start === 'Choose a chapter' && fresh.pct === '0%' && fresh.recent === 0 && fresh.subs === Array(6).fill('Not timed yet').join('|') && !/NaN|undefined|Infinity|∞/.test(fresh.text), fresh)
+  check('no history: Home says so in words — no charts, no sample figures, no default goal', fresh.cont === 'Nothing opened yet' && fresh.today === '0 min' && fresh.sub === 'None yesterday either' && fresh.week.startsWith('No tracked study time yet') && fresh.charts === 0 && fresh.queue === 0 && fresh.goal === 0 && fresh.rev.startsWith('Nothing flagged') && fresh.start === 'Choose a chapter' && fresh.pct === '0%' && fresh.recent === 0 && fresh.subs === Array(8).fill('Not timed yet').join('|') && !/NaN|undefined|Infinity|∞/.test(fresh.text), fresh)
   await N.page.screenshot({ path: join(OUT, 'desktop-home-empty.png'), fullPage: true })
   await N.ctx.close()
 
@@ -1325,7 +1333,7 @@ try {
     await RV.hash('#/pyqs'); const pq6 = await RV.text('.pq-count')
     await RV.hash(PARL); await sleep(300)
     const lib6 = await RV.ev(() => ({ secs: document.querySelectorAll('.sec').length, xref: document.querySelectorAll('a.xref, .related a').length, rq: document.querySelectorAll('.sec-body .rq').length, done: document.querySelector('.chap-meta span').textContent }))
-    check('the notes, the static PYQ corpus and the cross-links are untouched', pq6 === pq5 && pq5 === '2146 questions' && lib6.secs === lib5.secs && lib6.xref === lib5.xref && lib6.xref > 0 && lib6.done === '0 / 9 sections done' && (await RV.text('#s-presiding-officers .sec-body')).includes('RESET-E2E edit') && (await RV.marks('bills-types-and-procedure')).length === 1, [pq5, pq6, lib5, lib6])
+    check('the notes, the static PYQ corpus and the cross-links are untouched', pq6 === pq5 && pq5 === '2300 questions' && lib6.secs === lib5.secs && lib6.xref === lib5.xref && lib6.xref > 0 && lib6.done === '0 / 9 sections done' && (await RV.text('#s-presiding-officers .sec-body')).includes('RESET-E2E edit') && (await RV.marks('bills-types-and-procedure')).length === 1, [pq5, pq6, lib5, lib6])
     await RV.reload(); await sleep(300)
     check('the reset survives a reload', (await RV.idb('revisionUnits')).length === 0 && (await RV.text('.chap-meta span')) === '0 / 9 sections done')
     await RV.click('#s-presiding-officers .tg.done'); await sleep(300)
@@ -1700,6 +1708,11 @@ try {
   const offGeo = await L.ev(() => location.hash); const offGeoSecs = await L.count('.sec')
   await L.hash('#/study/prelims/environment/pollution/aqi')
   check('offline: Geography, Environment and Science & Technology open and cross-link', offGeo === '#/study/prelims/geography/india-minerals-energy-industry/atomic-beach-minerals' && offGeoSecs > 3 && (await L.count('.sec')) === 8 && (await L.count('#s-aqi .rc')) > 0, [offGeo, offGeoSecs])
+  await L.hash('#/study/prelims/agriculture/agricultural-economics/procurement')
+  await L.ev(() => document.querySelector('#s-procurement a.xref[data-xref^="prelims/economy/"]').click()); await sleep(400)
+  const offAgri = await L.ev(() => location.hash)
+  await L.hash('#/study/prelims/international-relations/un-system-law/unclos')
+  check('offline: Agriculture and International Relations open and cross-link', offAgri === '#/study/prelims/economy/international-institutions/aoa-boxes' && (await L.count('.sec')) === 9 && (await L.count('#s-unclos .rc')) > 0, offAgri)
   await L.hash('#/study/prelims/economy/taxation'); await L.click('.chap-meta .fav.q'); await L.reload(); await L.hash('#/'); await sleep(700)
   const offHome = await L.ev(() => ({ cards: document.querySelectorAll('.card').length, cells: document.querySelectorAll('.week .heat i[data-date]').length, bars: document.querySelectorAll('.week .vb').length, today: document.querySelector('.today .big').dataset.final }))
   check('offline: Home is drawn from this device — figures, charts, and a queue change that persists', offHome.cards >= 8 && offHome.cells >= 85 && offHome.bars === 7 && /min$/.test(offHome.today) && (await L.idb('studyQueue')).some((r) => r.target.chapterId === 'taxation' && !r.removed) && (await qTitles()).length === (await L.idb('studyQueue')).filter((r) => !r.removed && !r.completedAt).length, offHome)
@@ -1796,6 +1809,8 @@ try {
     ['Geography', 'geography/climatology', 6, ['humidity', 'Condensation needs saturation'], 'tropical-cyclones', 'enso-iod'],
     ['Environment', 'environment/pollution', 8, ['heavy-metals', 'they cannot be broken down'], 'aqi', 'smog-acid-rain'],
     ['Science & Technology', 'science-tech/space-technology', 5, ['remote-sensing', 'see through cloud'], 'orbits', 'launch-vehicles'],
+    ['Agriculture', 'agriculture/soil-conservation', 5, ['erosion', 'fertile topsoil goes first'], 'soil-health', 'salinity'],
+    ['International Relations', 'international-relations/groupings', 10, ['brics', 'short-term liquidity'], 'g20-g7', 'eu'],
   ]
   for (const [name, path, secs, hl, done, edit] of S3) {
     await A.hash('#/study/prelims/' + path)

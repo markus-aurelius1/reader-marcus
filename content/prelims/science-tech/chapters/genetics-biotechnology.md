@@ -42,7 +42,7 @@ taxonomy: prelims-science-and-technology-life-science-health-and-biotechnology-g
 - **Golden Rice** → {{Vitamin A}} (beta-carotene).
 - GM mustard → uses gene technology for male sterility to make hybrids.
 
-On the farm → [Agriculture](@prelims/agriculture) · Who approves GM crops → [GEAC](@prelims/environment/environmental-laws#epa) · Biosafety treaty → [Cartagena Protocol](@prelims/environment/international-conventions#cbd-family)
+On the farm → [Bt crops](@prelims/agriculture/agri-biotechnology#bt-crops) · Who approves GM crops → [GEAC](@prelims/environment/environmental-laws#epa) · Biosafety treaty → [Cartagena Protocol](@prelims/environment/international-conventions#cbd-family)
 
 > [!DYN] Approval and court status of GM mustard and Bt brinjal is a current-layer item.
 

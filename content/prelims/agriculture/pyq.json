@@ -1,0 +1,323 @@
+{
+ "source": "source/Agriculture-v01-source-pack-CLAUDE-READY.md",
+ "chapters": {
+  "agricultural-geography": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2023-GS1-Q004"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2022-GS1-Q110",
+      "UPPCS-2024-GS1-Q041",
+      "UPPCS-2024-GS1-Q073"
+     ]
+    }
+   ],
+   "synthesis": "- Know **land-use terms + cropping intensity**, rainfed/irrigated geography, dryland/wetland distinction, regional agricultural intensity.\n- UPSC favors **comparisons and qualifiers**; UPPCS favors **regional/State geography and numerical-order recall**."
+  },
+  "crops": {
+   "upsc": [
+    {
+     "label": "Crop identification / requirements",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q093",
+      "UPSC-CSE-2011-GS1-Q098",
+      "UPSC-CSE-2012-GS1-Q047",
+      "UPSC-CSE-2013-GS1-Q064",
+      "UPSC-CSE-2020-GS1-Q087",
+      "UPSC-CSE-2021-GS1-Q057",
+      "UPSC-CSE-2022-GS1-Q062"
+     ]
+    },
+    {
+     "label": "Origin / family / uses / by-products",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q012",
+      "UPSC-CSE-2012-GS1-Q044",
+      "UPSC-CSE-2014-GS1-Q040",
+      "UPSC-CSE-2014-GS1-Q073",
+      "UPSC-CSE-2019-GS1-Q021",
+      "UPSC-CSE-2020-GS1-Q084",
+      "UPSC-CSE-2024-GS1-Q019",
+      "UPSC-CSE-2025-GS1-Q063"
+     ]
+    },
+    {
+     "label": "Crop statistics / trade / season traps",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q037",
+      "UPSC-CSE-2019-GS1-Q083",
+      "UPSC-CSE-2019-GS1-Q084",
+      "UPSC-CSE-2020-GS1-Q086",
+      "UPSC-CSE-2023-GS1-Q027",
+      "UPSC-CSE-2025-GS1-Q024"
+     ]
+    },
+    {
+     "label": "Boundary/current",
+     "ids": [
+      "UPSC-CSE-2022-GS1-Q079"
+     ]
+    },
+    {
+     "label": "Malformed",
+     "ids": [
+      "UPSC-CSE-2024-GS1-Q059"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q055",
+      "UPPCS-2018-GS1-Q126",
+      "UPPCS-2019-GS1-Q046",
+      "UPPCS-2019-GS1-Q086",
+      "UPPCS-2022-GS1-Q008",
+      "UPPCS-2024-GS1-Q035",
+      "UPPCS-2024-GS1-Q036",
+      "UPPCS-2024-GS1-Q043"
+     ]
+    }
+   ],
+   "synthesis": "- Highest-yield material = **crop × season × temperature/moisture × soil × region × use**, plus exceptions.\n- Repeated traps: a crop is **not tied to one season everywhere**; irrigated cultivation can break climatic generalisations; producer rankings and trade ranks are **dated**, not permanent truths."
+  },
+  "farming-practices": {
+   "upsc": [
+    {
+     "label": "Micro-irrigation / fertigation",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q058",
+      "UPSC-CSE-2016-GS1-Q083",
+      "UPSC-CSE-2020-GS1-Q091"
+     ]
+    },
+    {
+     "label": "Conservation agriculture / zero till / carbon-water",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q098",
+      "UPSC-CSE-2017-GS1-Q071",
+      "UPSC-CSE-2018-GS1-Q059",
+      "UPSC-CSE-2020-GS1-Q083"
+     ]
+    },
+    {
+     "label": "Farming systems",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q042",
+      "UPSC-CSE-2020-GS1-Q090",
+      "UPSC-CSE-2021-GS1-Q051",
+      "UPSC-CSE-2023-GS1-Q026",
+      "UPSC-CSE-2026-GS1-Q038"
+     ]
+    },
+    {
+     "label": "Sugarcane technology",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q001",
+      "UPSC-CSE-2020-GS1-Q089"
+     ]
+    },
+    {
+     "label": "Fertiliser/input effects",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q011",
+      "UPSC-CSE-2016-GS1-Q024",
+      "UPSC-CSE-2020-GS1-Q094"
+     ]
+    },
+    {
+     "label": "Organic / traditional systems",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q027",
+      "UPSC-CSE-2018-GS1-Q100"
+     ]
+    },
+    {
+     "label": "Agri emissions",
+     "ids": [
+      "UPSC-CSE-2019-GS1-Q035",
+      "UPSC-CSE-2019-GS1-Q041",
+      "UPSC-CSE-2022-GS1-Q021",
+      "UPSC-CSE-2022-GS1-Q022"
+     ]
+    },
+    {
+     "label": "Biochar",
+     "ids": [
+      "UPSC-CSE-2020-GS1-Q080"
+     ]
+    },
+    {
+     "label": "Livestock / allied",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q044",
+      "UPSC-CSE-2023-GS1-Q055",
+      "UPSC-CSE-2025-GS1-Q030",
+      "UPSC-CSE-2026-GS1-Q028"
+     ]
+    },
+    {
+     "label": "Current-only initiative boundary",
+     "ids": [
+      "UPSC-CSE-2016-GS1-Q048",
+      "UPSC-CSE-2021-GS1-Q059",
+      "UPSC-CSE-2024-GS1-Q026"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q011",
+      "UPPCS-2019-GS1-Q062",
+      "UPPCS-2019-GS1-Q116",
+      "UPPCS-2023-GS1-Q104",
+      "UPPCS-2025-GS1-Q010"
+     ]
+    }
+   ],
+   "synthesis": "- UPSC repeatedly asks **advantages of practice X** through multi-selects; memorize mechanism → consequence, not slogans.\n- Conservation agriculture, zero tillage, SRI, drip/fertigation, biochar and input-use efficiency are the central elimination domains.\n- Livestock/fisheries demand is lower-frequency but direct; do not omit breeds, indigenous-bovine mission logic or aquaculture biofiltration."
+  },
+  "agri-biotechnology": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q029",
+      "UPSC-CSE-2012-GS1-Q064",
+      "UPSC-CSE-2014-GS1-Q072",
+      "UPSC-CSE-2017-GS1-Q045",
+      "UPSC-CSE-2018-GS1-Q063",
+      "UPSC-CSE-2019-GS1-Q096",
+      "UPSC-CSE-2019-GS1-Q099",
+      "UPSC-CSE-2021-GS1-Q067",
+      "UPSC-CSE-2024-GS1-Q092"
+     ]
+    },
+    {
+     "label": "Cross-boundary",
+     "ids": [
+      "UPSC-CSE-2012-GS1-Q003"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q005"
+     ]
+    }
+   ],
+   "synthesis": "- Distinguish **trait**, **gene/source**, **technique**, **regulatory body**, and **biosafety concern**.\n- Recurring UPSC trap: convert a partially true GM statement into a false one by swapping **bacterium ↔ fungus**, **hybridisation ↔ transgenesis**, or **biosafety concern ↔ proven harm**."
+  },
+  "agricultural-economics": {
+   "upsc": [
+    {
+     "label": "MSP / FRP / procurement / foodgrain economics",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q013",
+      "UPSC-CSE-2018-GS1-Q093",
+      "UPSC-CSE-2019-GS1-Q079",
+      "UPSC-CSE-2020-GS1-Q063",
+      "UPSC-CSE-2020-GS1-Q069",
+      "UPSC-CSE-2023-GS1-Q027"
+     ]
+    },
+    {
+     "label": "Marketing",
+     "ids": [
+      "UPSC-CSE-2015-GS1-Q024",
+      "UPSC-CSE-2017-GS1-Q033"
+     ]
+    },
+    {
+     "label": "Credit / institutions / KCC",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q083",
+      "UPSC-CSE-2013-GS1-Q100",
+      "UPSC-CSE-2020-GS1-Q059",
+      "UPSC-CSE-2020-GS1-Q066"
+     ]
+    },
+    {
+     "label": "Public investment / subsidy / fertiliser",
+     "ids": [
+      "UPSC-CSE-2017-GS1-Q072",
+      "UPSC-CSE-2020-GS1-Q061",
+      "UPSC-CSE-2020-GS1-Q094"
+     ]
+    },
+    {
+     "label": "Seeds / durable agriculture schemes",
+     "ids": [
+      "UPSC-CSE-2014-GS1-Q094",
+      "UPSC-CSE-2015-GS1-Q097",
+      "UPSC-CSE-2016-GS1-Q021",
+      "UPSC-CSE-2016-GS1-Q048"
+     ]
+    },
+    {
+     "label": "Land reform / farm organisation / food security",
+     "ids": [
+      "UPSC-CSE-2018-GS1-Q025",
+      "UPSC-CSE-2019-GS1-Q002",
+      "UPSC-CSE-2023-GS1-Q026"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2018-GS1-Q107",
+      "UPPCS-2019-GS1-Q073",
+      "UPPCS-2019-GS1-Q074",
+      "UPPCS-2020-GS1-Q147",
+      "UPPCS-2022-GS1-Q086",
+      "UPPCS-2024-GS1-Q118",
+      "UPPCS-2025-GS1-Q015",
+      "UPPCS-2025-GS1-Q118",
+      "UPPCS-2025-GS1-Q147"
+     ]
+    }
+   ],
+   "synthesis": "- Recurrent examiner move = convert policy architecture into **institution/function**, **crop/non-crop**, **investment/subsidy**, **support/procurement**, **direct/apex credit**, **statutory coverage/false qualifier** distinctions.\n- High-value qualifiers: **all, only, unlimited, any State/UT, uniform, market-driven, BPL-only**.\n- MSP questions increasingly test the chain rather than only crop names: **recommendation → fixation → procurement → stocking/distribution → economic cost/consumer subsidy**.\n- Credit questions test the institutional stack rather than interest rates: **NABARD vs banks; PACS–DCCB relation; KCC short-term vs investment credit**.\n- UPPCS adds durable recall on **tenancy reform, chronology, food-security entitlement**; numerical current MSP rates should remain replaceable."
+  },
+  "soil-conservation": {
+   "upsc": [
+    {
+     "label": "General",
+     "ids": [
+      "UPSC-CSE-2011-GS1-Q078",
+      "UPSC-CSE-2013-GS1-Q024",
+      "UPSC-CSE-2014-GS1-Q042",
+      "UPSC-CSE-2014-GS1-Q056",
+      "UPSC-CSE-2018-GS1-Q082"
+     ]
+    }
+   ],
+   "uppcs": [
+    {
+     "label": "General",
+     "ids": [
+      "UPPCS-2022-GS1-Q095",
+      "UPPCS-2023-GS1-Q110",
+      "UPPCS-2025-GS1-Q073"
+     ]
+    }
+   ],
+   "synthesis": "- Examiner tests **process logic**: what slows runoff, what changes slope length, what increases infiltration, what removes protective cover, what makes salts accumulate.\n- Conservation practices are often paired with the **wrong terrain/agent**; memorize mechanism, not only method name.\n- Soil-health statements blend physical + biogeochemical properties: **organic matter ↔ water holding/aggregation; soil ↔ nutrient cycles; irrigation ↔ salinity**.\n- Watershed demand spans definition → resource-conservation functions → historical programme identification."
+  }
+ }
+}

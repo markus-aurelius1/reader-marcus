@@ -1,0 +1,45 @@
+{
+  "status": {
+    "UPPCS-2020-GS1-Q047": { "status": "review-required", "dynamic": true, "note": "EDITABLE_REVIEW · NEEDS_FIX_BEFORE_SCORING — summit ↔ place table structure unclear; demand only" },
+    "UPSC-CSE-2025-GS1-Q097": { "dynamic": true, "note": "BRICS expansion / summit statements — current trigger" },
+    "UPPCS-2018-GS1-Q110": { "dynamic": true, "note": "BRICS summit host" },
+    "UPPCS-2021-GS1-Q048": { "dynamic": true, "note": "G7 chair / guest" },
+    "UPPCS-2022-GS1-Q094": { "dynamic": true, "note": "BIMSTEC summit / chair" },
+    "UPPCS-2023-GS1-Q081": { "dynamic": true, "note": "G20 logo" },
+    "UPPCS-2023-GS1-Q087": { "dynamic": true, "note": "SCO Film Festival / presidency context" },
+    "UPPCS-2023-GS1-Q089": { "dynamic": true, "note": "G20 meeting venues in UP" },
+    "UPPCS-2024-GS1-Q046": { "dynamic": true, "note": "Voice of Global South Summit" },
+
+    "UPPCS-2022-GS1-Q121": { "status": "review-required", "note": "EDITABLE_REVIEW · NEEDS_FIX_BEFORE_SCORING — observance-day matching structure; demand only" },
+    "UPPCS-2019-GS1-Q119": { "dynamic": true, "note": "UN Climate Action Summit host" },
+    "UPPCS-2020-GS1-Q063": { "dynamic": true, "note": "UNSC non-permanent member election" },
+    "UPPCS-2022-GS1-Q085": { "dynamic": true, "note": "WHO Global Traditional Medicine Centre location" },
+    "UPPCS-2023-GS1-Q126": { "dynamic": true, "note": "Annual theme of an observance day" },
+
+    "UPSC-CSE-2024-GS1-Q024": { "status": "review-required", "note": "EDITABLE_REVIEW · NEEDS_FIX_BEFORE_SCORING — World Toilet Organization record malformed; demand only" },
+
+    "UPPCS-2024-GS1-Q058": { "status": "demand-only", "dynamic": true, "note": "Current heads of state — replaceable layer" },
+    "UPPCS-2025-GS1-Q038": { "status": "demand-only", "dynamic": true, "note": "Operation Brahma — one-off relief operation" }
+  },
+  "sections": {
+    "groupings": {
+      "BRICS / NDB": ["brics"],
+      "G20 / G7": ["g20-g7"],
+      "ASEAN / East Asia": ["asean-eas", "india-status"],
+      "BIMSTEC": ["bimstec-saarc"],
+      "SCO / Turkic groupings": ["sco-gcc-iora", "mgc-ots", "india-status"],
+      "GCC / IORA / Arctic / NATO": ["sco-gcc-iora", "nato-arctic"],
+      "EU institutions / pacts": ["eu"],
+      "Other groupings / membership logic": ["other-groupings", "mgc-ots"]
+    },
+    "un-system-law": {
+      "UN organs / institutional architecture": ["unga", "agencies"],
+      "Declarations / conventions / protocol-family traps": ["declarations", "untoc-uncac", "agencies"],
+      "UN-linked agency / programme association": ["agencies", "observances"],
+      "Maritime law": ["unclos"]
+    },
+    "bilateral-connectivity": {
+      "Dynamic-only evidence": ["current-layer"]
+    }
+  }
+}

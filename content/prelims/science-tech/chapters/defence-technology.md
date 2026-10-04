@@ -18,7 +18,7 @@ taxonomy: prelims-science-and-technology-defence-and-security-technology-defence
 - **MIRV** → one missile, {{several warheads}}, each for a different target.
 - **FOBS** (Fractional Orbital Bombardment System) → warhead put into low orbit, brought down on target before completing one orbit → attack from an unexpected direction.
 
-Missile export-control regimes → [International Relations](@prelims/international-relations)
+Missile export-control regimes → [Export-control regimes](@prelims/international-relations/nuclear-wmd-regimes#export-controls)
 
 > [!TRAP] "Ballistic missiles are jet-propelled throughout" and "cruise missiles are rocket-powered only at launch" are both reversed.
 

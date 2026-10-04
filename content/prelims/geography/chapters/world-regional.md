@@ -48,7 +48,7 @@ taxonomy: prelims-geography-world-regional-and-economic-geography-world-regional
 
 - Suez lakes, north → south → {{Manzala → Timsah → Great Bitter → Little Bitter}}.
 
-Chokepoints as energy and trade risk → [Crude oil](@world-resources#crude-oil) · Their geopolitics → [International Relations](@prelims/international-relations)
+Chokepoints as energy and trade risk → [Crude oil](@world-resources#crude-oil) · Their geopolitics → [Chokepoints](@prelims/international-relations/geopolitical-regions#chokepoints)
 
 ## Countries, Regions & Sequences {#countries-regions}
 

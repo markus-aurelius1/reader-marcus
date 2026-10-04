@@ -1,0 +1,49 @@
+{
+  "status": {
+    "UPSC-CSE-2018-GS1-Q063": { "status": "review-required", "note": "EMPTY_STATEMENT — GM mustard demand only; answer not relied upon" },
+    "UPSC-CSE-2024-GS1-Q059": { "status": "review-required", "note": "EMPTY_STATEMENT — incomplete rice–wheat record; demand only" },
+    "UPPCS-2019-GS1-Q116": { "status": "demand-only", "note": "Exam wording “first 100 percent organic state in the world” not carried — Sikkim is India's first fully organic State" },
+    "UPSC-CSE-2022-GS1-Q079": { "dynamic": true, "note": "Tea Board — commodity-board snapshot" },
+    "UPPCS-2018-GS1-Q126": { "dynamic": true, "note": "Coffee-producer rank — dated" },
+    "UPPCS-2019-GS1-Q086": { "dynamic": true, "note": "UP–Maharashtra sugarcane comparison — year-sensitive" },
+    "UPSC-CSE-2016-GS1-Q048": { "dynamic": true, "note": "Current-only initiative — practice retained, scheme trivia not" },
+    "UPSC-CSE-2021-GS1-Q059": { "dynamic": true, "note": "Current-only initiative" },
+    "UPSC-CSE-2024-GS1-Q026": { "dynamic": true, "note": "Current-only initiative" },
+    "UPPCS-2025-GS1-Q010": { "dynamic": true, "note": "Bio-decomposer — implementation detail is current layer" },
+
+    "UPPCS-2022-GS1-Q086": { "status": "demand-only", "note": "Canonical key C (1 & 4) internally inconsistent — farm-subsidy demand only; needs the official UPPSC key" },
+    "UPPCS-2025-GS1-Q073": { "status": "demand-only", "note": "Canonical key B conflicts with soil science (earthworms) — demand only; needs the official UPPSC key" },
+    "UPPCS-2018-GS1-Q107": { "status": "demand-only", "dynamic": true, "note": "2018 paddy MSP value — rate omitted from the notes" }
+  },
+  "sections": {
+    "crops": {
+      "Crop identification / requirements": ["cereals-millets", "pulses-oilseeds", "fibre-sugar", "plantation-spices"],
+      "Origin / family / uses / by-products": ["uses", "pulses-oilseeds"],
+      "Crop statistics / trade / season traps": ["statistics", "seasons"],
+      "Boundary/current": ["statistics"],
+      "Malformed": ["statistics"]
+    },
+    "farming-practices": {
+      "Micro-irrigation / fertigation": ["micro-irrigation"],
+      "Conservation agriculture / zero till / carbon-water": ["conservation-agriculture"],
+      "Farming systems": ["farming-systems"],
+      "Sugarcane technology": ["sugarcane"],
+      "Fertiliser/input effects": ["inputs"],
+      "Organic / traditional systems": ["organic"],
+      "Agri emissions": ["emissions", "sri"],
+      "Biochar": ["inputs"],
+      "Livestock / allied": ["allied"]
+    },
+    "agri-biotechnology": {
+      "Cross-boundary": ["regulation"]
+    },
+    "agricultural-economics": {
+      "MSP / FRP / procurement / foodgrain economics": ["msp", "procurement"],
+      "Marketing": ["marketing"],
+      "Credit / institutions / KCC": ["credit"],
+      "Public investment / subsidy / fertiliser": ["investment-subsidy", "fertiliser"],
+      "Seeds / durable agriculture schemes": ["seeds-farm-organisation"],
+      "Land reform / farm organisation / food security": ["land-reforms", "seeds-farm-organisation", "food-security"]
+    }
+  }
+}

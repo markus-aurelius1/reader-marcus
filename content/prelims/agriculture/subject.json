@@ -1,0 +1,16 @@
+{
+  "title": "Agriculture",
+  "source": "source/Agriculture-v01-source-pack-CLAUDE-READY.md",
+  "topics": [
+    { "id": "crops-farming", "title": "Crops & Farming Systems", "chapters": ["agricultural-geography", "crops", "farming-practices", "agri-biotechnology"] },
+    { "id": "economy-resources", "title": "Agricultural Economy & Resource Management", "chapters": ["soil-conservation", "agricultural-economics"] }
+  ],
+  "taxonomy": [
+    "prelims-agriculture-crops-and-farming-systems-agricultural-geography-of-india",
+    "prelims-agriculture-crops-and-farming-systems-crops-geography-climate-uses-and-statistics",
+    "prelims-agriculture-crops-and-farming-systems-farming-practices-technology-and-allied-sectors",
+    "prelims-agriculture-crops-and-farming-systems-agricultural-biotechnology-and-gm-crops",
+    "prelims-agriculture-agricultural-economy-and-resource-management-agricultural-economics-msp-procurement-marketing-and-credit",
+    "prelims-agriculture-agricultural-economy-and-resource-management-soil-conservation-and-soil-health"
+  ]
+}

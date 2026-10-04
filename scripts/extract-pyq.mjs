@@ -127,21 +127,38 @@ for (const part of pack.split(/\n(?=# [^\n]*Source Pack)/)) {
 }
 
 // topic packs: children are named in the ledger, then mapped A/B/C… in the demand map
-for (const part of pack.split(/\n(?=## [^\n]*Topic Source Pack)/).slice(1)) {
+// (a topic pack may also be headed "## <code> — <topic> — Source Pack v01")
+const plain = (s) => slug(s.replace(/['’]/g, ''))
+for (const part of pack.split(/\n(?=## [^\n]*(?:Topic Source Pack|— Source Pack v\d))/).slice(1)) {
   const byName = new Map()
   for (const row of part.matchAll(/^\|\s*([^|`]+?)\s*\|\s*`([\w.-]+)`\s*\|/gm)) {
     // the ledger may abbreviate an id as `...-suffix`
     const id = row[2].startsWith('...') ? [...byTaxonomy.keys()].find((t) => t.endsWith(row[2].slice(3))) : row[2]
     if (id && byTaxonomy.has(id)) byName.set(slug(row[1]), byTaxonomy.get(id))
   }
-  const demand = part.match(/\n### 3\. PYQ Demand Map\n([\s\S]*?)(?=\n### 4\.)/)
+  // the demand map is "### 3." in most packs; it may be numbered and levelled differently
+  const demand = part.match(/\n(#{2,3}) \d\. PYQ Demand Map\n([\s\S]*?)(?=\n\1 \d\. )/)
   if (!demand) continue
+  // a ledger without taxonomy ids: the child is the chapter whose taxonomy id ends with the child's name
+  const topic = part.match(/\*\*Topic ID:\*\*\s*`([\w-]+)`/)?.[1]
+  const owner = (name) => byName.get(slug(name)) ?? (topic ? byTaxonomy.get(`${topic}-${plain(name)}`) : undefined)
   // the child heading sits at any level (## A. … #### A.); its exam headings are the first UPSC / UPPCS heading below it
-  for (const child of demand[1].split(/\n(?=#{2,4} [A-Z]\. )/)) {
+  let last
+  for (const child of demand[2].split(/\n(?=#{2,4} [A-Z]\. )/)) {
     const name = child.match(/^#{2,4} [A-Z]\. (.+)$/m)
-    const chapter = name && byName.get(slug(name[1]))
-    const exam = child.match(/^(#{3,6}) UPP?CS\b/m)
-    if (chapter && exam) put(chapter, entry(child, exam[1]))
+    if (!name) continue
+    const exam = child.match(/^(#{3,6}) (?:UPSC|UPPCS)\b/m)
+    // a trailing "Dynamic-only evidence" child has no node of its own: its IDs stay with the child before it
+    const dynamicOnly = /^dynamic-only/i.test(name[1])
+    const chapter = dynamicOnly ? last : owner(name[1])
+    if (!chapter) continue
+    last = chapter
+    if (exam) put(chapter, entry(child, exam[1]))
+    else {
+      // no exam headings (ID tables): the exam is read from each ID
+      const of = (re) => clusters(child.split('\n').filter((l) => re.test(l)).join('\n'), '').map((c) => (dynamicOnly ? { ...c, label: 'Dynamic-only evidence' } : c))
+      put(chapter, { upsc: of(/UPSC-CSE-/), uppcs: of(/UPPCS-/), synthesis: '' })
+    }
   }
 }
 

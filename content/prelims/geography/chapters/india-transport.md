@@ -78,7 +78,7 @@ Historic ports of the same coasts → [Ancient ports](@prelims/history-culture/h
 - **Kaladan project** → {{Sittwe}} port (Myanmar) → river to Paletwa → road to {{Mizoram}}.
 - **India–Myanmar–Thailand Highway** → {{Moreh}} (Manipur) → Myanmar → Mae Sot (Thailand).
 
-Chabahar, INSTC and the diplomacy around these routes → [International Relations](@prelims/international-relations)
+Chabahar, INSTC and the diplomacy around these routes → [Corridors](@prelims/international-relations/bilateral-connectivity#corridors)
 
 ## UP & Planning Frameworks {#up-and-schemes}
 

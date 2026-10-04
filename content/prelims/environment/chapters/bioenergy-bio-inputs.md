@@ -53,4 +53,4 @@ Same process for coal → [Coal gasification](@prelims/geography/india-minerals-
 
 > [!TRAP] Agaricus (mushroom) and Spirogyra are !!not!! biofertilisers.
 
-Nitrogen cycle → [Nutrient cycles](@ecology-ecosystems#nutrient-cycles) · Use on the farm → [Agriculture](@prelims/agriculture)
+Nitrogen cycle → [Nutrient cycles](@ecology-ecosystems#nutrient-cycles) · Use on the farm → [Fertilisers & soil inputs](@prelims/agriculture/farming-practices#inputs)

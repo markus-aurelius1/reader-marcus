@@ -1,0 +1,16 @@
+{
+  "title": "International Relations",
+  "source": "source/International-Relations-v01-source-pack-CLAUDE-READY.md",
+  "topics": [
+    { "id": "organisations-law", "title": "International Organisations & Law", "chapters": ["groupings", "un-system-law", "ngos-other-bodies"] },
+    { "id": "geopolitics", "title": "Geopolitics, Connectivity & Strategic Regimes", "chapters": ["geopolitical-regions", "bilateral-connectivity", "nuclear-wmd-regimes"] }
+  ],
+  "taxonomy": [
+    "prelims-international-relations-international-organisations-and-law-international-groupings-and-memberships",
+    "prelims-international-relations-international-organisations-and-law-un-system-conventions-and-international-law",
+    "prelims-international-relations-international-organisations-and-law-international-ngos-and-other-bodies",
+    "prelims-international-relations-geopolitics-connectivity-and-strategic-regimes-geopolitical-regions-chokepoints-and-conflict-geography",
+    "prelims-international-relations-geopolitics-connectivity-and-strategic-regimes-nuclear-and-wmd-regimes",
+    "prelims-international-relations-geopolitics-connectivity-and-strategic-regimes-indias-bilateral-relations-and-connectivity"
+  ]
+}
